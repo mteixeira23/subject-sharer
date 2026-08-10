@@ -72,6 +72,7 @@ const appRoutes = (
   <Suspense fallback={<PageFallback />}>
     <Routes>
       <Route path="/" element={<HubDashboard />} />
+      <Route path="/index" element={<Navigate to="/" replace />} />
       <Route path="/conversa" element={<Conversa />} />
       <Route path="/estudos" element={<Estudos />} />
       <Route path="/financas" element={<Financas />} />
@@ -94,6 +95,7 @@ const restrictedRoutes = (
   <Suspense fallback={<PageFallback />}>
     <Routes>
       <Route path="/" element={<HubDashboard />} />
+      <Route path="/index" element={<Navigate to="/" replace />} />
       <Route path="/assinatura" element={<Assinatura />} />
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/reset-password" element={<ResetPassword />} />
@@ -159,6 +161,7 @@ function AppRoutes() {
       <Suspense fallback={<PageFallback />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/index" element={<Navigate to="/" replace />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/install" element={<Install />} />
