@@ -1,0 +1,867 @@
+import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { StudyData, Contest, Subject, Lesson, ScheduleEvent, QuestionSession } from '@/types/study';
+import { PomodoroSession } from '@/types/pomodoro';
+import { SEFAZ_BA_SUBJECTS } from '@/data/sefazBA';
+import { SUBJECT_COLORS } from '@/types/study';
+import { getLocalDateString } from '@/lib/dates';
+
+// ── Row mappers ──────────────────────────────────────────────────────────────
+
+function rowToContest(r: any): Contest {
+  return { id: r.id, name: r.name, createdAt: r.created_at, currentCycle: r.current_cycle ?? 1 };
+}
+
+function rowToSubject(r: any): Subject {
+  return {
+    id: r.id,
+    contestId: r.contest_id,
+    name: r.name,
+    totalLessons: r.total_lessons,
+    color: r.color,
+  };
+}
+
+function rowToLesson(r: any): Lesson {
+  return {
+    id: r.id,
+    subjectId: r.subject_id,
+    number: r.number,
+    name: r.name ?? '',
+    theoryCompleted: r.theory_completed,
+    reviewCompleted: r.review_completed,
+    questionsCount: r.questions_count,
+    correctAnswers: r.correct_answers,
+    cycle: r.cycle ?? 1,
+  };
+}
+
+function rowToScheduleEvent(r: any): ScheduleEvent {
+  return {
+    id: r.id,
+    date: r.date,
+    subjectId: r.subject_id,
+    lessonNumber: r.lesson_number,
+    type: r.type,
+    completed: r.completed,
+    description: r.description ?? undefined,
+    shift: r.shift ?? undefined,
+  };
+}
+
+function rowToQuestionSession(r: any): QuestionSession {
+  return {
+    id: r.id,
+    subjectId: r.subject_id,
+    lessonNumber: r.lesson_number,
+    questionsCount: r.questions_count,
+    correctAnswers: r.correct_answers,
+    date: r.date,
+  };
+}
+
+function rowToPomodoroSession(r: any): PomodoroSession {
+  return {
+    id: r.id,
+    subjectId: r.subject_id,
+    lessonNumber: r.lesson_number,
+    startedAt: r.started_at,
+    duration: r.duration,
+    completed: r.completed,
+    date: r.date,
+  };
+}
+
+// ── Hook ──────────────────────────────────────────────────────────────────────
+
+export function useStudyData() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const userId = user?.id;
+  const [seeding, setSeeding] = useState(false);
+
+  const invalidate = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['study', userId] });
+  }, [queryClient, userId]);
+
+  // ── Queries ──────────────────────────────────────────────────────────────
+
+  const { data: contests = [], isLoading: loadingContests } = useQuery({
+    queryKey: ['study', userId, 'contests'],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase.from('contests').select('*').eq('user_id', userId);
+      if (error) throw error;
+      return (data ?? []).map(rowToContest);
+    },
+    enabled: !!userId,
+  });
+
+  const { data: subjects = [], isLoading: loadingSubjects } = useQuery({
+    queryKey: ['study', userId, 'subjects'],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase.from('subjects').select('*').eq('user_id', userId);
+      if (error) throw error;
+      return (data ?? []).map(rowToSubject);
+    },
+    enabled: !!userId,
+  });
+
+  const { data: lessons = [], isLoading: loadingLessons } = useQuery({
+    queryKey: ['study', userId, 'lessons'],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase.from('lessons').select('*').eq('user_id', userId);
+      if (error) throw error;
+      return (data ?? []).map(rowToLesson);
+    },
+    enabled: !!userId,
+  });
+
+  const { data: scheduleEvents = [] } = useQuery({
+    queryKey: ['study', userId, 'scheduleEvents'],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase.from('schedule_events').select('*').eq('user_id', userId);
+      if (error) throw error;
+      return (data ?? []).map(rowToScheduleEvent);
+    },
+    enabled: !!userId,
+  });
+
+  const { data: questionSessions = [] } = useQuery({
+    queryKey: ['study', userId, 'questionSessions'],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase.from('question_sessions').select('*').eq('user_id', userId);
+      if (error) throw error;
+      return (data ?? []).map(rowToQuestionSession);
+    },
+    enabled: !!userId,
+  });
+
+  const { data: pomodoroSessions = [] } = useQuery({
+    queryKey: ['study', userId, 'pomodoroSessions'],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase.from('pomodoro_sessions').select('*').eq('user_id', userId);
+      if (error) throw error;
+      return (data ?? []).map(rowToPomodoroSession);
+    },
+    enabled: !!userId,
+  });
+
+  const isLoading = loadingContests || loadingSubjects || loadingLessons || seeding;
+
+  // ── Seed initial data for new users ──────────────────────────────────────
+
+  useEffect(() => {
+    if (!userId || loadingContests || contests.length > 0 || seeding) return;
+
+    const seed = async () => {
+      setSeeding(true);
+      try {
+        // Create contest
+        const { data: contestRow, error: contestErr } = await supabase
+          .from('contests')
+          .insert({ user_id: userId, name: 'SEFAZ-BA 2025' })
+          .select('id')
+          .single();
+        if (contestErr || !contestRow) throw contestErr;
+
+        const contestId = contestRow.id;
+
+        // Create subjects
+        const subjectRows = SEFAZ_BA_SUBJECTS.map((s, i) => ({
+          user_id: userId,
+          contest_id: contestId,
+          name: s.name,
+          total_lessons: s.totalLessons,
+          color: SUBJECT_COLORS[i % SUBJECT_COLORS.length],
+        }));
+        const { data: insertedSubjects, error: subjErr } = await supabase
+          .from('subjects')
+          .insert(subjectRows)
+          .select('id, total_lessons');
+        if (subjErr || !insertedSubjects) throw subjErr;
+
+        // Create lessons for each subject
+        const lessonRows: any[] = [];
+        for (const subj of insertedSubjects) {
+          for (let i = 1; i <= subj.total_lessons; i++) {
+            lessonRows.push({
+              user_id: userId,
+              subject_id: subj.id,
+              number: i,
+              name: '',
+              theory_completed: false,
+              review_completed: false,
+              questions_count: 0,
+              correct_answers: 0,
+            });
+          }
+        }
+        // Insert in batches of 100
+        for (let i = 0; i < lessonRows.length; i += 100) {
+          const batch = lessonRows.slice(i, i + 100);
+          const { error } = await supabase.from('lessons').insert(batch);
+          if (error) throw error;
+        }
+
+        invalidate();
+      } catch (err) {
+        console.error('Failed to seed study data:', err);
+      } finally {
+        setSeeding(false);
+      }
+    };
+
+    seed();
+  }, [userId, loadingContests, contests.length, seeding, invalidate]);
+
+  // ── Aggregated data object ───────────────────────────────────────────────
+
+  const data: StudyData = useMemo(
+    () => ({ contests, subjects, lessons, scheduleEvents, questionSessions, pomodoroSessions }),
+    [contests, subjects, lessons, scheduleEvents, questionSessions, pomodoroSessions],
+  );
+
+  // ── Contest CRUD ─────────────────────────────────────────────────────────
+
+  const addContest = useCallback(
+    async (contest: Contest) => {
+      if (!userId) return;
+      const { error } = await supabase.from('contests').insert({
+        user_id: userId,
+        name: contest.name,
+      });
+      if (error) throw error;
+      invalidate();
+    },
+    [userId, invalidate],
+  );
+
+  const updateContest = useCallback(
+    async (id: string, updates: Partial<Contest>) => {
+      const row: Record<string, any> = {};
+      if (updates.name !== undefined) row.name = updates.name;
+      const { error } = await supabase.from('contests').update(row).eq('id', id);
+      if (error) throw error;
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  const deleteContest = useCallback(
+    async (id: string) => {
+      // CASCADE will handle subjects, lessons, events, etc.
+      const { error } = await supabase.from('contests').delete().eq('id', id);
+      if (error) throw error;
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  // ── Subject CRUD ─────────────────────────────────────────────────────────
+
+  const addSubject = useCallback(
+    async (subject: Subject, lessonsCount: number) => {
+      if (!userId) return;
+      const { data: inserted, error } = await supabase
+        .from('subjects')
+        .insert({
+          user_id: userId,
+          contest_id: subject.contestId,
+          name: subject.name,
+          total_lessons: lessonsCount,
+          color: subject.color,
+        })
+        .select('id')
+        .single();
+      if (error || !inserted) throw error;
+
+      // Create lessons with current cycle
+      const contest = contests.find(c => c.id === subject.contestId);
+      const currentCycle = contest?.currentCycle ?? 1;
+      const lessonRows = [];
+      for (let i = 1; i <= lessonsCount; i++) {
+        lessonRows.push({
+          user_id: userId,
+          subject_id: inserted.id,
+          number: i,
+          name: '',
+          theory_completed: false,
+          review_completed: false,
+          questions_count: 0,
+          correct_answers: 0,
+          cycle: currentCycle,
+        });
+      }
+      if (lessonRows.length > 0) {
+        const { error: lErr } = await supabase.from('lessons').insert(lessonRows);
+        if (lErr) throw lErr;
+      }
+      invalidate();
+    },
+    [userId, contests, invalidate],
+  );
+
+  const updateSubject = useCallback(
+    async (id: string, updates: Partial<Subject>) => {
+      const row: Record<string, any> = {};
+      if (updates.name !== undefined) row.name = updates.name;
+      if (updates.totalLessons !== undefined) row.total_lessons = updates.totalLessons;
+      if (updates.color !== undefined) row.color = updates.color;
+      const { error } = await supabase.from('subjects').update(row).eq('id', id);
+      if (error) throw error;
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  const deleteSubject = useCallback(
+    async (id: string) => {
+      const { error } = await supabase.from('subjects').delete().eq('id', id);
+      if (error) throw error;
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  // ── Lesson CRUD ──────────────────────────────────────────────────────────
+
+  const addLesson = useCallback(
+    async (subjectId: string, name?: string) => {
+      if (!userId) return;
+      const subjectLessons = lessons.filter(l => l.subjectId === subjectId);
+      const nextNumber = subjectLessons.length > 0
+        ? Math.max(...subjectLessons.map(l => l.number)) + 1
+        : 1;
+
+      // Get current cycle for the subject's contest
+      const subj = subjects.find(s => s.id === subjectId);
+      const contest = subj ? contests.find(c => c.id === subj.contestId) : null;
+      const currentCycle = contest?.currentCycle ?? 1;
+
+      const { error } = await supabase.from('lessons').insert({
+        user_id: userId,
+        subject_id: subjectId,
+        number: nextNumber,
+        name: name || '',
+        cycle: currentCycle,
+      });
+      if (error) throw error;
+
+      // Update subject total_lessons
+      const subject = subjects.find(s => s.id === subjectId);
+      if (subject) {
+        await supabase.from('subjects').update({ total_lessons: subject.totalLessons + 1 }).eq('id', subjectId);
+      }
+      invalidate();
+    },
+    [userId, lessons, subjects, contests, invalidate],
+  );
+
+  const updateLesson = useCallback(
+    async (id: string, updates: Partial<Lesson>) => {
+      const row: Record<string, any> = {};
+      if (updates.name !== undefined) row.name = updates.name;
+      if (updates.theoryCompleted !== undefined) row.theory_completed = updates.theoryCompleted;
+      if (updates.reviewCompleted !== undefined) row.review_completed = updates.reviewCompleted;
+      if (updates.questionsCount !== undefined) row.questions_count = updates.questionsCount;
+      if (updates.correctAnswers !== undefined) row.correct_answers = updates.correctAnswers;
+      const { error } = await supabase.from('lessons').update(row).eq('id', id);
+      if (error) throw error;
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  const deleteLesson = useCallback(
+    async (id: string) => {
+      const lesson = lessons.find(l => l.id === id);
+      if (!lesson) return;
+      const subjectLessons = lessons.filter(l => l.subjectId === lesson.subjectId);
+      if (subjectLessons.length <= 1) return; // Keep at least one
+
+      const { error } = await supabase.from('lessons').delete().eq('id', id);
+      if (error) throw error;
+
+      const subject = subjects.find(s => s.id === lesson.subjectId);
+      if (subject) {
+        await supabase.from('subjects').update({ total_lessons: subject.totalLessons - 1 }).eq('id', lesson.subjectId);
+      }
+      invalidate();
+    },
+    [lessons, subjects, invalidate],
+  );
+
+  // ── Schedule Events ──────────────────────────────────────────────────────
+
+  const addScheduleEvent = useCallback(
+    async (event: ScheduleEvent) => {
+      if (!userId) return;
+      const { error } = await supabase.from('schedule_events').insert({
+        user_id: userId,
+        subject_id: event.subjectId,
+        date: event.date,
+        lesson_number: event.lessonNumber,
+        type: event.type,
+        completed: event.completed,
+        description: event.description ?? null,
+        shift: event.shift ?? null,
+      });
+      if (error) throw error;
+      invalidate();
+    },
+    [userId, invalidate],
+  );
+
+  const updateScheduleEvent = useCallback(
+    async (id: string, updates: Partial<ScheduleEvent>) => {
+      const row: Record<string, any> = {};
+      if (updates.date !== undefined) row.date = updates.date;
+      if (updates.lessonNumber !== undefined) row.lesson_number = updates.lessonNumber;
+      if (updates.type !== undefined) row.type = updates.type;
+      if (updates.completed !== undefined) row.completed = updates.completed;
+      if (updates.description !== undefined) row.description = updates.description;
+      if (updates.shift !== undefined) row.shift = updates.shift;
+      const { error } = await supabase.from('schedule_events').update(row).eq('id', id);
+      if (error) throw error;
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  const deleteScheduleEvent = useCallback(
+    async (id: string) => {
+      const { error } = await supabase.from('schedule_events').delete().eq('id', id);
+      if (error) throw error;
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  // ── Question Sessions ────────────────────────────────────────────────────
+
+  // Helper: find the lesson row in the user's current cycle
+  const findCurrentCycleLesson = useCallback(
+    (subjectId: string, lessonNumber: number) => {
+      const subject = subjects.find(s => s.id === subjectId);
+      const contest = subject ? contests.find(c => c.id === subject.contestId) : null;
+      const cycle = contest?.currentCycle ?? 1;
+      return lessons.find(
+        l => l.subjectId === subjectId && l.number === lessonNumber && l.cycle === cycle,
+      ) ?? lessons.find(l => l.subjectId === subjectId && l.number === lessonNumber);
+    },
+    [lessons, subjects, contests],
+  );
+
+  const addQuestionSession = useCallback(
+    async (session: QuestionSession) => {
+      if (!userId) return;
+      const { data: inserted, error } = await supabase
+        .from('question_sessions')
+        .insert({
+          user_id: userId,
+          subject_id: session.subjectId,
+          lesson_number: session.lessonNumber,
+          questions_count: session.questionsCount,
+          correct_answers: session.correctAnswers,
+          date: session.date,
+        })
+        .select('*')
+        .single();
+      if (error) throw error;
+
+      // Update lesson counters on the current cycle lesson
+      const lesson = findCurrentCycleLesson(session.subjectId, session.lessonNumber);
+      let updatedLessonRow: any = null;
+      if (lesson) {
+        const { data: lessonRow, error: updErr } = await supabase
+          .from('lessons')
+          .update({
+            questions_count: lesson.questionsCount + session.questionsCount,
+            correct_answers: lesson.correctAnswers + session.correctAnswers,
+          })
+          .eq('id', lesson.id)
+          .select('*')
+          .single();
+        if (updErr) throw updErr;
+        updatedLessonRow = lessonRow;
+      }
+
+      // Optimistic cache update so UI reflects immediately
+      if (inserted) {
+        queryClient.setQueryData(['study', userId, 'questionSessions'], (old: QuestionSession[] = []) => [
+          ...old,
+          rowToQuestionSession(inserted),
+        ]);
+      }
+      if (updatedLessonRow) {
+        queryClient.setQueryData(['study', userId, 'lessons'], (old: Lesson[] = []) =>
+          old.map(l => (l.id === updatedLessonRow.id ? rowToLesson(updatedLessonRow) : l)),
+        );
+      }
+      invalidate();
+    },
+    [userId, findCurrentCycleLesson, invalidate, queryClient],
+  );
+
+  const updateQuestionSession = useCallback(
+    async (id: string, updates: Partial<QuestionSession>) => {
+      const oldSession = questionSessions.find(s => s.id === id);
+      if (!oldSession) return;
+
+      const newQuestionsCount = updates.questionsCount ?? oldSession.questionsCount;
+      const newCorrectAnswers = updates.correctAnswers ?? oldSession.correctAnswers;
+      const questionsDiff = newQuestionsCount - oldSession.questionsCount;
+      const correctDiff = newCorrectAnswers - oldSession.correctAnswers;
+
+      const row: Record<string, any> = {};
+      if (updates.questionsCount !== undefined) row.questions_count = updates.questionsCount;
+      if (updates.correctAnswers !== undefined) row.correct_answers = updates.correctAnswers;
+      if (updates.date !== undefined) row.date = updates.date;
+
+      const { error } = await supabase.from('question_sessions').update(row).eq('id', id);
+      if (error) throw error;
+
+      // Update lesson counters
+      if (questionsDiff !== 0 || correctDiff !== 0) {
+        const lesson = findCurrentCycleLesson(oldSession.subjectId, oldSession.lessonNumber);
+        if (lesson) {
+          await supabase.from('lessons').update({
+            questions_count: Math.max(0, lesson.questionsCount + questionsDiff),
+            correct_answers: Math.max(0, lesson.correctAnswers + correctDiff),
+          }).eq('id', lesson.id);
+        }
+      }
+      invalidate();
+    },
+    [questionSessions, findCurrentCycleLesson, invalidate],
+  );
+
+  const deleteQuestionSession = useCallback(
+    async (id: string) => {
+      const session = questionSessions.find(s => s.id === id);
+      if (!session) return;
+
+      const { error } = await supabase.from('question_sessions').delete().eq('id', id);
+      if (error) throw error;
+
+      // Subtract from lesson counters
+      const lesson = findCurrentCycleLesson(session.subjectId, session.lessonNumber);
+      if (lesson) {
+        await supabase.from('lessons').update({
+          questions_count: Math.max(0, lesson.questionsCount - session.questionsCount),
+          correct_answers: Math.max(0, lesson.correctAnswers - session.correctAnswers),
+        }).eq('id', lesson.id);
+      }
+      invalidate();
+    },
+    [questionSessions, findCurrentCycleLesson, invalidate],
+  );
+
+  // ── Pomodoro ─────────────────────────────────────────────────────────────
+
+  const addPomodoroSession = useCallback(
+    async (session: PomodoroSession) => {
+      if (!userId) return;
+      const { error } = await supabase.from('pomodoro_sessions').insert({
+        user_id: userId,
+        subject_id: session.subjectId,
+        lesson_number: session.lessonNumber,
+        started_at: session.startedAt,
+        duration: session.duration,
+        completed: session.completed,
+        date: session.date,
+      });
+      if (error) throw error;
+      invalidate();
+    },
+    [userId, invalidate],
+  );
+
+  const deletePomodoroSession = useCallback(
+    async (id: string) => {
+      const { error } = await supabase.from('pomodoro_sessions').delete().eq('id', id);
+      if (error) throw error;
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  // ── Computed values (same interface as before) ───────────────────────────
+
+  const getSubjectsByContest = useCallback(
+    (contestId: string) => subjects.filter(s => s.contestId === contestId),
+    [subjects],
+  );
+
+  // Helper to get current cycle lessons only
+  const currentCycleLessons = useMemo(() => {
+    return lessons.filter(l => {
+      const subject = subjects.find(s => s.id === l.subjectId);
+      const contest = subject ? contests.find(c => c.id === subject.contestId) : null;
+      const targetCycle = contest?.currentCycle ?? 1;
+      return (l.cycle ?? 1) === targetCycle;
+    });
+  }, [lessons, subjects, contests]);
+
+  // Enrich current cycle lessons with question_sessions counters dynamically
+  const enrichedCurrentCycleLessons = useMemo(() => {
+    return currentCycleLessons.map(lesson => {
+      const lessonSessions = questionSessions.filter(
+        s => s.subjectId === lesson.subjectId && s.lessonNumber === lesson.number
+      );
+      const sessionQuestions = lessonSessions.reduce((acc, s) => acc + s.questionsCount, 0);
+      const sessionCorrect = lessonSessions.reduce((acc, s) => acc + s.correctAnswers, 0);
+
+      const questionsCount = Math.max(lesson.questionsCount ?? 0, sessionQuestions);
+      const correctAnswers = sessionQuestions > 0 ? sessionCorrect : (lesson.correctAnswers ?? 0);
+
+      return {
+        ...lesson,
+        questionsCount,
+        correctAnswers,
+      };
+    });
+  }, [currentCycleLessons, questionSessions]);
+
+  const getLessonsBySubject = useCallback(
+    (subjectId: string) => enrichedCurrentCycleLessons.filter(l => l.subjectId === subjectId).sort((a, b) => a.number - b.number),
+    [enrichedCurrentCycleLessons],
+  );
+
+  const getSubjectProgress = useCallback(
+    (subjectId: string) => {
+      const subjectLessons = enrichedCurrentCycleLessons.filter(l => l.subjectId === subjectId);
+      const totalLessons = subjectLessons.length;
+      const theoryCompleted = subjectLessons.filter(l => l.theoryCompleted).length;
+      const reviewCompleted = subjectLessons.filter(l => l.reviewCompleted).length;
+      const fullyCompleted = subjectLessons.filter(l => l.theoryCompleted && l.reviewCompleted && l.questionsCount > 0).length;
+      const lessonsWithQuestions = subjectLessons.filter(l => l.questionsCount > 0).length;
+      const totalQuestions = subjectLessons.reduce((acc, l) => acc + l.questionsCount, 0);
+      const totalCorrect = subjectLessons.reduce((acc, l) => acc + l.correctAnswers, 0);
+      const performance = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
+
+      return {
+        totalLessons,
+        theoryCompleted,
+        reviewCompleted,
+        fullyCompleted,
+        lessonsWithQuestions,
+        theoryProgress: totalLessons > 0 ? (theoryCompleted / totalLessons) * 100 : 0,
+        reviewProgress: totalLessons > 0 ? (reviewCompleted / totalLessons) * 100 : 0,
+        questionsLessonsProgress: totalLessons > 0 ? (lessonsWithQuestions / totalLessons) * 100 : 0,
+        completeProgress: totalLessons > 0 ? (fullyCompleted / totalLessons) * 100 : 0,
+        completedLessons: fullyCompleted,
+        progress: totalLessons > 0 ? (fullyCompleted / totalLessons) * 100 : 0,
+        totalQuestions,
+        totalCorrect,
+        performance,
+      };
+    },
+    [enrichedCurrentCycleLessons],
+  );
+
+  const getOverallProgress = useCallback(() => {
+    const totalLessons = enrichedCurrentCycleLessons.length;
+    const completedLessons = enrichedCurrentCycleLessons.filter(l => l.theoryCompleted && l.reviewCompleted).length;
+
+    const totalQuestions = enrichedCurrentCycleLessons.reduce((acc, l) => acc + l.questionsCount, 0);
+    const totalCorrect = enrichedCurrentCycleLessons.reduce((acc, l) => acc + l.correctAnswers, 0);
+    const performance = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
+
+    return { totalLessons, completedLessons, progress: totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0, totalQuestions, totalCorrect, performance };
+  }, [enrichedCurrentCycleLessons]);
+
+  const getWeakSubjects = useCallback(
+    (limit = 3) =>
+      subjects
+        .map(subject => ({ subject, ...getSubjectProgress(subject.id) }))
+        .filter(s => s.totalQuestions > 0)
+        .sort((a, b) => a.performance - b.performance)
+        .slice(0, limit),
+    [subjects, getSubjectProgress],
+  );
+
+  const getScheduleEventsByDate = useCallback(
+    (date: string) => scheduleEvents.filter(e => e.date === date),
+    [scheduleEvents],
+  );
+
+  const getUpcomingEvents = useCallback(
+    (limit = 5) => {
+      const today = getLocalDateString();
+      return scheduleEvents
+        .filter(e => e.date >= today && !e.completed)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, limit);
+    },
+    [scheduleEvents],
+  );
+
+  const getTodayStudyTime = useCallback(() => {
+    const today = getLocalDateString();
+    return pomodoroSessions
+      .filter(s => (s.date ? s.date.split('T')[0] : '') === today && s.completed)
+      .reduce((acc, s) => acc + s.duration, 0);
+  }, [pomodoroSessions]);
+
+  const getStudyTimeBySubject = useCallback(
+    (subjectId: string) =>
+      pomodoroSessions
+        .filter(s => s.subjectId === subjectId && s.completed)
+        .reduce((acc, s) => acc + s.duration, 0),
+    [pomodoroSessions],
+  );
+
+  const resetData = useCallback(async () => {
+    if (!userId) return;
+    await supabase.from('contests').delete().eq('user_id', userId);
+    invalidate();
+  }, [userId, invalidate]);
+
+  // ── Cycle management ────────────────────────────────────────────────────
+
+  const startNewCycle = useCallback(
+    async (contestId: string) => {
+      if (!userId) return;
+      const contest = contests.find(c => c.id === contestId);
+      if (!contest) return;
+
+      const newCycle = contest.currentCycle + 1;
+
+      // Get current cycle lessons for this contest's subjects
+      const contestSubjects = subjects.filter(s => s.contestId === contestId);
+      const contestSubjectIds = new Set(contestSubjects.map(s => s.id));
+      const currentLessons = lessons.filter(
+        l => contestSubjectIds.has(l.subjectId) && l.cycle === contest.currentCycle
+      );
+
+      // Duplicate lessons with reset flags for new cycle
+      const newLessonRows = currentLessons.map(l => ({
+        user_id: userId,
+        subject_id: l.subjectId,
+        number: l.number,
+        name: l.name || '',
+        theory_completed: false,
+        review_completed: false,
+        questions_count: 0,
+        correct_answers: 0,
+        cycle: newCycle,
+      }));
+
+      // Insert new lessons in batches
+      for (let i = 0; i < newLessonRows.length; i += 100) {
+        const batch = newLessonRows.slice(i, i + 100);
+        const { error } = await supabase.from('lessons').insert(batch);
+        if (error) throw error;
+      }
+
+      // Update contest current_cycle
+      const { error } = await supabase
+        .from('contests')
+        .update({ current_cycle: newCycle } as any)
+        .eq('id', contestId);
+      if (error) throw error;
+
+      invalidate();
+    },
+    [userId, contests, subjects, lessons, invalidate],
+  );
+
+  const getCycleHistory = useCallback(
+    (contestId: string) => {
+      const contest = contests.find(c => c.id === contestId);
+      if (!contest) return [];
+
+      const contestSubjects = subjects.filter(s => s.contestId === contestId);
+      const contestSubjectIds = new Set(contestSubjects.map(s => s.id));
+      const contestLessons = lessons.filter(l => contestSubjectIds.has(l.subjectId));
+
+      // Group lessons by cycle
+      const cycleMap = new Map<number, typeof contestLessons>();
+      for (const lesson of contestLessons) {
+        const cycle = lesson.cycle;
+        if (!cycleMap.has(cycle)) cycleMap.set(cycle, []);
+        cycleMap.get(cycle)!.push(lesson);
+      }
+
+      // Build history for past cycles only
+      const history: Array<{
+        cycle: number;
+        totalLessons: number;
+        theoryCompleted: number;
+        reviewCompleted: number;
+        theoryProgress: number;
+        reviewProgress: number;
+      }> = [];
+
+      for (const [cycle, cycleLessons] of cycleMap.entries()) {
+        if (cycle >= (contest.currentCycle)) continue; // Skip current cycle
+        const total = cycleLessons.length;
+        const theory = cycleLessons.filter(l => l.theoryCompleted).length;
+        const review = cycleLessons.filter(l => l.reviewCompleted).length;
+        history.push({
+          cycle,
+          totalLessons: total,
+          theoryCompleted: theory,
+          reviewCompleted: review,
+          theoryProgress: total > 0 ? (theory / total) * 100 : 0,
+          reviewProgress: total > 0 ? (review / total) * 100 : 0,
+        });
+      }
+
+      return history.sort((a, b) => b.cycle - a.cycle);
+    },
+    [contests, subjects, lessons],
+  );
+
+  return {
+    data,
+    isLoading,
+    // Contest
+    addContest,
+    updateContest,
+    deleteContest,
+    // Subject
+    addSubject,
+    updateSubject,
+    deleteSubject,
+    // Lesson
+    addLesson,
+    updateLesson,
+    deleteLesson,
+    // Schedule
+    addScheduleEvent,
+    updateScheduleEvent,
+    deleteScheduleEvent,
+    // Questions
+    addQuestionSession,
+    updateQuestionSession,
+    deleteQuestionSession,
+    // Pomodoro
+    addPomodoroSession,
+    deletePomodoroSession,
+    getTodayStudyTime,
+    getStudyTimeBySubject,
+    // Getters
+    getSubjectsByContest,
+    getLessonsBySubject,
+    getSubjectProgress,
+    getOverallProgress,
+    getWeakSubjects,
+    getScheduleEventsByDate,
+    getUpcomingEvents,
+    // Cycles
+    startNewCycle,
+    getCycleHistory,
+    // Utils
+    resetData,
+  };
+}

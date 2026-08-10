@@ -1,0 +1,1 @@
+UPDATE public.finance_transactions SET type = 'income', category = 'Outros' WHERE id IN ('284aefc9-3796-4197-9b8b-6016cfade500', '24129ccf-a966-458a-8bb2-00a1b34c8544', '9538fbe0-1199-46e2-9cf3-ac0a4800cc58');
