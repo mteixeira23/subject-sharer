@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { AULA_00_QUESTIONS, QuestionData } from '@/data/aula00Questions';
+import React, { useState, useMemo } from 'react';
+import { AULA_00_QUESTIONS, QuestionData, generateCustomQuestionsForSubject } from '@/data/aula00Questions';
+import { SEFAZ_BA_SUBJECTS, getLessonName } from '@/data/sefazBA';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,12 +15,47 @@ import { cn } from '@/lib/utils';
 export function Aula00QuestionsSimulado() {
   const { data: studyData, addQuestionSession } = useStudy();
 
-  const contabilidadeSubj = studyData.subjects.find(
+  // Filter studyData.subjects to ONLY SEFAZ-BA 13 subjects
+  const sefazNames = useMemo(() => new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase())), []);
+  const availableSubjects = useMemo(() => {
+    const subs = studyData.subjects.filter(s => sefazNames.has(s.name.trim().toLowerCase()));
+    if (subs.length > 0) return subs;
+    // Fallback mapping if database hasn't synced
+    return SEFAZ_BA_SUBJECTS.map((s, idx) => ({
+      id: `sefaz-sub-${idx}`,
+      contestId: s.contestId,
+      name: s.name,
+      totalLessons: s.totalLessons,
+      color: s.color,
+    }));
+  }, [studyData.subjects, sefazNames]);
+
+  const contabilidadeSubj = availableSubjects.find(
     s => s.name.trim().toLowerCase() === 'contabilidade geral'
   );
 
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(contabilidadeSubj?.id || studyData.subjects[0]?.id || '');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(contabilidadeSubj?.id || availableSubjects[0]?.id || '');
   const [selectedLessonNumber, setSelectedLessonNumber] = useState<string>('0');
+
+  const activeSubjectObj = availableSubjects.find(s => s.id === selectedSubjectId) || availableSubjects[0];
+  const activeSubjectName = activeSubjectObj ? activeSubjectObj.name : 'Contabilidade Geral';
+
+  const sefazDef = SEFAZ_BA_SUBJECTS.find(s => s.name.trim().toLowerCase() === activeSubjectName.trim().toLowerCase());
+  const totalLessonsForActiveSubj = sefazDef ? sefazDef.totalLessons : 10;
+
+  const dynamicLessonOptions = useMemo(() => {
+    return Array.from({ length: totalLessonsForActiveSubj }, (_, i) => ({
+      number: String(i),
+      title: getLessonName(activeSubjectName, i),
+    }));
+  }, [activeSubjectName, totalLessonsForActiveSubj]);
+
+  const activeQuestions = useMemo(() => {
+    if (activeSubjectName.trim().toLowerCase() === 'contabilidade geral' && selectedLessonNumber === '0') {
+      return AULA_00_QUESTIONS;
+    }
+    return generateCustomQuestionsForSubject(activeSubjectName, Number(selectedLessonNumber));
+  }, [activeSubjectName, selectedLessonNumber]);
 
   // Stores user answers: questionId -> chosen answer index or string ('Certo'/'Errado' or number index)
   const [answers, setAnswers] = useState<Record<number, number | string>>({});
@@ -27,14 +63,27 @@ export function Aula00QuestionsSimulado() {
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
   const [filterBlock, setFilterBlock] = useState<number | 'all'>('all');
 
-  const totalQuestions = AULA_00_QUESTIONS.length;
+  const handleSubjectChange = (newSubjId: string) => {
+    setSelectedSubjectId(newSubjId);
+    setSelectedLessonNumber('0');
+    setAnswers({});
+    setRevealed({});
+  };
+
+  const handleLessonChange = (newLessonNum: string) => {
+    setSelectedLessonNumber(newLessonNum);
+    setAnswers({});
+    setRevealed({});
+  };
+
+  const totalQuestions = activeQuestions.length;
   const answeredCount = Object.keys(answers).length;
 
   // Calculate score
   let correctCount = 0;
   Object.entries(answers).forEach(([qIdStr, userAns]) => {
     const qId = Number(qIdStr);
-    const q = AULA_00_QUESTIONS.find(item => item.id === qId);
+    const q = activeQuestions.find(item => item.id === qId);
     if (q) {
       if (q.type === 'tf') {
         const correctStr = q.correctAnswer === 0 ? 'Certo' : 'Errado';
@@ -77,7 +126,7 @@ export function Aula00QuestionsSimulado() {
         totalQuestions: answeredCount,
         correctAnswers: correctCount,
         banca: 'FGV / CEBRASPE',
-        notes: `Simulado Aula ${selectedLessonNumber} - ${currentSubj.name}`,
+        notes: `Simulado Aula ${selectedLessonNumber} - ${activeSubjectName}`,
       });
       toast.success(`🎉 Sessão salva no sistema! ${correctCount}/${answeredCount} acertos (${accuracyPercent}%).`);
     } catch (err) {
@@ -85,12 +134,14 @@ export function Aula00QuestionsSimulado() {
     }
   };
 
-  const filteredQuestions = AULA_00_QUESTIONS.filter(q => {
+  const filteredQuestions = activeQuestions.filter(q => {
     if (filterBlock === 'all') return true;
     const blockStart = (filterBlock - 1) * 10 + 1;
     const blockEnd = filterBlock * 10;
     return q.id >= blockStart && q.id <= blockEnd;
   });
+
+  const activeLessonTitle = getLessonName(activeSubjectName, Number(selectedLessonNumber));
 
   return (
     <div className="space-y-6 my-2">
@@ -98,14 +149,14 @@ export function Aula00QuestionsSimulado() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/40 p-3.5 rounded-lg border">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
-            <BookOpen className="h-3.5 w-3.5 text-primary" /> Selecione a Matéria:
+            <BookOpen className="h-3.5 w-3.5 text-primary" /> Selecione a Matéria SEFAZ-BA:
           </Label>
-          <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId}>
+          <Select value={selectedSubjectId} onValueChange={handleSubjectChange}>
             <SelectTrigger className="w-full h-9 text-xs bg-background font-medium">
               <SelectValue placeholder="Selecione a Matéria" />
             </SelectTrigger>
             <SelectContent>
-              {studyData.subjects.map(s => (
+              {availableSubjects.map(s => (
                 <SelectItem key={s.id} value={s.id} className="text-xs">
                   {s.name}
                 </SelectItem>
@@ -116,25 +167,18 @@ export function Aula00QuestionsSimulado() {
 
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-primary" /> Selecione a Aula:
+            <Sparkles className="h-3.5 w-3.5 text-primary" /> Selecione a Aula de {activeSubjectName}:
           </Label>
-          <Select value={selectedLessonNumber} onValueChange={setSelectedLessonNumber}>
+          <Select value={selectedLessonNumber} onValueChange={handleLessonChange}>
             <SelectTrigger className="w-full h-9 text-xs bg-background font-medium">
               <SelectValue placeholder="Selecione a Aula" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="0" className="text-xs font-semibold">
-                Aula 00 – Conceito, Objeto, Finalidades e Usuários
-              </SelectItem>
-              <SelectItem value="1" className="text-xs">
-                Aula 01 – Ativo, Passivo e Patrimônio Líquido
-              </SelectItem>
-              <SelectItem value="2" className="text-xs">
-                Aula 02 – Lançamentos Contábeis e Razoetes
-              </SelectItem>
-              <SelectItem value="3" className="text-xs">
-                Aula 03 – Balancete de Verificação
-              </SelectItem>
+              {dynamicLessonOptions.map(lOpt => (
+                <SelectItem key={lOpt.number} value={lOpt.number} className="text-xs">
+                  {lOpt.title}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -147,7 +191,7 @@ export function Aula00QuestionsSimulado() {
             <div>
               <CardTitle className="text-xl font-bold flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-                Simulado Interativo: Aula 00 – Contabilidade Geral (50 Questões)
+                Simulado Interativo: {activeSubjectName} – {activeLessonTitle} ({totalQuestions} Questões)
               </CardTitle>
               <CardDescription>
                 Responda cada questão diretamente abaixo. O gabarito e a explicação detalhada aparecem imediatamente!

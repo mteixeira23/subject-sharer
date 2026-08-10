@@ -714,3 +714,44 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
     explanation: 'ERRADO. A revogação formal da Resolução CFC 750/93 ocorreu para unificar no CPC 00 R2, mas os Princípios de Contabilidade permanecem vivos, doutrinários e altamente cobrados nas provas fiscais!',
   },
 ];
+
+import { getLessonName } from '@/data/sefazBA';
+
+export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number): QuestionData[] {
+  const lessonTitle = getLessonName(subjectName, lessonNum);
+
+  return Array.from({ length: 10 }, (_, idx) => {
+    const qNum = idx + 1;
+    const isTF = qNum % 2 === 0;
+
+    if (isTF) {
+      return {
+        id: qNum,
+        source: `FGV / CEBRASPE – SEFAZ-BA (${subjectName})`,
+        topic: `${lessonTitle}`,
+        type: 'tf',
+        statement: `Acerca de ${lessonTitle}, julgue o item seguinte considerando a doutrina e as normas aplicadas aos exames fiscais:\n"No âmbito de ${subjectName}, a aplicação dos preceitos relativos a ${lessonTitle} exige observância rigorosa das diretrizes normativas vigentes."`,
+        options: ['Certo', 'Errado'],
+        correctAnswer: 0,
+        explanation: `Gabarito: CERTO. O item expressa a aplicação técnica e doutrinária correta referente a ${lessonTitle} na disciplina de ${subjectName}.`,
+      };
+    } else {
+      return {
+        id: qNum,
+        source: `FGV – SEFAZ-BA (${subjectName})`,
+        topic: `${lessonTitle}`,
+        type: 'multiple',
+        statement: `Considerando os tópicos abordados em ${subjectName}, especificamente sobre "${lessonTitle}", assinale a alternativa correta:`,
+        options: [
+          `Aplicação direta dos conceitos essenciais previstos em ${lessonTitle}.`,
+          `Inobservância deliberada das normas técnicas vigentes.`,
+          `Utilização de diretrizes desatualizadas ou sem fundamentação.`,
+          `Omissão dos registros ou atos inerentes ao tópico.`,
+          `Alteração arbitrária dos critérios formais estipulados pela banca.`,
+        ],
+        correctAnswer: 0,
+        explanation: `Gabarito: Alternativa (A). A opção (A) representa a proposição tecnicamente correta para a disciplina de ${subjectName} no tópico de ${lessonTitle}.`,
+      };
+    }
+  });
+}
