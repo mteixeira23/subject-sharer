@@ -20,7 +20,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, Target, TrendingUp, AlertTriangle, Plus, Clock, ArrowLeft, Pencil, Trash2, RotateCcw, History } from 'lucide-react';
+import { BookOpen, Target, TrendingUp, AlertTriangle, Plus, Clock, ArrowLeft, Pencil, Trash2, RotateCcw, History, Sparkles } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
 import { Subject, Lesson, QuestionSession, SUBJECT_COLORS } from '@/types/study';
 import { getLessonName } from '@/data/sefazBA';
+import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
 import { cn } from '@/lib/utils';
 
 function SectionDivider({ label }: { label: string }) {
@@ -141,6 +142,7 @@ export default function Estudos() {
   const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null);
   const [deletePomodoroId, setDeletePomodoroId] = useState<string | null>(null);
   const [newCycleDialogOpen, setNewCycleDialogOpen] = useState(false);
+  const [simuladoDialogOpen, setSimuladoDialogOpen] = useState(false);
 
   // ── Derived data ──
   const overall = getOverallProgress();
@@ -251,6 +253,15 @@ export default function Estudos() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <PomodoroTimer compact />
+          <Button
+            size="sm"
+            onClick={() => setSimuladoDialogOpen(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1.5 shadow-sm"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span className="hidden sm:inline">Fazer Simulado</span>
+            <span className="sm:hidden">Simulado</span>
+          </Button>
           <Button size="sm" onClick={() => setNewCycleDialogOpen(true)}>
             <RotateCcw className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">Novo Ciclo</span>
@@ -696,6 +707,19 @@ export default function Estudos() {
           <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => { if (deletePomodoroId) { deletePomodoroSession(deletePomodoroId); toast.success('Sessão excluída'); setDeletePomodoroId(null); } }}>Excluir</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Simulado Modal */}
+      <Dialog open={simuladoDialogOpen} onOpenChange={setSimuladoDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-emerald-500" />
+              Simulado por Matéria e Aula
+            </DialogTitle>
+          </DialogHeader>
+          <Aula00QuestionsSimulado />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

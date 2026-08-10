@@ -4,13 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, XCircle, HelpCircle, Save, RotateCcw, Check, Sparkles } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CheckCircle2, XCircle, HelpCircle, Save, RotateCcw, Check, Sparkles, BookOpen } from 'lucide-react';
 import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 export function Aula00QuestionsSimulado() {
   const { data: studyData, addQuestionSession } = useStudy();
+
+  const contabilidadeSubj = studyData.subjects.find(
+    s => s.name.trim().toLowerCase() === 'contabilidade geral'
+  );
+
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(contabilidadeSubj?.id || studyData.subjects[0]?.id || '');
+  const [selectedLessonNumber, setSelectedLessonNumber] = useState<string>('0');
 
   // Stores user answers: questionId -> chosen answer index or string ('Certo'/'Errado' or number index)
   const [answers, setAnswers] = useState<Record<number, number | string>>({});
@@ -55,22 +64,20 @@ export function Aula00QuestionsSimulado() {
       toast.warning('Responda a pelo menos uma questão antes de salvar.');
       return;
     }
-    const contabilidadeSubj = studyData.subjects.find(
-      s => s.name.trim().toLowerCase() === 'contabilidade geral'
-    );
-    if (!contabilidadeSubj) {
-      toast.error('Disciplina Contabilidade Geral não encontrada.');
+    const currentSubj = studyData.subjects.find(s => s.id === selectedSubjectId) || contabilidadeSubj;
+    if (!currentSubj) {
+      toast.error('Selecione uma disciplina válida.');
       return;
     }
 
     try {
       await addQuestionSession({
-        subjectId: contabilidadeSubj.id,
+        subjectId: currentSubj.id,
         date: new Date().toISOString().split('T')[0],
         totalQuestions: answeredCount,
         correctAnswers: correctCount,
         banca: 'FGV / CEBRASPE',
-        notes: `Simulado Aula 00 - Contabilidade Geral (Resoluções diretas na plataforma)`,
+        notes: `Simulado Aula ${selectedLessonNumber} - ${currentSubj.name}`,
       });
       toast.success(`🎉 Sessão salva no sistema! ${correctCount}/${answeredCount} acertos (${accuracyPercent}%).`);
     } catch (err) {
@@ -86,7 +93,53 @@ export function Aula00QuestionsSimulado() {
   });
 
   return (
-    <div className="space-y-6 my-6">
+    <div className="space-y-6 my-2">
+      {/* Subject & Lesson Selection Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/40 p-3.5 rounded-lg border">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
+            <BookOpen className="h-3.5 w-3.5 text-primary" /> Selecione a Matéria:
+          </Label>
+          <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId}>
+            <SelectTrigger className="w-full h-9 text-xs bg-background font-medium">
+              <SelectValue placeholder="Selecione a Matéria" />
+            </SelectTrigger>
+            <SelectContent>
+              {studyData.subjects.map(s => (
+                <SelectItem key={s.id} value={s.id} className="text-xs">
+                  {s.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 text-primary" /> Selecione a Aula:
+          </Label>
+          <Select value={selectedLessonNumber} onValueChange={setSelectedLessonNumber}>
+            <SelectTrigger className="w-full h-9 text-xs bg-background font-medium">
+              <SelectValue placeholder="Selecione a Aula" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0" className="text-xs font-semibold">
+                Aula 00 – Conceito, Objeto, Finalidades e Usuários
+              </SelectItem>
+              <SelectItem value="1" className="text-xs">
+                Aula 01 – Ativo, Passivo e Patrimônio Líquido
+              </SelectItem>
+              <SelectItem value="2" className="text-xs">
+                Aula 02 – Lançamentos Contábeis e Razoetes
+              </SelectItem>
+              <SelectItem value="3" className="text-xs">
+                Aula 03 – Balancete de Verificação
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
       {/* Top Banner & Stats */}
       <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-background to-primary/5 shadow-md">
         <CardHeader className="pb-3">

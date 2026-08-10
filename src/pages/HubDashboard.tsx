@@ -11,8 +11,9 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { SummaryCards } from '@/components/hub/SummaryCards';
 import { AgendaSection } from '@/components/hub/AgendaViews';
 import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Loader2 } from 'lucide-react';
+import { RotateCcw, Loader2, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -37,6 +38,7 @@ export default function HubDashboard() {
   const { getEventsByDate, toggleEvent, moveEvent, moveEventToShift } = useUnifiedEvents();
 
   const [isSyncing, setIsSyncing] = useState(false);
+  const [simuladoOpen, setSimuladoOpen] = useState(false);
 
   const handleSyncSchedule = async () => {
     setIsSyncing(true);
@@ -71,6 +73,14 @@ export default function HubDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <Button
+            size="sm"
+            onClick={() => setSimuladoOpen(true)}
+            className="gap-2 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Fazer Simulado</span>
+          </Button>
+          <Button
             variant="outline"
             size="sm"
             onClick={handleSyncSchedule}
@@ -89,9 +99,6 @@ export default function HubDashboard() {
       </div>
 
       <div className="flex-1 p-4 md:p-6 pb-20 md:pb-6 space-y-2">
-        <SectionDivider label="Simulado Especial: Aula 00 – Contabilidade Geral (50 Questões)" />
-        <Aula00QuestionsSimulado />
-
         <SectionDivider label="Agenda" />
         <AgendaSection
           getEventsByDate={getEventsByDate}
@@ -115,6 +122,19 @@ export default function HubDashboard() {
           todayTasks={tasks.getFilteredTasks('today').length}
         />
       </div>
+
+      {/* Simulado Modal */}
+      <Dialog open={simuladoOpen} onOpenChange={setSimuladoOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-emerald-500" />
+              Simulado por Matéria e Aula
+            </DialogTitle>
+          </DialogHeader>
+          <Aula00QuestionsSimulado />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
