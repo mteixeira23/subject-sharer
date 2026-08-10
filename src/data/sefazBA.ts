@@ -297,6 +297,50 @@ export const FINANCAS_PUBLICAS_LESSON_NAMES: Record<number, string> = {
   13: 'Aula 12 - Lei de Responsabilidade Fiscal (LRF Parte 4 - Transparência e Controle)',
 };
 
+export function getLessonName(subjectName: string, lessonNumber: number): string {
+  const nameClean = subjectName.trim();
+  if (nameClean === 'Direito Constitucional' && DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber]) {
+    return DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Língua Portuguesa' && PORTUGUES_LESSON_NAMES[lessonNumber]) {
+    return PORTUGUES_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Noções de Igualdade Racial' && IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber]) {
+    return IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Contabilidade Geral' && CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber]) {
+    return CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean.includes('CASP') && CASP_LESSON_NAMES[lessonNumber]) {
+    return CASP_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Direito Administrativo' && DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber]) {
+    return DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean.includes('Finanças Públicas') && FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber]) {
+    return FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Auditoria' && AUDITORIA_LESSON_NAMES[lessonNumber]) {
+    return AUDITORIA_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Estatística' && ESTATISTICA_LESSON_NAMES[lessonNumber]) {
+    return ESTATISTICA_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Direito Tributário' && DIREITO_TRIBUTARIO_LESSON_NAMES[lessonNumber]) {
+    return DIREITO_TRIBUTARIO_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Matemática Financeira' && MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber]) {
+    return MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Informática Básica' && INFORMATICA_LESSON_NAMES[lessonNumber]) {
+    return INFORMATICA_LESSON_NAMES[lessonNumber];
+  }
+  if (nameClean === 'Economia' && ECONOMIA_LESSON_NAMES[lessonNumber]) {
+    return ECONOMIA_LESSON_NAMES[lessonNumber];
+  }
+  return '';
+}
+
 export function generateInitialData(): {
   contests: Contest[];
   subjects: Subject[];
@@ -310,34 +354,7 @@ export function generateInitialData(): {
   const lessons: Lesson[] = [];
   subjects.forEach((subject) => {
     for (let i = 1; i <= subject.totalLessons; i++) {
-      let name = '';
-      if (subject.name === 'Direito Constitucional' && DIREITO_CONSTITUCIONAL_LESSON_NAMES[i]) {
-        name = DIREITO_CONSTITUCIONAL_LESSON_NAMES[i];
-      } else if (subject.name === 'Língua Portuguesa' && PORTUGUES_LESSON_NAMES[i]) {
-        name = PORTUGUES_LESSON_NAMES[i];
-      } else if (subject.name === 'Noções de Igualdade Racial' && IGUALDADE_RACIAL_LESSON_NAMES[i]) {
-        name = IGUALDADE_RACIAL_LESSON_NAMES[i];
-      } else if (subject.name === 'Contabilidade Geral' && CONTABILIDADE_GERAL_LESSON_NAMES[i]) {
-        name = CONTABILIDADE_GERAL_LESSON_NAMES[i];
-      } else if (subject.name.includes('CASP') && CASP_LESSON_NAMES[i]) {
-        name = CASP_LESSON_NAMES[i];
-      } else if (subject.name === 'Direito Administrativo' && DIREITO_ADMINISTRATIVO_LESSON_NAMES[i]) {
-        name = DIREITO_ADMINISTRATIVO_LESSON_NAMES[i];
-      } else if (subject.name.includes('Finanças Públicas') && FINANCAS_PUBLICAS_LESSON_NAMES[i]) {
-        name = FINANCAS_PUBLICAS_LESSON_NAMES[i];
-      } else if (subject.name === 'Auditoria' && AUDITORIA_LESSON_NAMES[i]) {
-        name = AUDITORIA_LESSON_NAMES[i];
-      } else if (subject.name === 'Estatística' && ESTATISTICA_LESSON_NAMES[i]) {
-        name = ESTATISTICA_LESSON_NAMES[i];
-      } else if (subject.name === 'Direito Tributário' && DIREITO_TRIBUTARIO_LESSON_NAMES[i]) {
-        name = DIREITO_TRIBUTARIO_LESSON_NAMES[i];
-      } else if (subject.name === 'Matemática Financeira' && MATEMATICA_FINANCEIRA_LESSON_NAMES[i]) {
-        name = MATEMATICA_FINANCEIRA_LESSON_NAMES[i];
-      } else if (subject.name === 'Informática Básica' && INFORMATICA_LESSON_NAMES[i]) {
-        name = INFORMATICA_LESSON_NAMES[i];
-      } else if (subject.name === 'Economia' && ECONOMIA_LESSON_NAMES[i]) {
-        name = ECONOMIA_LESSON_NAMES[i];
-      }
+      const name = getLessonName(subject.name, i);
       lessons.push({
         id: `${subject.id}-lesson-${i}`,
         subjectId: subject.id,
