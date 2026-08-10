@@ -7,6 +7,8 @@ export interface UnifiedEvent {
   date: string; // YYYY-MM-DD
   title: string;
   subtitle?: string;
+  description?: string;
+
   module: UnifiedModule;
   type: string; // 'schedule' | 'transaction' | 'habit' | 'task'
   completed: boolean;
