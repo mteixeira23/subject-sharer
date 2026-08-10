@@ -36,14 +36,25 @@ export function useUnifiedEvents() {
 
     // Study schedule events
     study.data.scheduleEvents.forEach(ev => {
-      const subject = study.data.subjects.find(s => s.id === ev.subjectId);
-      const subjectName = subject?.name ?? 'Matéria';
+      let subject = study.data.subjects.find(
+        s => s.id === ev.subjectId || s.name.trim().toLowerCase() === ev.subjectId?.trim().toLowerCase()
+      );
+      if (!subject && ev.description) {
+        subject = study.data.subjects.find(s => ev.description?.toLowerCase().includes(s.name.toLowerCase()));
+      }
+
+      const subjectName = subject?.name ?? (ev.subjectId && !ev.subjectId.startsWith('subject-') ? ev.subjectId : 'Estudos');
       const lessonNum = ev.lessonNumber ?? 1;
       const lessonName = getLessonName(subjectName, lessonNum);
       const typeLabel = ev.type === 'theory' ? 'Teoria' : ev.type === 'review' ? 'Revisão' : 'Questões';
+      const aulaStr = `Aula ${String(Math.max(0, lessonNum - 1)).padStart(2, '0')}`;
 
-      const displayTitle = `${subjectName} - Aula ${String(Math.max(0, lessonNum - 1)).padStart(2, '0')}`;
-      const displaySubtitle = lessonName ? `${lessonName} (${typeLabel})` : typeLabel;
+      const displayTitle = subjectName;
+      const displaySubtitle = lessonName && !lessonName.startsWith('Aula ')
+        ? `${aulaStr} - ${lessonName} (${typeLabel})`
+        : lessonName
+        ? `${lessonName} (${typeLabel})`
+        : `${aulaStr} (${typeLabel})`;
 
       events.push({
         id: `study-${ev.id}`,
