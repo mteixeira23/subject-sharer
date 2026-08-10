@@ -788,6 +788,7 @@ export function useStudyData() {
 
   // Enrich current cycle lessons with question_sessions counters dynamically
   const enrichedCurrentCycleLessons = useMemo(() => {
+    const subjectMap = new Map<string, string>(subjects.map(s => [s.id, s.name]));
     return currentCycleLessons.map(lesson => {
       const lessonSessions = questionSessions.filter(
         s => s.subjectId === lesson.subjectId && s.lessonNumber === lesson.number
@@ -798,13 +799,22 @@ export function useStudyData() {
       const questionsCount = Math.max(lesson.questionsCount ?? 0, sessionQuestions);
       const correctAnswers = sessionQuestions > 0 ? sessionCorrect : (lesson.correctAnswers ?? 0);
 
+      let name = lesson.name && lesson.name.trim() !== '' ? lesson.name : '';
+      if (!name) {
+        const sName = subjectMap.get(lesson.subjectId);
+        if (sName) {
+          name = getLessonName(sName, lesson.number);
+        }
+      }
+
       return {
         ...lesson,
+        name,
         questionsCount,
         correctAnswers,
       };
     });
-  }, [currentCycleLessons, questionSessions]);
+  }, [currentCycleLessons, questionSessions, subjects]);
 
   const getLessonsBySubject = useCallback(
     (subjectId: string) => enrichedCurrentCycleLessons.filter(l => l.subjectId === subjectId).sort((a, b) => a.number - b.number),

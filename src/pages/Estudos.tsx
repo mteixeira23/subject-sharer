@@ -27,6 +27,7 @@ import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
 import { Subject, Lesson, QuestionSession, SUBJECT_COLORS } from '@/types/study';
+import { getLessonName } from '@/data/sefazBA';
 import { cn } from '@/lib/utils';
 
 function SectionDivider({ label }: { label: string }) {
@@ -434,10 +435,13 @@ export default function Estudos() {
                   <TableBody>
                     {lessons.map((lesson) => {
                       const perf = lesson.questionsCount > 0 ? (lesson.correctAnswers / lesson.questionsCount) * 100 : 0;
+                      const displayName = lesson.name && lesson.name.trim() !== ''
+                        ? lesson.name
+                        : (selectedSubject ? getLessonName(selectedSubject.name, lesson.number) : `Aula ${String(lesson.number - 1).padStart(2, '0')}`);
                       return (
                         <TableRow key={lesson.id}>
                           <TableCell className="font-medium">{lesson.number}</TableCell>
-                          <TableCell><span className={cn(!lesson.name && "text-muted-foreground italic")}>{lesson.name || 'Sem nome'}</span></TableCell>
+                          <TableCell><span className={cn(!lesson.name && "font-medium")}>{displayName}</span></TableCell>
                           <TableCell><Checkbox checked={lesson.theoryCompleted} onCheckedChange={(c) => updateLesson(lesson.id, { theoryCompleted: !!c })} /></TableCell>
                           <TableCell><Checkbox checked={lesson.reviewCompleted} onCheckedChange={(c) => updateLesson(lesson.id, { reviewCompleted: !!c })} /></TableCell>
                           <TableCell>{lesson.questionsCount}</TableCell>
