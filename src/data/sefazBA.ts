@@ -15,7 +15,7 @@ export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Geral', totalLessons: 31, color: SUBJECT_COLORS[4] },
   { contestId: 'sefaz-ba-2025', name: 'Estatística', totalLessons: 15, color: SUBJECT_COLORS[5] },
   { contestId: 'sefaz-ba-2025', name: 'Noções de Igualdade Racial', totalLessons: 10, color: SUBJECT_COLORS[6] },
-  { contestId: 'sefaz-ba-2025', name: 'Administração, Economia e Finanças Públicas', totalLessons: 23, color: SUBJECT_COLORS[7] },
+  { contestId: 'sefaz-ba-2025', name: 'Administração, Economia e Finanças Públicas', totalLessons: 13, color: SUBJECT_COLORS[7] },
   { contestId: 'sefaz-ba-2025', name: 'Matemática Financeira', totalLessons: 16, color: SUBJECT_COLORS[8] },
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Aplicada ao Setor Público (CASP)', totalLessons: 19, color: SUBJECT_COLORS[9] },
   { contestId: 'sefaz-ba-2025', name: 'Informática Básica', totalLessons: 12, color: SUBJECT_COLORS[10] },
@@ -118,6 +118,22 @@ export const DIREITO_ADMINISTRATIVO_LESSON_NAMES: Record<number, string> = {
   25: 'Aula 24 - Lei Estadual da Bahia nº 9.290/2004',
 };
 
+export const FINANCAS_PUBLICAS_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Conceito e Funções do Orçamento Público',
+  2: 'Aula 01 - Princípios Orçamentários',
+  3: 'Aula 02 - Créditos Adicionais (Suplementares, Especiais e Extraordinários)',
+  4: 'Aula 03 - Ciclo Orçamentário e Processo Orçamentário',
+  5: 'Aula 04 - Instrumentos de Planejamento na CF/88 (PPA, LDO e LOA)',
+  6: 'Aula 05 - Receita Pública: Conceito e Classificações',
+  7: 'Aula 06 - Despesa Pública: Conceito e Estrutura',
+  8: 'Aula 07 - Despesa Pública: Classificação Orçamentária',
+  9: 'Aula 08 - Estágios da Receita e da Despesa Pública',
+  10: 'Aula 09 - Lei de Responsabilidade Fiscal (LRF Parte 1 - Planejamento e RCL)',
+  11: 'Aula 10 - Lei de Responsabilidade Fiscal (LRF Parte 2 - Despesa com Pessoal)',
+  12: 'Aula 11 - Lei de Responsabilidade Fiscal (LRF Parte 3 - Dívida e Endividamento)',
+  13: 'Aula 12 - Lei de Responsabilidade Fiscal (LRF Parte 4 - Transparência e Controle)',
+};
+
 export function generateInitialData(): {
   contests: Contest[];
   subjects: Subject[];
@@ -140,6 +156,8 @@ export function generateInitialData(): {
         name = CASP_LESSON_NAMES[i];
       } else if (subject.name === 'Direito Administrativo' && DIREITO_ADMINISTRATIVO_LESSON_NAMES[i]) {
         name = DIREITO_ADMINISTRATIVO_LESSON_NAMES[i];
+      } else if (subject.name.includes('Finanças Públicas') && FINANCAS_PUBLICAS_LESSON_NAMES[i]) {
+        name = FINANCAS_PUBLICAS_LESSON_NAMES[i];
       }
       lessons.push({
         id: `${subject.id}-lesson-${i}`,
