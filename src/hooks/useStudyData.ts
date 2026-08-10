@@ -258,8 +258,21 @@ export function useStudyData() {
           }
         }
 
-        // Generate day-by-day schedule events if none exist
-        if (scheduleEvents.length === 0 && subjects.length > 0) {
+        // D) Purge old mock template schedule events and generate official SEFAZ-BA daily schedule
+        const isSEFAZSubject = (subjId: string) => {
+          const s = subjects.find(sub => sub.id === subjId);
+          if (!s) return false;
+          const sName = s.name.trim().toLowerCase();
+          return SEFAZ_BA_SUBJECTS.some(def => def.name.trim().toLowerCase() === sName);
+        };
+
+        const invalidEventCount = scheduleEvents.filter(e => !isSEFAZSubject(e.subjectId)).length;
+        const needsRegeneration = scheduleEvents.length === 0 || invalidEventCount > 0;
+
+        if (needsRegeneration && subjects.length > 0) {
+          // Delete old mock schedule events from template
+          await supabase.from('schedule_events').delete().eq('user_id', userId);
+
           const subjectMap = new Map<string, string>();
           subjects.forEach(s => subjectMap.set(s.name.trim().toLowerCase(), s.id));
 
@@ -343,6 +356,7 @@ export function useStudyData() {
             if (l1) {
               const subjId = subjectMap.get(l1.subjectName.toLowerCase());
               if (subjId) {
+                const lessonTitle = getLessonName(l1.subjectName, l1.number);
                 eventsToInsert.push({
                   user_id: userId,
                   subject_id: subjId,
@@ -350,7 +364,7 @@ export function useStudyData() {
                   lesson_number: l1.number,
                   type: 'theory',
                   completed: false,
-                  description: `Teoria e Questões (Aula ${l1.number})`,
+                  description: `${l1.subjectName} - Aula ${l1.number}: ${lessonTitle}`,
                   shift: 'Manhã',
                 });
               }
@@ -361,6 +375,7 @@ export function useStudyData() {
               if (l2) {
                 const subjId = subjectMap.get(l2.subjectName.toLowerCase());
                 if (subjId) {
+                  const lessonTitle = getLessonName(l2.subjectName, l2.number);
                   eventsToInsert.push({
                     user_id: userId,
                     subject_id: subjId,
@@ -368,7 +383,7 @@ export function useStudyData() {
                     lesson_number: l2.number,
                     type: 'theory',
                     completed: false,
-                    description: `Teoria e Questões (Aula ${l2.number})`,
+                    description: `${l2.subjectName} - Aula ${l2.number}: ${lessonTitle}`,
                     shift: 'Tarde',
                   });
                 }
