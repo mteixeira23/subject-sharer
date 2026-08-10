@@ -9,20 +9,16 @@ export const SEFAZ_BA_CONTEST: Contest = {
 
 export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Língua Portuguesa', totalLessons: 20, color: SUBJECT_COLORS[0] },
-  { contestId: 'sefaz-ba-2025', name: 'Matemática e RLM', totalLessons: 32, color: SUBJECT_COLORS[1] },
-  { contestId: 'sefaz-ba-2025', name: 'Estatística', totalLessons: 15, color: SUBJECT_COLORS[2] },
-  { contestId: 'sefaz-ba-2025', name: 'Direito Constitucional', totalLessons: 14, color: SUBJECT_COLORS[3] },
-  { contestId: 'sefaz-ba-2025', name: 'Direito Administrativo', totalLessons: 21, color: SUBJECT_COLORS[4] },
-  { contestId: 'sefaz-ba-2025', name: 'Direito Tributário', totalLessons: 25, color: SUBJECT_COLORS[5] },
-  { contestId: 'sefaz-ba-2025', name: 'Direito Civil e Empresarial', totalLessons: 13, color: SUBJECT_COLORS[6] },
-  { contestId: 'sefaz-ba-2025', name: 'Direito Penal', totalLessons: 8, color: SUBJECT_COLORS[7] },
-  { contestId: 'sefaz-ba-2025', name: 'Legislação Tributária da Bahia', totalLessons: 12, color: SUBJECT_COLORS[8] },
-  { contestId: 'sefaz-ba-2025', name: 'Contabilidade Geral', totalLessons: 28, color: SUBJECT_COLORS[9] },
-  { contestId: 'sefaz-ba-2025', name: 'Contabilidade de Custos', totalLessons: 10, color: SUBJECT_COLORS[10] },
-  { contestId: 'sefaz-ba-2025', name: 'Contabilidade Avançada', totalLessons: 15, color: SUBJECT_COLORS[11] },
-  { contestId: 'sefaz-ba-2025', name: 'Auditoria', totalLessons: 14, color: SUBJECT_COLORS[12] },
-  { contestId: 'sefaz-ba-2025', name: 'Economia e Finanças Públicas', totalLessons: 23, color: SUBJECT_COLORS[13] },
-  { contestId: 'sefaz-ba-2025', name: 'Tecnologia da Informação', totalLessons: 12, color: SUBJECT_COLORS[14] },
+  { contestId: 'sefaz-ba-2025', name: 'Direito Constitucional', totalLessons: 14, color: SUBJECT_COLORS[1] },
+  { contestId: 'sefaz-ba-2025', name: 'Direito Administrativo', totalLessons: 21, color: SUBJECT_COLORS[2] },
+  { contestId: 'sefaz-ba-2025', name: 'Direito Tributário', totalLessons: 25, color: SUBJECT_COLORS[3] },
+  { contestId: 'sefaz-ba-2025', name: 'Contabilidade Geral', totalLessons: 28, color: SUBJECT_COLORS[4] },
+  { contestId: 'sefaz-ba-2025', name: 'Estatística', totalLessons: 15, color: SUBJECT_COLORS[5] },
+  { contestId: 'sefaz-ba-2025', name: 'Noções de Igualdade Racial', totalLessons: 8, color: SUBJECT_COLORS[6] },
+  { contestId: 'sefaz-ba-2025', name: 'Administração, Economia e Finanças Públicas', totalLessons: 23, color: SUBJECT_COLORS[7] },
+  { contestId: 'sefaz-ba-2025', name: 'Matemática Financeira', totalLessons: 16, color: SUBJECT_COLORS[8] },
+  { contestId: 'sefaz-ba-2025', name: 'Contabilidade Aplicada ao Setor Público (CASP)', totalLessons: 18, color: SUBJECT_COLORS[9] },
+  { contestId: 'sefaz-ba-2025', name: 'Informática Básica', totalLessons: 12, color: SUBJECT_COLORS[10] },
 ];
 
 export function generateInitialData(): {
