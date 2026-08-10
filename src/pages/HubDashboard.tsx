@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useStudy } from '@/contexts/StudyContext';
 import { useFinance } from '@/contexts/FinanceContext';
@@ -9,6 +10,9 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { SummaryCards } from '@/components/hub/SummaryCards';
 import { AgendaSection } from '@/components/hub/AgendaViews';
+import { Button } from '@/components/ui/button';
+import { RotateCcw, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -31,6 +35,20 @@ export default function HubDashboard() {
   const { getWeekFrequency, data: workoutData } = useWorkout();
   const { getEventsByDate, toggleEvent, moveEvent, moveEventToShift } = useUnifiedEvents();
 
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSyncSchedule = async () => {
+    setIsSyncing(true);
+    try {
+      await study.syncSefazSchedule();
+      toast.success('Agenda SEFAZ-BA 2026 sincronizada com sucesso!');
+    } catch (err) {
+      toast.error('Erro ao sincronizar agenda.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const now = new Date();
   const overall = study.getOverallProgress();
   const monthStats = finance.getConsolidatedMonthlyStats(now.getFullYear(), now.getMonth() + 1);
@@ -50,7 +68,23 @@ export default function HubDashboard() {
             </p>
           </div>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSyncSchedule}
+            disabled={isSyncing}
+            className="gap-2 text-xs border-primary/40 hover:bg-primary/10"
+          >
+            {isSyncing ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <RotateCcw className="h-3.5 w-3.5 text-primary" />
+            )}
+            <span className="hidden sm:inline">Sincronizar Trilha SEFAZ-BA</span>
+          </Button>
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className="flex-1 p-4 md:p-6 pb-20 md:pb-6 space-y-2">
