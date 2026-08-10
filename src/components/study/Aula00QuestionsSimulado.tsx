@@ -121,13 +121,14 @@ export function Aula00QuestionsSimulado() {
 
     try {
       await addQuestionSession({
+        id: `session-${Date.now()}`,
         subjectId: currentSubj.id,
+        lessonNumber: selectedLessonNumber,
         date: new Date().toISOString().split('T')[0],
-        totalQuestions: answeredCount,
+        questionsCount: answeredCount,
         correctAnswers: correctCount,
-        banca: 'FGV / CEBRASPE',
-        notes: `Simulado Aula ${selectedLessonNumber} - ${activeSubjectName}`,
       });
+
       toast.success(`🎉 Sessão salva no sistema! ${correctCount}/${answeredCount} acertos (${accuracyPercent}%).`);
     } catch (err) {
       toast.error('Erro ao registrar sessão no sistema.');
