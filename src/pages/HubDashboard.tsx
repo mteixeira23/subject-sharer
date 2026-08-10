@@ -99,15 +99,6 @@ export default function HubDashboard() {
       </div>
 
       <div className="flex-1 p-4 md:p-6 pb-20 md:pb-6 space-y-2">
-        <SectionDivider label="Agenda" />
-        <AgendaSection
-          getEventsByDate={getEventsByDate}
-          toggleEvent={toggleEvent}
-          moveEvent={moveEvent}
-          moveEventToShift={moveEventToShift}
-          isMobile={isMobile}
-        />
-
         <SectionDivider label="Resumo" />
         <SummaryCards
           studyProgress={overall}
@@ -121,7 +112,18 @@ export default function HubDashboard() {
           pendingTasks={tasks.getPendingCount()}
           todayTasks={tasks.getFilteredTasks('today').length}
         />
+
+        <SectionDivider label="Agenda" />
+        <AgendaSection
+          getEventsByDate={getEventsByDate}
+          toggleEvent={toggleEvent}
+          moveEvent={moveEvent}
+          moveEventToShift={moveEventToShift}
+          isMobile={isMobile}
+        />
       </div>
+
+
 
       {/* Simulado Modal */}
       <Dialog open={simuladoOpen} onOpenChange={setSimuladoOpen}>

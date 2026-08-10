@@ -413,7 +413,7 @@ export function useStudyData() {
           }
         }
 
-        if (missingSubjects.length > 0 || lessonsToUpdate.length > 0 || scheduleEvents.length === 0) {
+        if (lessonsToUpdate.length > 0 || scheduleEvents.length === 0) {
           invalidate();
         }
       } catch (err) {
