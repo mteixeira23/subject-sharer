@@ -177,50 +177,75 @@ export function useStudyData() {
           activeContestId = contestRow.id;
         }
 
-        // Check missing subjects from SEFAZ_BA_SUBJECTS
-        const existingSubjectNames = new Set(subjects.map(s => s.name.trim().toLowerCase()));
-        const missingSubjects = SEFAZ_BA_SUBJECTS.filter(
-          s => !existingSubjectNames.has(s.name.trim().toLowerCase())
-        );
+        // Ensure all subjects exist and all lessons exist for each subject
+        const currentSubjects = [...subjects];
+        const activeContestId = contests[0]?.id;
 
-        if (missingSubjects.length > 0) {
-          const subjectRows = missingSubjects.map((s, i) => ({
-            user_id: userId,
-            contest_id: activeContestId,
-            name: s.name,
-            total_lessons: s.totalLessons,
-            color: s.color || SUBJECT_COLORS[(subjects.length + i) % SUBJECT_COLORS.length],
-          }));
+        if (activeContestId) {
+          // A) Insert missing subjects
+          const existingSubjectNames = new Set(currentSubjects.map(s => s.name.trim().toLowerCase()));
+          const missingSubjects = SEFAZ_BA_SUBJECTS.filter(
+            s => !existingSubjectNames.has(s.name.trim().toLowerCase())
+          );
 
-          const { data: insertedSubjects, error: subjErr } = await supabase
-            .from('subjects')
-            .insert(subjectRows)
-            .select('id, name, total_lessons');
-          if (subjErr || !insertedSubjects) throw subjErr;
+          if (missingSubjects.length > 0) {
+            const subjectRows = missingSubjects.map((s, i) => ({
+              user_id: userId,
+              contest_id: activeContestId,
+              name: s.name,
+              total_lessons: s.totalLessons,
+              color: s.color || SUBJECT_COLORS[(currentSubjects.length + i) % SUBJECT_COLORS.length],
+            }));
 
-          const lessonRows: any[] = [];
-          for (const subj of insertedSubjects) {
-            for (let i = 1; i <= subj.total_lessons; i++) {
-              lessonRows.push({
-                user_id: userId,
-                subject_id: subj.id,
-                number: i,
-                name: getLessonName(subj.name, i),
-                theory_completed: false,
-                review_completed: false,
-                questions_count: 0,
-                correct_answers: 0,
-              });
+            const { data: insertedSubjects, error: subjErr } = await supabase
+              .from('subjects')
+              .insert(subjectRows)
+              .select('id, name, total_lessons, contest_id, color');
+            if (!subjErr && insertedSubjects) {
+              insertedSubjects.forEach(s => currentSubjects.push(rowToSubject(s)));
             }
           }
-          for (let i = 0; i < lessonRows.length; i += 100) {
-            const batch = lessonRows.slice(i, i + 100);
-            const { error } = await supabase.from('lessons').insert(batch);
-            if (error) throw error;
+
+          // B) Check EVERY subject to ensure all lessons are inserted in Supabase
+          const missingLessonRows: any[] = [];
+          for (const subj of currentSubjects) {
+            const sefazDef = SEFAZ_BA_SUBJECTS.find(s => s.name.trim().toLowerCase() === subj.name.trim().toLowerCase());
+            const targetCount = sefazDef ? sefazDef.totalLessons : (subj.totalLessons || 1);
+
+            if (subj.totalLessons !== targetCount) {
+              await supabase.from('subjects').update({ total_lessons: targetCount }).eq('id', subj.id);
+            }
+
+            const existingLessonNumbers = new Set(
+              lessons.filter(l => l.subjectId === subj.id).map(l => l.number)
+            );
+
+            for (let i = 1; i <= targetCount; i++) {
+              if (!existingLessonNumbers.has(i)) {
+                missingLessonRows.push({
+                  user_id: userId,
+                  subject_id: subj.id,
+                  number: i,
+                  name: getLessonName(subj.name, i),
+                  theory_completed: false,
+                  review_completed: false,
+                  questions_count: 0,
+                  correct_answers: 0,
+                  cycle: 1,
+                });
+              }
+            }
+          }
+
+          if (missingLessonRows.length > 0) {
+            for (let i = 0; i < missingLessonRows.length; i += 100) {
+              const batch = missingLessonRows.slice(i, i + 100);
+              await supabase.from('lessons').insert(batch);
+            }
           }
         }
 
-        // Fill missing lesson names for existing lessons
+        // C) Fill missing lesson names for existing lessons
         const lessonsToUpdate = lessons.filter(l => !l.name || l.name.trim() === '');
         if (lessonsToUpdate.length > 0) {
           for (const lesson of lessonsToUpdate) {
@@ -817,13 +842,39 @@ export function useStudyData() {
   }, [currentCycleLessons, questionSessions, subjects]);
 
   const getLessonsBySubject = useCallback(
-    (subjectId: string) => enrichedCurrentCycleLessons.filter(l => l.subjectId === subjectId).sort((a, b) => a.number - b.number),
-    [enrichedCurrentCycleLessons],
+    (subjectId: string) => {
+      const subject = subjects.find(s => s.id === subjectId);
+      const list = enrichedCurrentCycleLessons
+        .filter(l => l.subjectId === subjectId)
+        .sort((a, b) => a.number - b.number);
+
+      if (list.length > 0) return list;
+
+      if (!subject) return [];
+      const sefazDef = SEFAZ_BA_SUBJECTS.find(s => s.name.trim().toLowerCase() === subject.name.trim().toLowerCase());
+      const totalCount = sefazDef ? sefazDef.totalLessons : (subject.totalLessons || 1);
+      const fallbackList: Lesson[] = [];
+      for (let i = 1; i <= totalCount; i++) {
+        fallbackList.push({
+          id: `${subjectId}-fallback-${i}`,
+          subjectId: subjectId,
+          number: i,
+          name: getLessonName(subject.name, i),
+          theoryCompleted: false,
+          reviewCompleted: false,
+          questionsCount: 0,
+          correctAnswers: 0,
+          cycle: 1,
+        });
+      }
+      return fallbackList;
+    },
+    [enrichedCurrentCycleLessons, subjects],
   );
 
   const getSubjectProgress = useCallback(
     (subjectId: string) => {
-      const subjectLessons = enrichedCurrentCycleLessons.filter(l => l.subjectId === subjectId);
+      const subjectLessons = getLessonsBySubject(subjectId);
       const totalLessons = subjectLessons.length;
       const theoryCompleted = subjectLessons.filter(l => l.theoryCompleted).length;
       const reviewCompleted = subjectLessons.filter(l => l.reviewCompleted).length;
@@ -850,7 +901,7 @@ export function useStudyData() {
         performance,
       };
     },
-    [enrichedCurrentCycleLessons],
+    [getLessonsBySubject],
   );
 
   const getOverallProgress = useCallback(() => {
