@@ -10,7 +10,7 @@ export const SEFAZ_BA_CONTEST: Contest = {
 export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Língua Portuguesa', totalLessons: 20, color: SUBJECT_COLORS[0] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Constitucional', totalLessons: 14, color: SUBJECT_COLORS[1] },
-  { contestId: 'sefaz-ba-2025', name: 'Direito Administrativo', totalLessons: 21, color: SUBJECT_COLORS[2] },
+  { contestId: 'sefaz-ba-2025', name: 'Direito Administrativo', totalLessons: 25, color: SUBJECT_COLORS[2] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Tributário', totalLessons: 25, color: SUBJECT_COLORS[3] },
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Geral', totalLessons: 31, color: SUBJECT_COLORS[4] },
   { contestId: 'sefaz-ba-2025', name: 'Estatística', totalLessons: 15, color: SUBJECT_COLORS[5] },
@@ -90,6 +90,34 @@ export const CASP_LESSON_NAMES: Record<number, string> = {
   19: 'Princípios Aplicados à Contabilidade Pública',
 };
 
+export const DIREITO_ADMINISTRATIVO_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Princípios do Direito Administrativo',
+  2: 'Aula 01 - Conceito e Introdução ao Direito Administrativo',
+  3: 'Aula 02 - Poderes Administrativos',
+  4: 'Aula 03 - Atos Administrativos (Parte 1)',
+  5: 'Aula 04 - Atos Administrativos (Parte 2)',
+  6: 'Aula 05 - Organização Administrativa e Descentralização',
+  7: 'Aula 06 - Lei das Estatais (Lei nº 13.303/2016)',
+  8: 'Aula 07 - Entidades Paraestatais e Terceiro Setor',
+  9: 'Aula 08 - Agentes Públicos e Estatuto dos Servidores',
+  10: 'Aula 09 - Licitações Públicas (Lei nº 14.133/2021 - Parte 1)',
+  11: 'Aula 10 - Licitações Públicas (Lei nº 14.133/2021 - Parte 2)',
+  12: 'Aula 11 - Contratos Administrativos (Lei nº 14.133/2021)',
+  13: 'Aula 12 - Serviços Públicos e Concessões',
+  14: 'Aula 13 - Parcerias Público-Privadas (PPPs - Lei nº 11.079/2004)',
+  15: 'Aula 14 - Responsabilidade Civil do Estado',
+  16: 'Aula 15 - Controle da Administração Pública',
+  17: 'Aula 16 - Improbidade Administrativa (Lei nº 8.429/1992)',
+  18: 'Aula 17 - Bens Públicos',
+  19: 'Aula 18 - Intervenção do Estado na Propriedade',
+  20: 'Aula 19 - Convênios e Contratos de Repasse',
+  21: 'Aula 20 - Resumo Geral de Direito Administrativo',
+  22: 'Aula 21 - Processo Administrativo',
+  23: 'Aula 22 - Constituição do Estado da Bahia (CE-BA)',
+  24: 'Aula 23 - Lei Estadual da Bahia nº 14.634/2023 (Licitações)',
+  25: 'Aula 24 - Lei Estadual da Bahia nº 9.290/2004',
+};
+
 export function generateInitialData(): {
   contests: Contest[];
   subjects: Subject[];
@@ -110,6 +138,8 @@ export function generateInitialData(): {
         name = CONTABILIDADE_GERAL_LESSON_NAMES[i];
       } else if (subject.name.includes('CASP') && CASP_LESSON_NAMES[i]) {
         name = CASP_LESSON_NAMES[i];
+      } else if (subject.name === 'Direito Administrativo' && DIREITO_ADMINISTRATIVO_LESSON_NAMES[i]) {
+        name = DIREITO_ADMINISTRATIVO_LESSON_NAMES[i];
       }
       lessons.push({
         id: `${subject.id}-lesson-${i}`,
