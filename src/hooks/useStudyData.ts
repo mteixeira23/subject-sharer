@@ -222,11 +222,24 @@ export function useStudyData() {
     seed();
   }, [userId, loadingContests, contests.length, seeding, invalidate]);
 
+  // ── Active subjects deduplication ─────────────────────────────────────
+  const activeSubjects = useMemo(() => {
+    const activeContestId = contests[0]?.id;
+    const list = activeContestId ? subjects.filter(s => s.contestId === activeContestId) : subjects;
+    const seen = new Set<string>();
+    return list.filter(s => {
+      const key = s.name.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [subjects, contests]);
+
   // ── Aggregated data object ───────────────────────────────────────────────
 
   const data: StudyData = useMemo(
-    () => ({ contests, subjects, lessons, scheduleEvents, questionSessions, pomodoroSessions }),
-    [contests, subjects, lessons, scheduleEvents, questionSessions, pomodoroSessions],
+    () => ({ contests, subjects: activeSubjects, lessons, scheduleEvents, questionSessions, pomodoroSessions }),
+    [contests, activeSubjects, lessons, scheduleEvents, questionSessions, pomodoroSessions],
   );
 
   // ── Contest CRUD ─────────────────────────────────────────────────────────
@@ -597,7 +610,16 @@ export function useStudyData() {
   // ── Computed values (same interface as before) ───────────────────────────
 
   const getSubjectsByContest = useCallback(
-    (contestId: string) => subjects.filter(s => s.contestId === contestId),
+    (contestId: string) => {
+      const list = subjects.filter(s => s.contestId === contestId);
+      const seen = new Set<string>();
+      return list.filter(s => {
+        const key = s.name.trim().toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    },
     [subjects],
   );
 
@@ -681,12 +703,12 @@ export function useStudyData() {
 
   const getWeakSubjects = useCallback(
     (limit = 3) =>
-      subjects
+      activeSubjects
         .map(subject => ({ subject, ...getSubjectProgress(subject.id) }))
         .filter(s => s.totalQuestions > 0)
         .sort((a, b) => a.performance - b.performance)
         .slice(0, limit),
-    [subjects, getSubjectProgress],
+    [activeSubjects, getSubjectProgress],
   );
 
   const getScheduleEventsByDate = useCallback(
