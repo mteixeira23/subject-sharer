@@ -293,7 +293,10 @@ export function AgendaSection({
     if (!filtered.length) return '<div style="color:#aaa;font-size:11px;padding:4px 0">Sem eventos</div>';
     const grouped: Record<string, UnifiedEvent[]> = {};
     for (const ev of filtered) {
-      const s = ev.shift || 'allday';
+      const rawShift = (ev.shift || '').toLowerCase();
+      const s = rawShift === 'manha' || rawShift === 'morning' ? 'morning' :
+                rawShift === 'tarde' || rawShift === 'afternoon' ? 'afternoon' :
+                rawShift === 'noite' || rawShift === 'evening' ? 'evening' : 'allday';
       (grouped[s] ??= []).push(ev);
     }
     return SHIFT_ORDER

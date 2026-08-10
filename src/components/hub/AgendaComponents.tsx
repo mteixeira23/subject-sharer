@@ -286,8 +286,15 @@ export function DayEventsGrouped({
     evening: [],
   };
   filtered.forEach(e => {
-    if (e.shift) {
-      byShift[e.shift].push(e);
+    const rawShift = (e.shift || '').toLowerCase();
+    const normalizedShift: Shift =
+      rawShift === 'manha' || rawShift === 'morning' ? 'morning' :
+      rawShift === 'tarde' || rawShift === 'afternoon' ? 'afternoon' :
+      rawShift === 'noite' || rawShift === 'evening' ? 'evening' :
+      rawShift === 'allday' ? 'allday' : 'allday';
+
+    if (byShift[normalizedShift]) {
+      byShift[normalizedShift].push(e);
     } else {
       byShift.allday.push(e);
     }
