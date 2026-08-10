@@ -234,7 +234,135 @@ export function useStudyData() {
           }
         }
 
-        if (missingSubjects.length > 0 || lessonsToUpdate.length > 0) {
+        // Generate day-by-day schedule events if none exist
+        if (scheduleEvents.length === 0 && subjects.length > 0) {
+          const subjectMap = new Map<string, string>();
+          subjects.forEach(s => subjectMap.set(s.name.trim().toLowerCase(), s.id));
+
+          const subjectsData = [
+            { name: 'Contabilidade Geral', count: 31 },
+            { name: 'Direito Administrativo', count: 25 },
+            { name: 'Direito Constitucional', count: 21 },
+            { name: 'Estatística', count: 20 },
+            { name: 'Contabilidade Aplicada ao Setor Público (CASP)', count: 19 },
+            { name: 'Direito Tributário', count: 19 },
+            { name: 'Auditoria', count: 17 },
+            { name: 'Economia', count: 16 },
+            { name: 'Matemática Financeira', count: 16 },
+            { name: 'Língua Portuguesa', count: 16 },
+            { name: 'Administração, Economia e Finanças Públicas', count: 13 },
+            { name: 'Informática Básica', count: 12 },
+            { name: 'Noções de Igualdade Racial', count: 10 },
+          ];
+
+          const lessonQueues: Record<string, Array<{ subjectName: string; number: number }>> = {};
+          subjectsData.forEach(s => {
+            lessonQueues[s.name] = [];
+            for (let i = 1; i <= s.count; i++) {
+              lessonQueues[s.name].push({ subjectName: s.name, number: i });
+            }
+          });
+
+          const subjectRotation = [
+            'Contabilidade Geral',
+            'Direito Tributário',
+            'Direito Administrativo',
+            'Língua Portuguesa',
+            'Direito Constitucional',
+            'Contabilidade Geral',
+            'Auditoria',
+            'Contabilidade Aplicada ao Setor Público (CASP)',
+            'Direito Tributário',
+            'Estatística',
+            'Economia',
+            'Direito Administrativo',
+            'Matemática Financeira',
+            'Administração, Economia e Finanças Públicas',
+            'Direito Constitucional',
+            'Informática Básica',
+            'Noções de Igualdade Racial',
+          ];
+
+          const allLessonsOrdered: Array<{ subjectName: string; number: number }> = [];
+          let rotationIndex = 0;
+
+          while (Object.values(lessonQueues).some(q => q.length > 0)) {
+            const targetSubject = subjectRotation[rotationIndex % subjectRotation.length];
+            if (lessonQueues[targetSubject] && lessonQueues[targetSubject].length > 0) {
+              allLessonsOrdered.push(lessonQueues[targetSubject].shift()!);
+            } else {
+              const remainingSubject = Object.keys(lessonQueues).find(k => lessonQueues[k].length > 0);
+              if (remainingSubject) {
+                allLessonsOrdered.push(lessonQueues[remainingSubject].shift()!);
+              }
+            }
+            rotationIndex++;
+          }
+
+          const formatDateStr = (d: Date) => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          };
+
+          const startDate = new Date(2026, 7, 10);
+          let currentDate = new Date(startDate);
+          let lessonIdx = 0;
+          const eventsToInsert: any[] = [];
+
+          while (currentDate <= new Date(2026, 10, 15) && lessonIdx < allLessonsOrdered.length) {
+            const isSunday = currentDate.getDay() === 0;
+            const dateStr = formatDateStr(currentDate);
+
+            const l1 = allLessonsOrdered[lessonIdx++];
+            if (l1) {
+              const subjId = subjectMap.get(l1.subjectName.toLowerCase());
+              if (subjId) {
+                eventsToInsert.push({
+                  user_id: userId,
+                  subject_id: subjId,
+                  date: dateStr,
+                  lesson_number: l1.number,
+                  type: 'theory',
+                  completed: false,
+                  description: `Teoria e Questões (Aula ${l1.number})`,
+                  shift: 'Manhã',
+                });
+              }
+            }
+
+            if (!isSunday) {
+              const l2 = allLessonsOrdered[lessonIdx++];
+              if (l2) {
+                const subjId = subjectMap.get(l2.subjectName.toLowerCase());
+                if (subjId) {
+                  eventsToInsert.push({
+                    user_id: userId,
+                    subject_id: subjId,
+                    date: dateStr,
+                    lesson_number: l2.number,
+                    type: 'theory',
+                    completed: false,
+                    description: `Teoria e Questões (Aula ${l2.number})`,
+                    shift: 'Tarde',
+                  });
+                }
+              }
+            }
+
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+
+          if (eventsToInsert.length > 0) {
+            for (let i = 0; i < eventsToInsert.length; i += 100) {
+              const batch = eventsToInsert.slice(i, i + 100);
+              await supabase.from('schedule_events').insert(batch);
+            }
+          }
+        }
+
+        if (missingSubjects.length > 0 || lessonsToUpdate.length > 0 || scheduleEvents.length === 0) {
           invalidate();
         }
       } catch (err) {
