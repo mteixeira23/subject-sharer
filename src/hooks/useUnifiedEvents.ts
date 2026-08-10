@@ -10,7 +10,7 @@ import { UnifiedEvent } from '@/types/unified';
 import { format, addDays, startOfDay, getDay } from 'date-fns';
 import { isTaskActiveOnDate, isRecurringTaskDoneOn } from '@/hooks/useTaskData';
 import { isHabitActiveOnDate } from '@/hooks/useHealthData';
-import { getLessonName } from '@/data/sefazBA';
+import { getLessonName, SEFAZ_BA_SUBJECTS } from '@/data/sefazBA';
 
 export function useUnifiedEvents() {
   const study = useStudy();
