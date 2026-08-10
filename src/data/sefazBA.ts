@@ -298,47 +298,47 @@ export const FINANCAS_PUBLICAS_LESSON_NAMES: Record<number, string> = {
 };
 
 export function getLessonName(subjectName: string, lessonNumber: number): string {
-  const nameClean = subjectName.trim();
-  if (nameClean === 'Direito Constitucional' && DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber]) {
+  const nameClean = (subjectName || '').trim().toLowerCase();
+  if (nameClean.includes('constitucional') && DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber]) {
     return DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Língua Portuguesa' && PORTUGUES_LESSON_NAMES[lessonNumber]) {
+  if ((nameClean.includes('portug') || nameClean.includes('língua')) && PORTUGUES_LESSON_NAMES[lessonNumber]) {
     return PORTUGUES_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Noções de Igualdade Racial' && IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('racial') && IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber]) {
     return IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Contabilidade Geral' && CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('contabilidade geral') && CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber]) {
     return CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean.includes('CASP') && CASP_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('casp') && CASP_LESSON_NAMES[lessonNumber]) {
     return CASP_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Direito Administrativo' && DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('administrativo') && DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber]) {
     return DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean.includes('Finanças Públicas') && FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber]) {
+  if ((nameClean.includes('finanças') || nameClean.includes('afo')) && FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber]) {
     return FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Auditoria' && AUDITORIA_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('auditoria') && AUDITORIA_LESSON_NAMES[lessonNumber]) {
     return AUDITORIA_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Estatística' && ESTATISTICA_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('estat') && ESTATISTICA_LESSON_NAMES[lessonNumber]) {
     return ESTATISTICA_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Direito Tributário' && DIREITO_TRIBUTARIO_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('tribut') && DIREITO_TRIBUTARIO_LESSON_NAMES[lessonNumber]) {
     return DIREITO_TRIBUTARIO_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Matemática Financeira' && MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('matem') && MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber]) {
     return MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Informática Básica' && INFORMATICA_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('inform') && INFORMATICA_LESSON_NAMES[lessonNumber]) {
     return INFORMATICA_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean === 'Economia' && ECONOMIA_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('economia') && ECONOMIA_LESSON_NAMES[lessonNumber]) {
     return ECONOMIA_LESSON_NAMES[lessonNumber];
   }
-  return '';
+  return `Aula ${String(Math.max(0, lessonNumber - 1)).padStart(2, '0')}`;
 }
 
 export function generateInitialData(): {
