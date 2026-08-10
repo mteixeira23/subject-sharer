@@ -123,7 +123,7 @@ export function Aula00QuestionsSimulado() {
       await addQuestionSession({
         id: `session-${Date.now()}`,
         subjectId: currentSubj.id,
-        lessonNumber: selectedLessonNumber,
+        lessonNumber: Number(selectedLessonNumber),
         date: new Date().toISOString().split('T')[0],
         questionsCount: answeredCount,
         correctAnswers: correctCount,
