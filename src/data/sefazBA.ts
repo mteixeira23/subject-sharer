@@ -302,22 +302,22 @@ export function getLessonName(subjectName: string, lessonNumber: number): string
   if (nameClean.includes('constitucional') && DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber]) {
     return DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber];
   }
-  if ((nameClean.includes('portug') || nameClean.includes('língua')) && PORTUGUES_LESSON_NAMES[lessonNumber]) {
+  if ((nameClean.includes('portug') || nameClean.includes('língua') || nameClean.includes('lingua')) && PORTUGUES_LESSON_NAMES[lessonNumber]) {
     return PORTUGUES_LESSON_NAMES[lessonNumber];
   }
   if (nameClean.includes('racial') && IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber]) {
     return IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean.includes('contabilidade geral') && CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber]) {
+  if (nameClean.includes('contabilid') && !nameClean.includes('casp') && CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber]) {
     return CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean.includes('casp') && CASP_LESSON_NAMES[lessonNumber]) {
+  if ((nameClean.includes('casp') || nameClean.includes('setor público') || nameClean.includes('setor publico')) && CASP_LESSON_NAMES[lessonNumber]) {
     return CASP_LESSON_NAMES[lessonNumber];
   }
   if (nameClean.includes('administrativo') && DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber]) {
     return DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber];
   }
-  if ((nameClean.includes('finanças') || nameClean.includes('afo')) && FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber]) {
+  if ((nameClean.includes('finanças') || nameClean.includes('financas') || nameClean.includes('afo') || nameClean.includes('orçamento')) && FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber]) {
     return FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber];
   }
   if (nameClean.includes('auditoria') && AUDITORIA_LESSON_NAMES[lessonNumber]) {
@@ -332,7 +332,7 @@ export function getLessonName(subjectName: string, lessonNumber: number): string
   if (nameClean.includes('matem') && MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber]) {
     return MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber];
   }
-  if (nameClean.includes('inform') && INFORMATICA_LESSON_NAMES[lessonNumber]) {
+  if ((nameClean.includes('inform') || nameClean.includes('tecnologia')) && INFORMATICA_LESSON_NAMES[lessonNumber]) {
     return INFORMATICA_LESSON_NAMES[lessonNumber];
   }
   if (nameClean.includes('economia') && ECONOMIA_LESSON_NAMES[lessonNumber]) {

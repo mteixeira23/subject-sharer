@@ -10,6 +10,7 @@ import { UnifiedEvent } from '@/types/unified';
 import { format, addDays, startOfDay, getDay } from 'date-fns';
 import { isTaskActiveOnDate, isRecurringTaskDoneOn } from '@/hooks/useTaskData';
 import { isHabitActiveOnDate } from '@/hooks/useHealthData';
+import { getLessonName } from '@/data/sefazBA';
 
 export function useUnifiedEvents() {
   const study = useStudy();
@@ -36,11 +37,20 @@ export function useUnifiedEvents() {
     // Study schedule events
     study.data.scheduleEvents.forEach(ev => {
       const subject = study.data.subjects.find(s => s.id === ev.subjectId);
+      const subjectName = subject?.name ?? 'Matéria';
+      const lessonNum = ev.lessonNumber ?? 1;
+      const lessonName = getLessonName(subjectName, lessonNum);
+      const typeLabel = ev.type === 'theory' ? 'Teoria' : ev.type === 'review' ? 'Revisão' : 'Questões';
+
+      const displayTitle = `${subjectName} - Aula ${String(Math.max(0, lessonNum - 1)).padStart(2, '0')}`;
+      const displaySubtitle = lessonName ? `${lessonName} (${typeLabel})` : typeLabel;
+
       events.push({
         id: `study-${ev.id}`,
         date: ev.date,
-        title: subject?.name ?? 'Aula',
-        subtitle: ev.type === 'theory' ? 'Teoria' : ev.type === 'review' ? 'Revisão' : 'Questões',
+        title: displayTitle,
+        subtitle: displaySubtitle,
+        description: lessonName ? `${subjectName}: ${lessonName}` : undefined,
         module: 'study',
         type: 'schedule',
         completed: ev.completed,
