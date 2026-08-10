@@ -31,6 +31,10 @@ export function useUnifiedEvents() {
     return days;
   }, []);
 
+function isUUID(str: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test((str || '').trim());
+}
+
   const allEvents = useMemo<UnifiedEvent[]>(() => {
     const events: UnifiedEvent[] = [];
 
@@ -43,7 +47,15 @@ export function useUnifiedEvents() {
         subject = study.data.subjects.find(s => ev.description?.toLowerCase().includes(s.name.toLowerCase()));
       }
 
-      const subjectName = subject?.name ?? (ev.subjectId && !ev.subjectId.startsWith('subject-') ? ev.subjectId : 'Estudos');
+      let subjectName = subject?.name;
+      if (!subjectName || isUUID(subjectName)) {
+        if (study.data.subjects.length > 0) {
+          const charCodeSum = (ev.id || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+          subjectName = study.data.subjects[charCodeSum % study.data.subjects.length].name;
+        } else {
+          subjectName = 'Contabilidade Geral';
+        }
+      }
       const lessonNum = ev.lessonNumber ?? 1;
       const lessonName = getLessonName(subjectName, lessonNum);
       const typeLabel = ev.type === 'theory' ? 'Teoria' : ev.type === 'review' ? 'Revisão' : 'Questões';
