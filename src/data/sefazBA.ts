@@ -11,7 +11,7 @@ export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Língua Portuguesa', totalLessons: 16, color: SUBJECT_COLORS[0] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Constitucional', totalLessons: 21, color: SUBJECT_COLORS[1] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Administrativo', totalLessons: 25, color: SUBJECT_COLORS[2] },
-  { contestId: 'sefaz-ba-2025', name: 'Direito Tributário', totalLessons: 25, color: SUBJECT_COLORS[3] },
+  { contestId: 'sefaz-ba-2025', name: 'Direito Tributário', totalLessons: 19, color: SUBJECT_COLORS[3] },
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Geral', totalLessons: 31, color: SUBJECT_COLORS[4] },
   { contestId: 'sefaz-ba-2025', name: 'Estatística', totalLessons: 20, color: SUBJECT_COLORS[5] },
   { contestId: 'sefaz-ba-2025', name: 'Noções de Igualdade Racial', totalLessons: 10, color: SUBJECT_COLORS[6] },
@@ -40,6 +40,28 @@ export const AUDITORIA_LESSON_NAMES: Record<number, string> = {
   15: 'Aula 14 - Auditoria Fiscal e Tributária (Parte 1)',
   16: 'Aula 15 - Auditoria Fiscal e Tributária (Parte 2)',
   17: 'Aula 16 - Estrutura Conceitual para Trabalhos de Asseguração',
+};
+
+export const DIREITO_TRIBUTARIO_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Conceito de Tributo e Especies Tributárias',
+  2: 'Aula 01 - Competência Tributária e Capacidade Tributária',
+  3: 'Aula 02 - Limitações Ao Poder de Tributar: Princípios Tributários I',
+  4: 'Aula 03 - Limitações Ao Poder de Tributar: Princípios Tributários II',
+  5: 'Aula 04 - Imunidades Tributárias (Art. 150, VI da CF/88)',
+  6: 'Aula 05 - Fontes do Direito Tributário e Legislação Tributária',
+  7: 'Aula 06 - Obrigação Tributária e Responsabilidade Tributária',
+  8: 'Aula 07 - Fato Gerador e Sujeitos da Obrigação Tributária',
+  9: 'Aula 08 - Lançamento Tributário e Crédito Tributário',
+  10: 'Aula 09 - Suspensão da Exigibilidade do Crédito Tributário',
+  11: 'Aula 10 - Extinção do Crédito Tributário: Decadência e Prescrição',
+  12: 'Aula 11 - Exclusão do Crédito Tributário: Isenção e Anistia',
+  13: 'Aula 12 - Garantias e Privilégios do Crédito Tributário',
+  14: 'Aula 13 - Administração Tributária e Fiscalização',
+  15: 'Aula 14 - Dívida Ativa e Certidões Negativas',
+  16: 'Aula 15 - Processo Administrativo Tributário (PAT)',
+  17: 'Aula 16 - Processo Judicial Tributário (Execução Fiscal, Anulatória, MS)',
+  18: 'Aula 17 - Impostos de Competência dos Estados (ICMS, IPVA, ITCMD)',
+  19: 'Aula 18 - Simples Nacional e Legislação Específica da Bahia',
 };
 
 export const ESTATISTICA_LESSON_NAMES: Record<number, string> = {
@@ -253,6 +275,8 @@ export function generateInitialData(): {
         name = AUDITORIA_LESSON_NAMES[i];
       } else if (subject.name === 'Estatística' && ESTATISTICA_LESSON_NAMES[i]) {
         name = ESTATISTICA_LESSON_NAMES[i];
+      } else if (subject.name === 'Direito Tributário' && DIREITO_TRIBUTARIO_LESSON_NAMES[i]) {
+        name = DIREITO_TRIBUTARIO_LESSON_NAMES[i];
       }
       lessons.push({
         id: `${subject.id}-lesson-${i}`,
