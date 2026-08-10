@@ -42,6 +42,40 @@ export const AUDITORIA_LESSON_NAMES: Record<number, string> = {
   17: 'Aula 16 - Estrutura Conceitual para Trabalhos de Asseguração',
 };
 
+export const INFORMATICA_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Conceitos Fundamentais de Hardware e Software',
+  2: 'Aula 01 - Sistema Operacional Windows 10/11',
+  3: 'Aula 02 - Conceitos de Redes de Computadores e Internet',
+  4: 'Aula 03 - Navegadores de Internet (Chrome, Edge, Firefox)',
+  5: 'Aula 04 - Correio Eletrônico e Protocolos (SMTP, POP3, IMAP)',
+  6: 'Aula 05 - Edição de Textos: Microsoft Word',
+  7: 'Aula 06 - Planilhas Eletrônicas: Microsoft Excel (Fórmulas e Funções)',
+  8: 'Aula 07 - Softwares de Apresentação: Microsoft PowerPoint',
+  9: 'Aula 08 - Segurança da Informação e Malware (Vírus, Trojan, Ransomware)',
+  10: 'Aula 09 - Mecanismos de Proteção (Firewall, Antivírus, Criptografia)',
+  11: 'Aula 10 - Computação em Nuvem (Cloud Computing)',
+  12: 'Aula 11 - Bateria de Questões FGV e Revisão Geral',
+};
+
+export const MATEMATICA_FINANCEIRA_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Juros Simples e Desconto Simples',
+  2: 'Aula 01 - Juros Compostos e Taxas Equivalentes',
+  3: 'Aula 02 - Desconto Composto (Racional e Comercial)',
+  4: 'Aula 03 - Taxas Nominais, Efetivas, Reais e Inflação',
+  5: 'Aula 04 - Equivalência de Capitais e Fluxos de Caixa',
+  6: 'Aula 05 - Rendimento de Aplicações Financeiras',
+  7: 'Aula 06 - Anualidades e Séries de Pagamento (Uniforme e Periódica)',
+  8: 'Aula 07 - Séries Diferidas e Perpetuidades',
+  9: 'Aula 08 - Sistemas de Amortização: Tabela Price (SAF)',
+  10: 'Aula 09 - Sistemas de Amortização: SAC (Amortização Constante)',
+  11: 'Aula 10 - Sistema Americano e Sinking Fund',
+  12: 'Aula 11 - Análise de Investimentos: Valor Presente Líquido (VPL)',
+  13: 'Aula 12 - Análise de Investimentos: Taxa Interna de Retorno (TIR)',
+  14: 'Aula 13 - Payback Simples e Descontado',
+  15: 'Aula 14 - Depreciação Financeira e Avaliação de Ativos',
+  16: 'Aula 15 - Análise de Projetos e Bateria de Questões FGV',
+};
+
 export const DIREITO_TRIBUTARIO_LESSON_NAMES: Record<number, string> = {
   1: 'Aula 00 - Conceito de Tributo e Especies Tributárias',
   2: 'Aula 01 - Competência Tributária e Capacidade Tributária',
@@ -277,6 +311,10 @@ export function generateInitialData(): {
         name = ESTATISTICA_LESSON_NAMES[i];
       } else if (subject.name === 'Direito Tributário' && DIREITO_TRIBUTARIO_LESSON_NAMES[i]) {
         name = DIREITO_TRIBUTARIO_LESSON_NAMES[i];
+      } else if (subject.name === 'Matemática Financeira' && MATEMATICA_FINANCEIRA_LESSON_NAMES[i]) {
+        name = MATEMATICA_FINANCEIRA_LESSON_NAMES[i];
+      } else if (subject.name === 'Informática Básica' && INFORMATICA_LESSON_NAMES[i]) {
+        name = INFORMATICA_LESSON_NAMES[i];
       }
       lessons.push({
         id: `${subject.id}-lesson-${i}`,
