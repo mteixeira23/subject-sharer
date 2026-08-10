@@ -37,6 +37,7 @@ function isUUID(str: string): boolean {
 
   const allEvents = useMemo<UnifiedEvent[]>(() => {
     const events: UnifiedEvent[] = [];
+    const sefazSubjectNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
 
     // Study schedule events
     study.data.scheduleEvents.forEach(ev => {
@@ -45,6 +46,10 @@ function isUUID(str: string): boolean {
       );
       if (!subject && ev.description) {
         subject = study.data.subjects.find(s => ev.description?.toLowerCase().includes(s.name.toLowerCase()));
+      }
+
+      if (subject && !sefazSubjectNames.has(subject.name.trim().toLowerCase())) {
+        return;
       }
 
       let subjectName = subject?.name;

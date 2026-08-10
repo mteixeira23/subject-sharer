@@ -122,12 +122,18 @@ export function useStudyData() {
   });
 
   const { data: scheduleEvents = [] } = useQuery({
-    queryKey: ['study', userId, 'scheduleEvents'],
+    queryKey: ['study', userId, 'scheduleEvents', subjects],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await supabase.from('schedule_events').select('*').eq('user_id', userId);
       if (error) throw error;
-      return (data ?? []).map(rowToScheduleEvent);
+      const rawEvents = (data ?? []).map(rowToScheduleEvent);
+      const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
+      return rawEvents.filter(ev => {
+        const s = subjects.find(sub => sub.id === ev.subjectId);
+        if (!s) return false;
+        return sefazNames.has(s.name.trim().toLowerCase());
+      });
     },
     enabled: !!userId,
   });
@@ -259,19 +265,25 @@ export function useStudyData() {
         }
 
         // D) Purge old mock template schedule events and generate official SEFAZ-BA daily schedule
+        const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
         const isSEFAZSubject = (subjId: string) => {
           const s = subjects.find(sub => sub.id === subjId);
           if (!s) return false;
-          const sName = s.name.trim().toLowerCase();
-          return SEFAZ_BA_SUBJECTS.some(def => def.name.trim().toLowerCase() === sName);
+          return sefazNames.has(s.name.trim().toLowerCase());
         };
 
-        const invalidEventCount = scheduleEvents.filter(e => !isSEFAZSubject(e.subjectId)).length;
-        const needsRegeneration = scheduleEvents.length === 0 || invalidEventCount > 0;
+        const invalidEvents = scheduleEvents.filter(e => !isSEFAZSubject(e.subjectId));
+        const needsRegeneration = scheduleEvents.length === 0 || invalidEvents.length > 0;
 
         if (needsRegeneration && subjects.length > 0) {
           // Delete old mock schedule events from template
           await supabase.from('schedule_events').delete().eq('user_id', userId);
+          if (invalidEvents.length > 0) {
+            const invalidIds = invalidEvents.map(e => e.id);
+            for (let i = 0; i < invalidIds.length; i += 100) {
+              await supabase.from('schedule_events').delete().in('id', invalidIds.slice(i, i + 100));
+            }
+          }
 
           const subjectMap = new Map<string, string>();
           subjects.forEach(s => subjectMap.set(s.name.trim().toLowerCase(), s.id));
