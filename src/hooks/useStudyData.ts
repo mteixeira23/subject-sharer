@@ -179,7 +179,6 @@ export function useStudyData() {
 
         // Ensure all subjects exist and all lessons exist for each subject
         const currentSubjects = [...subjects];
-        const activeContestId = contests[0]?.id;
 
         if (activeContestId) {
           // A) Insert missing subjects
@@ -1023,9 +1022,10 @@ export function useStudyData() {
       // Group lessons by cycle
       const cycleMap = new Map<number, typeof contestLessons>();
       for (const lesson of contestLessons) {
-        const cycle = lesson.cycle;
+        const cycle = lesson.cycle ?? 1;
         if (!cycleMap.has(cycle)) cycleMap.set(cycle, []);
-        cycleMap.get(cycle)!.push(lesson);
+        const list = cycleMap.get(cycle);
+        if (list) list.push(lesson);
       }
 
       // Build history for past cycles only
