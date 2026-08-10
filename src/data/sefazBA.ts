@@ -13,13 +13,57 @@ export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Direito Administrativo', totalLessons: 25, color: SUBJECT_COLORS[2] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Tributário', totalLessons: 25, color: SUBJECT_COLORS[3] },
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Geral', totalLessons: 31, color: SUBJECT_COLORS[4] },
-  { contestId: 'sefaz-ba-2025', name: 'Estatística', totalLessons: 15, color: SUBJECT_COLORS[5] },
+  { contestId: 'sefaz-ba-2025', name: 'Estatística', totalLessons: 20, color: SUBJECT_COLORS[5] },
   { contestId: 'sefaz-ba-2025', name: 'Noções de Igualdade Racial', totalLessons: 10, color: SUBJECT_COLORS[6] },
   { contestId: 'sefaz-ba-2025', name: 'Administração, Economia e Finanças Públicas', totalLessons: 13, color: SUBJECT_COLORS[7] },
   { contestId: 'sefaz-ba-2025', name: 'Matemática Financeira', totalLessons: 16, color: SUBJECT_COLORS[8] },
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Aplicada ao Setor Público (CASP)', totalLessons: 19, color: SUBJECT_COLORS[9] },
   { contestId: 'sefaz-ba-2025', name: 'Informática Básica', totalLessons: 12, color: SUBJECT_COLORS[10] },
+  { contestId: 'sefaz-ba-2025', name: 'Auditoria', totalLessons: 17, color: SUBJECT_COLORS[11] },
 ];
+
+export const AUDITORIA_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Introdução à Auditoria (NBC TA 200)',
+  2: 'Aula 01 - Auditoria Interna (NBC TI 01)',
+  3: 'Aula 02 - Planejamento de Auditoria (NBC TA 300)',
+  4: 'Aula 03 - Evidência de Auditoria (NBC TA 500)',
+  5: 'Aula 04 - Amostragem em Auditoria (NBC TA 530)',
+  6: 'Aula 05 - Materialidade em Auditoria (NBC TA 320)',
+  7: 'Aula 06 - Relatório de Auditoria (NBC TA 700)',
+  8: 'Aula 07 - Controle Interno e Avaliação de Riscos (NBC TA 315)',
+  9: 'Aula 08 - Transações com Partes Relacionadas (NBC TA 550)',
+  10: 'Aula 09 - Representações Formais / Cartas de Responsabilidade (NBC TA 580)',
+  11: 'Aula 10 - Avaliação das Distorções Identificadas (NBC TA 450)',
+  12: 'Aula 11 - Utilização de Outros Profissionais / Auditores Internos (NBC TA 610/620)',
+  13: 'Aula 12 - Procedimentos em Áreas Específicas (Parte 1)',
+  14: 'Aula 13 - Procedimentos em Áreas Específicas (Parte 2)',
+  15: 'Aula 14 - Auditoria Fiscal e Tributária (Parte 1)',
+  16: 'Aula 15 - Auditoria Fiscal e Tributária (Parte 2)',
+  17: 'Aula 16 - Estrutura Conceitual para Trabalhos de Asseguração',
+};
+
+export const ESTATISTICA_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Apresentação de Dados e Estatística Descritiva',
+  2: 'Aula 01 - Medidas de Tendência Central: Médias',
+  3: 'Aula 02 - Medidas de Tendência Central: Moda',
+  4: 'Aula 03 - Separatrizes e Quantis',
+  5: 'Aula 04 - Medidas de Dispersão e Variabilidade',
+  6: 'Aula 05 - Análise Combinatória Aplicada à Probabilidade',
+  7: 'Aula 06 - Teoria das Probabilidades e Eventos',
+  8: 'Aula 07 - Variáveis Aleatórias Discretas',
+  9: 'Aula 08 - Distribuições de Probabilidade Discretas',
+  10: 'Aula 09 - Variáveis Aleatórias Contínuas',
+  11: 'Aula 10 - Distribuições Conjuntas de Variáveis Aleatórias',
+  12: 'Aula 11 - Teoria da Amostragem e Métodos Amostrais',
+  13: 'Aula 12 - Estimação Pontual e por Intervalo de Confiança',
+  14: 'Aula 13 - Testes de Hipóteses Parâmetricos e Não-Paramétricos',
+  15: 'Aula 14 - Análise de Variância (ANOVA)',
+  16: 'Aula 15 - Regressão Linear Simples e Correlação',
+  17: 'Aula 16 - Regressão Linear Múltipla',
+  18: 'Aula 17 - Séries Temporais e Números Índices',
+  19: 'Aula 18 - Análise Multivariada',
+  20: 'Aula 19 - Análise Bidimensional e Tabelas de Contingência',
+};
 
 export const DIREITO_CONSTITUCIONAL_LESSON_NAMES: Record<number, string> = {
   1: 'Aula 00 - Conceito, Objeto, Sentidos e Classificação das Constituições (Prof. Ricardo Vale)',
@@ -205,6 +249,10 @@ export function generateInitialData(): {
         name = DIREITO_ADMINISTRATIVO_LESSON_NAMES[i];
       } else if (subject.name.includes('Finanças Públicas') && FINANCAS_PUBLICAS_LESSON_NAMES[i]) {
         name = FINANCAS_PUBLICAS_LESSON_NAMES[i];
+      } else if (subject.name === 'Auditoria' && AUDITORIA_LESSON_NAMES[i]) {
+        name = AUDITORIA_LESSON_NAMES[i];
+      } else if (subject.name === 'Estatística' && ESTATISTICA_LESSON_NAMES[i]) {
+        name = ESTATISTICA_LESSON_NAMES[i];
       }
       lessons.push({
         id: `${subject.id}-lesson-${i}`,
