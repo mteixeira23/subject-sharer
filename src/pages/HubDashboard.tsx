@@ -123,7 +123,7 @@ export default function HubDashboard() {
         />
       </div>
 
-      </div>
+
 
       {/* Simulado Modal */}
       <Dialog open={simuladoOpen} onOpenChange={setSimuladoOpen}>
