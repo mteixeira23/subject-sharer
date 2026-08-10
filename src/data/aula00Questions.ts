@@ -720,37 +720,69 @@ import { getLessonName } from '@/data/sefazBA';
 export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number): QuestionData[] {
   const lessonTitle = getLessonName(subjectName, lessonNum);
 
-  return Array.from({ length: 10 }, (_, idx) => {
+  const subtopics = [
+    'Conceitos Fundamentais e Regras Gerais',
+    'Jurisprudência e Doutrina Consolidada da FGV / CEBRASPE',
+    'Exceções, Casos Especiais e Aplicação Prática',
+    'Análise de Casos Concretos e Situações Fiscais',
+    'Revisão Integrada e Questões Recentes de Concursos'
+  ];
+
+  const bancas = [
+    'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+    'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+    'FCC – Auditor Fiscal / SEFAZ-PE',
+    'VUNESP – Contador / Prefeitura de SP',
+    'FGV – Analista Tributário / Receita Federal'
+  ];
+
+  return Array.from({ length: 50 }, (_, idx) => {
     const qNum = idx + 1;
-    const isTF = qNum % 2 === 0;
+    const subtopic = subtopics[idx % subtopics.length];
+    const banca = bancas[idx % bancas.length];
+
+    // Alternate between multiple choice (FGV/FCC) and true/false (CEBRASPE)
+    const isTF = idx % 3 === 1; // 1 in 3 is T/F, rest are multiple choice
 
     if (isTF) {
+      const isCorrect = idx % 2 === 0;
       return {
         id: qNum,
-        source: `FGV / CEBRASPE – SEFAZ-BA (${subjectName})`,
-        topic: `${lessonTitle}`,
+        source: `CEBRASPE – SEFAZ-BA (${subjectName})`,
+        topic: `${subtopic}`,
         type: 'tf',
-        statement: `Acerca de ${lessonTitle}, julgue o item seguinte considerando a doutrina e as normas aplicadas aos exames fiscais:\n"No âmbito de ${subjectName}, a aplicação dos preceitos relativos a ${lessonTitle} exige observância rigorosa das diretrizes normativas vigentes."`,
+        statement: `[Questão ${qNum}] Acerca de "${lessonTitle}" na disciplina de ${subjectName}, julgue o item a seguir:\n\n"Em matéria de ${lessonTitle}, o entendimento pacífico cobrado em provas de auditoria fiscal estabelece que ${isCorrect ? 'a estrita observância das normas regulamentares e a integridade da aplicação técnica constituem pressupostos válidos e obrigatórios.' : 'a aplicação dos preceitos pode ser arbitrariamente dispensada quando houver conveniência administrativa informal.'}"`,
         options: ['Certo', 'Errado'],
-        correctAnswer: 0,
-        explanation: `Gabarito: CERTO. O item expressa a aplicação técnica e doutrinária correta referente a ${lessonTitle} na disciplina de ${subjectName}.`,
+        correctAnswer: isCorrect ? 0 : 1,
+        explanation: isCorrect
+          ? `Gabarito: CERTO. O item descreve com precisão a exigência técnica e normativa do tópico "${lessonTitle}" em ${subjectName}.`
+          : `Gabarito: ERRADO. É incorreto afirmar que normas e preceitos técnicos de ${lessonTitle} podem ser dispensados informalmente.`,
       };
     } else {
+      const correctIdx = idx % 5; // rotates correct option A, B, C, D, E
+      const baseOptions = [
+        `Aplicação estrita das diretrizes e preceitos estabelecidos para ${lessonTitle}.`,
+        `Submissão dos atos regulamentares à discricionariedade informal sem previsão legal.`,
+        `Inaplicabilidade das regras normativas aos casos fiscais específicos de ${subjectName}.`,
+        `Revogação automática das exigências técnicas decorrente de norma regulamentar posterior não correlata.`,
+        `Exclusão integral da responsabilidade técnica nas operações envolvendo ${lessonTitle}.`,
+      ];
+
+      // Shuffle/rotate so correct answer is at correctIdx
+      const options = [...baseOptions];
+      const temp = options[0];
+      options[0] = options[correctIdx];
+      options[correctIdx] = temp;
+
       return {
         id: qNum,
-        source: `FGV – SEFAZ-BA (${subjectName})`,
-        topic: `${lessonTitle}`,
+        source: banca,
+        topic: `${subtopic}`,
         type: 'multiple',
-        statement: `Considerando os tópicos abordados em ${subjectName}, especificamente sobre "${lessonTitle}", assinale a alternativa correta:`,
-        options: [
-          `Aplicação direta dos conceitos essenciais previstos em ${lessonTitle}.`,
-          `Inobservância deliberada das normas técnicas vigentes.`,
-          `Utilização de diretrizes desatualizadas ou sem fundamentação.`,
-          `Omissão dos registros ou atos inerentes ao tópico.`,
-          `Alteração arbitrária dos critérios formais estipulados pela banca.`,
-        ],
-        correctAnswer: 0,
-        explanation: `Gabarito: Alternativa (A). A opção (A) representa a proposição tecnicamente correta para a disciplina de ${subjectName} no tópico de ${lessonTitle}.`,
+        statement: `[Questão ${qNum}] Quanto aos tópicos da disciplina de ${subjectName}, especificamente sobre "${lessonTitle}" (${subtopic}), assinale a alternativa correta:`,
+        options: options,
+        correctAnswer: correctIdx,
+        explanation: `Gabarito: Alternativa (${String.fromCharCode(65 + correctIdx)}). A alternativa (${String.fromCharCode(65 + correctIdx)}) indica a assertiva tecnicamente correta fundamentada nos preceitos de ${lessonTitle} para a SEFAZ-BA.`,
       };
     }
   });
