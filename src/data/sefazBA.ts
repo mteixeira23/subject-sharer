@@ -8,7 +8,7 @@ export const SEFAZ_BA_CONTEST: Contest = {
 };
 
 export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
-  { contestId: 'sefaz-ba-2025', name: 'Língua Portuguesa', totalLessons: 20, color: SUBJECT_COLORS[0] },
+  { contestId: 'sefaz-ba-2025', name: 'Língua Portuguesa', totalLessons: 16, color: SUBJECT_COLORS[0] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Constitucional', totalLessons: 14, color: SUBJECT_COLORS[1] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Administrativo', totalLessons: 25, color: SUBJECT_COLORS[2] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Tributário', totalLessons: 25, color: SUBJECT_COLORS[3] },
@@ -20,6 +20,25 @@ export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Aplicada ao Setor Público (CASP)', totalLessons: 19, color: SUBJECT_COLORS[9] },
   { contestId: 'sefaz-ba-2025', name: 'Informática Básica', totalLessons: 12, color: SUBJECT_COLORS[10] },
 ];
+
+export const PORTUGUES_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Ortografia Oficial, Acentuação Gráfica e Fonemas (FGV)',
+  2: 'Aula 01 - Compreensão e Interpretação de Textos (Coesão e Coerência FGV)',
+  3: 'Aula 02 - Tipologia e Gêneros Textuais',
+  4: 'Aula 03 - Semântica: Parônimos, Homônimos e Significação de Palavras',
+  5: 'Aula 04 - Regras Gerais de Acentuação e Novo Acordo Ortográfico',
+  6: 'Aula 05 - Emprego do Hífen (Regras Gerais e Especiais)',
+  7: 'Aula 06 - Classes de Palavras: Substantivos, Adjetivos e Artigos',
+  8: 'Aula 07 - Pronomes: Emprego, Colocação Pronômica e Anapora',
+  9: 'Aula 08 - Verbos: Modos, Tempos, Vozes e Correlação Verbal',
+  10: 'Aula 09 - Estrutura Sintática da Oração (Sujeito, Predicado e Complementos)',
+  11: 'Aula 10 - Sintaxe do Período Composto (Orações Coordenadas e Subordinadas)',
+  12: 'Aula 11 - Concordância Verbal e Nominal',
+  13: 'Aula 12 - Regência Verbal/Nominal e Emprego da Crase',
+  14: 'Aula 13 - Pontuação (Vírgula, Ponto e Vírgula, Dois Pontos)',
+  15: 'Aula 14 - Reescritura de Frases e Equivalência de Estruturas (FGV)',
+  16: 'Aula 15 - Figuras de Linguagem e Bateria de Questões Comentadas FGV',
+};
 
 export const IGUALDADE_RACIAL_LESSON_NAMES: Record<number, string> = {
   1: 'Aula 00 - Direitos Humanos na CF/88 & Teoria Geral dos Direitos Fundamentais',
@@ -148,7 +167,9 @@ export function generateInitialData(): {
   subjects.forEach((subject) => {
     for (let i = 1; i <= subject.totalLessons; i++) {
       let name = '';
-      if (subject.name === 'Noções de Igualdade Racial' && IGUALDADE_RACIAL_LESSON_NAMES[i]) {
+      if (subject.name === 'Língua Portuguesa' && PORTUGUES_LESSON_NAMES[i]) {
+        name = PORTUGUES_LESSON_NAMES[i];
+      } else if (subject.name === 'Noções de Igualdade Racial' && IGUALDADE_RACIAL_LESSON_NAMES[i]) {
         name = IGUALDADE_RACIAL_LESSON_NAMES[i];
       } else if (subject.name === 'Contabilidade Geral' && CONTABILIDADE_GERAL_LESSON_NAMES[i]) {
         name = CONTABILIDADE_GERAL_LESSON_NAMES[i];
