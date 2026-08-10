@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, XCircle, HelpCircle, Save, RotateCcw, Check, Sparkles } from 'lucide-react';
 import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 export function Aula00QuestionsSimulado() {
   const { data: studyData, addQuestionSession } = useStudy();
