@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { StudyData, Contest, Subject, Lesson, ScheduleEvent, QuestionSession } from '@/types/study';
 import { PomodoroSession } from '@/types/pomodoro';
-import { SEFAZ_BA_SUBJECTS } from '@/data/sefazBA';
+import { SEFAZ_BA_SUBJECTS, getLessonName } from '@/data/sefazBA';
 import { SUBJECT_COLORS } from '@/types/study';
 import { getLocalDateString } from '@/lib/dates';
 
@@ -156,71 +156,96 @@ export function useStudyData() {
 
   const isLoading = loadingContests || loadingSubjects || loadingLessons || seeding;
 
-  // ── Seed initial data for new users ──────────────────────────────────────
+  // ── Seed / Sync initial data for users ──────────────────────────────────
 
   useEffect(() => {
-    if (!userId || loadingContests || contests.length > 0 || seeding) return;
+    if (!userId || loadingContests || loadingSubjects || loadingLessons || seeding) return;
 
-    const seed = async () => {
+    const seedAndSync = async () => {
       setSeeding(true);
       try {
-        // Create contest
-        const { data: contestRow, error: contestErr } = await supabase
-          .from('contests')
-          .insert({ user_id: userId, name: 'SEFAZ-BA 2025' })
-          .select('id')
-          .single();
-        if (contestErr || !contestRow) throw contestErr;
+        let activeContestId = contests[0]?.id;
 
-        const contestId = contestRow.id;
+        // Create contest if none exists
+        if (!activeContestId) {
+          const { data: contestRow, error: contestErr } = await supabase
+            .from('contests')
+            .insert({ user_id: userId, name: 'SEFAZ-BA 2025' })
+            .select('id')
+            .single();
+          if (contestErr || !contestRow) throw contestErr;
+          activeContestId = contestRow.id;
+        }
 
-        // Create subjects
-        const subjectRows = SEFAZ_BA_SUBJECTS.map((s, i) => ({
-          user_id: userId,
-          contest_id: contestId,
-          name: s.name,
-          total_lessons: s.totalLessons,
-          color: SUBJECT_COLORS[i % SUBJECT_COLORS.length],
-        }));
-        const { data: insertedSubjects, error: subjErr } = await supabase
-          .from('subjects')
-          .insert(subjectRows)
-          .select('id, total_lessons');
-        if (subjErr || !insertedSubjects) throw subjErr;
+        // Check missing subjects from SEFAZ_BA_SUBJECTS
+        const existingSubjectNames = new Set(subjects.map(s => s.name.trim().toLowerCase()));
+        const missingSubjects = SEFAZ_BA_SUBJECTS.filter(
+          s => !existingSubjectNames.has(s.name.trim().toLowerCase())
+        );
 
-        // Create lessons for each subject
-        const lessonRows: any[] = [];
-        for (const subj of insertedSubjects) {
-          for (let i = 1; i <= subj.total_lessons; i++) {
-            lessonRows.push({
-              user_id: userId,
-              subject_id: subj.id,
-              number: i,
-              name: '',
-              theory_completed: false,
-              review_completed: false,
-              questions_count: 0,
-              correct_answers: 0,
-            });
+        if (missingSubjects.length > 0) {
+          const subjectRows = missingSubjects.map((s, i) => ({
+            user_id: userId,
+            contest_id: activeContestId,
+            name: s.name,
+            total_lessons: s.totalLessons,
+            color: s.color || SUBJECT_COLORS[(subjects.length + i) % SUBJECT_COLORS.length],
+          }));
+
+          const { data: insertedSubjects, error: subjErr } = await supabase
+            .from('subjects')
+            .insert(subjectRows)
+            .select('id, name, total_lessons');
+          if (subjErr || !insertedSubjects) throw subjErr;
+
+          const lessonRows: any[] = [];
+          for (const subj of insertedSubjects) {
+            for (let i = 1; i <= subj.total_lessons; i++) {
+              lessonRows.push({
+                user_id: userId,
+                subject_id: subj.id,
+                number: i,
+                name: getLessonName(subj.name, i),
+                theory_completed: false,
+                review_completed: false,
+                questions_count: 0,
+                correct_answers: 0,
+              });
+            }
+          }
+          for (let i = 0; i < lessonRows.length; i += 100) {
+            const batch = lessonRows.slice(i, i + 100);
+            const { error } = await supabase.from('lessons').insert(batch);
+            if (error) throw error;
           }
         }
-        // Insert in batches of 100
-        for (let i = 0; i < lessonRows.length; i += 100) {
-          const batch = lessonRows.slice(i, i + 100);
-          const { error } = await supabase.from('lessons').insert(batch);
-          if (error) throw error;
+
+        // Fill missing lesson names for existing lessons
+        const lessonsToUpdate = lessons.filter(l => !l.name || l.name.trim() === '');
+        if (lessonsToUpdate.length > 0) {
+          for (const lesson of lessonsToUpdate) {
+            const parentSubject = subjects.find(s => s.id === lesson.subjectId);
+            if (parentSubject) {
+              const computedName = getLessonName(parentSubject.name, lesson.number);
+              if (computedName) {
+                await supabase.from('lessons').update({ name: computedName }).eq('id', lesson.id);
+              }
+            }
+          }
         }
 
-        invalidate();
+        if (missingSubjects.length > 0 || lessonsToUpdate.length > 0) {
+          invalidate();
+        }
       } catch (err) {
-        console.error('Failed to seed study data:', err);
+        console.error('Failed to seed/sync study data:', err);
       } finally {
         setSeeding(false);
       }
     };
 
-    seed();
-  }, [userId, loadingContests, contests.length, seeding, invalidate]);
+    seedAndSync();
+  }, [userId, loadingContests, loadingSubjects, loadingLessons, contests, subjects, lessons, seeding, invalidate]);
 
   // ── Active subjects deduplication ─────────────────────────────────────
   const activeSubjects = useMemo(() => {
