@@ -10,6 +10,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { SummaryCards } from '@/components/hub/SummaryCards';
 import { AgendaSection } from '@/components/hub/AgendaViews';
+import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -88,6 +89,9 @@ export default function HubDashboard() {
       </div>
 
       <div className="flex-1 p-4 md:p-6 pb-20 md:pb-6 space-y-2">
+        <SectionDivider label="Simulado Especial: Aula 00 – Contabilidade Geral (50 Questões)" />
+        <Aula00QuestionsSimulado />
+
         <SectionDivider label="Agenda" />
         <AgendaSection
           getEventsByDate={getEventsByDate}
