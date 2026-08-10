@@ -9,7 +9,7 @@ export const SEFAZ_BA_CONTEST: Contest = {
 
 export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Língua Portuguesa', totalLessons: 16, color: SUBJECT_COLORS[0] },
-  { contestId: 'sefaz-ba-2025', name: 'Direito Constitucional', totalLessons: 14, color: SUBJECT_COLORS[1] },
+  { contestId: 'sefaz-ba-2025', name: 'Direito Constitucional', totalLessons: 21, color: SUBJECT_COLORS[1] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Administrativo', totalLessons: 25, color: SUBJECT_COLORS[2] },
   { contestId: 'sefaz-ba-2025', name: 'Direito Tributário', totalLessons: 25, color: SUBJECT_COLORS[3] },
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Geral', totalLessons: 31, color: SUBJECT_COLORS[4] },
@@ -20,6 +20,30 @@ export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Aplicada ao Setor Público (CASP)', totalLessons: 19, color: SUBJECT_COLORS[9] },
   { contestId: 'sefaz-ba-2025', name: 'Informática Básica', totalLessons: 12, color: SUBJECT_COLORS[10] },
 ];
+
+export const DIREITO_CONSTITUCIONAL_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Conceito, Objeto, Sentidos e Classificação das Constituições (Prof. Ricardo Vale)',
+  2: 'Aula 01 - Aplicabilidade das Normas Constitucionais (Plena, Contida e Limitada)',
+  3: 'Aula 02 - Hierarquia das Normas e Pirâmide de Kelsen',
+  4: 'Aula 03 - Poder Constituinte Originário, Derivado, Reformador e Decorrente',
+  5: 'Aula 04 - Direitos e Garantias Fundamentais: Direitos Individuais e Coletivos I (Art. 5º)',
+  6: 'Aula 05 - Direitos e Garantias Fundamentais: Direitos Individuais e Coletivos II (Art. 5º)',
+  7: 'Aula 06 - Remédios Constitucionais (Habeas Corpus, MS, Ação Popular, HD, MI)',
+  8: 'Aula 07 - Direitos Sociais (Art. 6º ao 11 da CF/88)',
+  9: 'Aula 08 - Nacionalidade, Direitos Políticos e Partidos Políticos (Art. 12 ao 17 da CF/88)',
+  10: 'Aula 09 - Organização do Estado e Repartição de Competências (Art. 18 ao 36 da CF/88)',
+  11: 'Aula 10 - Administração Pública na CF/88 (Art. 37 ao 41 da CF/88)',
+  12: 'Aula 11 - Poder Legislativo e Processo Legislativo (Art. 44 ao 69 da CF/88)',
+  13: 'Aula 12 - Poder Executivo: Atribuições e Responsabilidade do Presidente (Art. 76 ao 91)',
+  14: 'Aula 13 - Poder Judiciário: Estrutura, Competências do STF e STJ (Art. 92 ao 126)',
+  15: 'Aula 14 - Funções Essenciais à Justiça (MP, Advocacia Pública, Defensoria)',
+  16: 'Aula 15 - Controle de Constitucionalidade: Conceito, Espécies e Vícios',
+  17: 'Aula 16 - Controle Concentrado de Constitucionalidade (ADI, ADC, ADO e ADPF)',
+  18: 'Aula 17 - Defesa do Estado e das Instituições Democráticas (Estado de Sítio e Defesa)',
+  19: 'Aula 18 - Finanças Públicas e Orçamento na CF/88 (Art. 165 ao 169 da CF/88)',
+  20: 'Aula 19 - Ordem Econômica e Financeira na CF/88 (Art. 170 ao 192 da CF/88)',
+  21: 'Aula 20 - Ordem Social e Direitos Sociais Específicos (Revisão Geral FGV)',
+};
 
 export const PORTUGUES_LESSON_NAMES: Record<number, string> = {
   1: 'Aula 00 - Ortografia Oficial, Acentuação Gráfica e Fonemas (FGV)',
@@ -167,7 +191,9 @@ export function generateInitialData(): {
   subjects.forEach((subject) => {
     for (let i = 1; i <= subject.totalLessons; i++) {
       let name = '';
-      if (subject.name === 'Língua Portuguesa' && PORTUGUES_LESSON_NAMES[i]) {
+      if (subject.name === 'Direito Constitucional' && DIREITO_CONSTITUCIONAL_LESSON_NAMES[i]) {
+        name = DIREITO_CONSTITUCIONAL_LESSON_NAMES[i];
+      } else if (subject.name === 'Língua Portuguesa' && PORTUGUES_LESSON_NAMES[i]) {
         name = PORTUGUES_LESSON_NAMES[i];
       } else if (subject.name === 'Noções de Igualdade Racial' && IGUALDADE_RACIAL_LESSON_NAMES[i]) {
         name = IGUALDADE_RACIAL_LESSON_NAMES[i];
