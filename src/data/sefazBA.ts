@@ -20,6 +20,7 @@ export const SEFAZ_BA_SUBJECTS: Omit<Subject, 'id'>[] = [
   { contestId: 'sefaz-ba-2025', name: 'Contabilidade Aplicada ao Setor Público (CASP)', totalLessons: 19, color: SUBJECT_COLORS[9] },
   { contestId: 'sefaz-ba-2025', name: 'Informática Básica', totalLessons: 12, color: SUBJECT_COLORS[10] },
   { contestId: 'sefaz-ba-2025', name: 'Auditoria', totalLessons: 17, color: SUBJECT_COLORS[11] },
+  { contestId: 'sefaz-ba-2025', name: 'Economia', totalLessons: 16, color: SUBJECT_COLORS[12] },
 ];
 
 export const AUDITORIA_LESSON_NAMES: Record<number, string> = {
@@ -40,6 +41,25 @@ export const AUDITORIA_LESSON_NAMES: Record<number, string> = {
   15: 'Aula 14 - Auditoria Fiscal e Tributária (Parte 1)',
   16: 'Aula 15 - Auditoria Fiscal e Tributária (Parte 2)',
   17: 'Aula 16 - Estrutura Conceitual para Trabalhos de Asseguração',
+};
+
+export const ECONOMIA_LESSON_NAMES: Record<number, string> = {
+  1: 'Aula 00 - Fundamentos da Economia e Introdução à Microeconomia',
+  2: 'Aula 01 - Elasticidades (Preço, Renda e Cruzada)',
+  3: 'Aula 02 - Teoria do Consumidor, Curvas de Indiferença e Restrição Orçamentária',
+  4: 'Aula 03 - Teoria da Produção e Rendimentos de Escala',
+  5: 'Aula 04 - Teoria dos Custos de Produção (Curto e Longo Prazo)',
+  6: 'Aula 05 - Teoria dos Mercados e Concorrência Perfeita',
+  7: 'Aula 06 - Monopólio, Discriminação de Preços e Regulação',
+  8: 'Aula 07 - Oligopólio, Concorrência Monopolística e Teoria dos Jogos',
+  9: 'Aula 08 - Bens Públicos, Externalidades e Falhas de Mercado',
+  10: 'Aula 09 - Introdução à Macroeconomia e Agregados Macroeconômicos',
+  11: 'Aula 10 - Modelo Keynesiano Simples e Determinação da Renda',
+  12: 'Aula 11 - Sistema Monetário, Oferta/Demanda por Moeda e Multiplicador',
+  13: 'Aula 12 - Modelo IS-LM-BP e Políticas Econômicas',
+  14: 'Aula 13 - Inflação, Curva de Phillips e Desemprego',
+  15: 'Aula 14 - Balanço de Pagamentos e Relações Internacionais',
+  16: 'Aula 15 - Política Cambial, Regimes de Câmbio e Economia Aberta',
 };
 
 export const INFORMATICA_LESSON_NAMES: Record<number, string> = {
@@ -315,6 +335,8 @@ export function generateInitialData(): {
         name = MATEMATICA_FINANCEIRA_LESSON_NAMES[i];
       } else if (subject.name === 'Informática Básica' && INFORMATICA_LESSON_NAMES[i]) {
         name = INFORMATICA_LESSON_NAMES[i];
+      } else if (subject.name === 'Economia' && ECONOMIA_LESSON_NAMES[i]) {
+        name = ECONOMIA_LESSON_NAMES[i];
       }
       lessons.push({
         id: `${subject.id}-lesson-${i}`,
