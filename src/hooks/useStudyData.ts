@@ -639,46 +639,81 @@ export function useStudyData() {
       if (updates.questionsCount !== undefined) row.questions_count = updates.questionsCount;
       if (updates.correctAnswers !== undefined) row.correct_answers = updates.correctAnswers;
 
-      if (id.includes('-fallback-')) {
-        const parts = id.split('-fallback-');
-        const subjectId = parts[0];
-        const number = parseInt(parts[1], 10);
-        const subj = subjects.find(s => s.id === subjectId);
-
-        const { error } = await supabase.from('lessons').upsert(
-          {
-            user_id: userId,
-            subject_id: subjectId,
-            number: number,
+      // Optimistic cache update for instant UI checkbox check/uncheck
+      queryClient.setQueryData(['study', userId, 'lessons'], (old: Lesson[] = []) => {
+        if (id.includes('-fallback-')) {
+          const parts = id.split('-fallback-');
+          const subjectId = parts[0];
+          const number = parseInt(parts[1], 10);
+          const subj = subjects.find(s => s.id === subjectId);
+          const existingIndex = old.findIndex(l => l.subjectId === subjectId && l.number === number);
+          const newLessonObj: Lesson = {
+            id,
+            subjectId,
+            number,
             name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
-            theory_completed: updates.theoryCompleted ?? false,
-            review_completed: updates.reviewCompleted ?? false,
-            questions_count: updates.questionsCount ?? 0,
-            correct_answers: updates.correctAnswers ?? 0,
+            theoryCompleted: updates.theoryCompleted ?? false,
+            reviewCompleted: updates.reviewCompleted ?? false,
+            questionsCount: updates.questionsCount ?? 0,
+            correctAnswers: updates.correctAnswers ?? 0,
             cycle: 1,
-          },
-          { onConflict: 'user_id,subject_id,number' }
-        );
-        if (error) {
-          await supabase.from('lessons').insert({
-            user_id: userId,
-            subject_id: subjectId,
-            number: number,
-            name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
-            theory_completed: updates.theoryCompleted ?? false,
-            review_completed: updates.reviewCompleted ?? false,
-            questions_count: updates.questionsCount ?? 0,
-            correct_answers: updates.correctAnswers ?? 0,
-            cycle: 1,
-          });
+            ...updates,
+          };
+          if (existingIndex >= 0) {
+            const copy = [...old];
+            copy[existingIndex] = { ...copy[existingIndex], ...updates };
+            return copy;
+          }
+          return [...old, newLessonObj];
         }
-      } else {
-        const { error } = await supabase.from('lessons').update(row).eq('id', id);
-        if (error) throw error;
+        return old.map(l => (l.id === id ? { ...l, ...updates } : l));
+      });
+
+      try {
+        if (id.includes('-fallback-')) {
+          const parts = id.split('-fallback-');
+          const subjectId = parts[0];
+          const number = parseInt(parts[1], 10);
+          const subj = subjects.find(s => s.id === subjectId);
+
+          const { error } = await supabase.from('lessons').upsert(
+            {
+              user_id: userId,
+              subject_id: subjectId,
+              number: number,
+              name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
+              theory_completed: updates.theoryCompleted ?? false,
+              review_completed: updates.reviewCompleted ?? false,
+              questions_count: updates.questionsCount ?? 0,
+              correct_answers: updates.correctAnswers ?? 0,
+              cycle: 1,
+            },
+            { onConflict: 'user_id,subject_id,number' }
+          );
+          if (error) {
+            await supabase.from('lessons').insert({
+              user_id: userId,
+              subject_id: subjectId,
+              number: number,
+              name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
+              theory_completed: updates.theoryCompleted ?? false,
+              review_completed: updates.reviewCompleted ?? false,
+              questions_count: updates.questionsCount ?? 0,
+              correct_answers: updates.correctAnswers ?? 0,
+              cycle: 1,
+            });
+          }
+        } else {
+          const { error } = await supabase.from('lessons').update(row).eq('id', id);
+          if (error) throw error;
+        }
+      } catch (err) {
+        console.error('Failed to update lesson:', err);
+      } finally {
+        invalidate();
       }
-      invalidate();
     },
-    [userId, subjects, invalidate],
+    [userId, subjects, queryClient, invalidate],
   );
 
   const deleteLesson = useCallback(

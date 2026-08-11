@@ -143,6 +143,14 @@ export default function Estudos() {
   const [deletePomodoroId, setDeletePomodoroId] = useState<string | null>(null);
   const [newCycleDialogOpen, setNewCycleDialogOpen] = useState(false);
   const [simuladoDialogOpen, setSimuladoDialogOpen] = useState(false);
+  const [simuladoSubjectId, setSimuladoSubjectId] = useState<string | undefined>(undefined);
+  const [simuladoLessonNumber, setSimuladoLessonNumber] = useState<string | undefined>(undefined);
+
+  const handleOpenSimuladoForLesson = (subjectId: string, lessonNumber: number) => {
+    setSimuladoSubjectId(subjectId);
+    setSimuladoLessonNumber(String(lessonNumber - 1));
+    setSimuladoDialogOpen(true);
+  };
 
   // ── Derived data ──
   const overall = getOverallProgress();
@@ -452,7 +460,15 @@ export default function Estudos() {
                       return (
                         <TableRow key={lesson.id}>
                           <TableCell className="font-medium">{lesson.number}</TableCell>
-                          <TableCell><span className={cn(!lesson.name && "font-medium")}>{displayName}</span></TableCell>
+                          <TableCell>
+                            <span 
+                              className="font-medium cursor-pointer hover:underline hover:text-emerald-500 transition-colors"
+                              onClick={() => selectedSubject && handleOpenSimuladoForLesson(selectedSubject.id, lesson.number)}
+                              title="Clique para fazer o simulado de 50 questões desta aula"
+                            >
+                              {displayName}
+                            </span>
+                          </TableCell>
                           <TableCell><Checkbox checked={lesson.theoryCompleted} onCheckedChange={(c) => updateLesson(lesson.id, { theoryCompleted: !!c })} /></TableCell>
                           <TableCell><Checkbox checked={lesson.reviewCompleted} onCheckedChange={(c) => updateLesson(lesson.id, { reviewCompleted: !!c })} /></TableCell>
                           <TableCell>{lesson.questionsCount}</TableCell>
@@ -460,8 +476,18 @@ export default function Estudos() {
                           <TableCell><span className={cn(perf >= 70 ? 'text-success' : perf >= 50 ? 'text-warning' : perf > 0 ? 'text-danger' : 'text-muted-foreground')}>{lesson.questionsCount > 0 ? `${perf.toFixed(1)}%` : '-'}</span></TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1">
-                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditLessonClick(lesson)}><Pencil className="h-4 w-4" /></Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteLessonClick(lesson)} disabled={lessons.length <= 1}><Trash2 className="h-4 w-4" /></Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-7 px-2 text-xs gap-1 text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10 font-semibold"
+                                onClick={() => selectedSubject && handleOpenSimuladoForLesson(selectedSubject.id, lesson.number)}
+                                title="Fazer simulado de 50 questões desta aula"
+                              >
+                                <Sparkles className="h-3.5 w-3.5" />
+                                <span className="hidden sm:inline">Simulado</span>
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditLessonClick(lesson)}><Pencil className="h-3.5 w-3.5" /></Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeleteLessonClick(lesson)} disabled={lessons.length <= 1}><Trash2 className="h-3.5 w-3.5" /></Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -717,7 +743,10 @@ export default function Estudos() {
               Simulado por Matéria e Aula
             </DialogTitle>
           </DialogHeader>
-          <Aula00QuestionsSimulado />
+          <Aula00QuestionsSimulado 
+            initialSubjectId={simuladoSubjectId} 
+            initialLessonNumber={simuladoLessonNumber} 
+          />
         </DialogContent>
       </Dialog>
     </div>
