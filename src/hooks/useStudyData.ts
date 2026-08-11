@@ -117,7 +117,26 @@ export function useStudyData() {
       if (!userId) return [];
       const { data, error } = await supabase.from('lessons').select('*').eq('user_id', userId);
       if (error) throw error;
-      return (data ?? []).map(rowToLesson);
+      const rawLessons = (data ?? []).map(rowToLesson);
+
+      const map = new Map<string, Lesson>();
+      rawLessons.forEach(l => {
+        const key = `${l.subjectId}-${l.number}`;
+        if (!map.has(key)) {
+          map.set(key, { ...l });
+        } else {
+          const existing = map.get(key)!;
+          map.set(key, {
+            ...existing,
+            theoryCompleted: existing.theoryCompleted || l.theoryCompleted,
+            reviewCompleted: existing.reviewCompleted || l.reviewCompleted,
+            questionsCount: Math.max(existing.questionsCount || 0, l.questionsCount || 0),
+            correctAnswers: Math.max(existing.correctAnswers || 0, l.correctAnswers || 0),
+            name: existing.name || l.name,
+          });
+        }
+      });
+      return Array.from(map.values());
     },
     enabled: !!userId,
   });
@@ -243,8 +262,12 @@ export function useStudyData() {
               await supabase.from('subjects').update({ total_lessons: targetCount }).eq('id', subj.id);
             }
 
+            const subjectName = subj.name.trim().toLowerCase();
             const existingLessonNumbers = new Set(
-              lessons.filter(l => l.subjectId === subj.id).map(l => l.number)
+              lessons.filter(l => {
+                const parentSubj = currentSubjects.find(s => s.id === l.subjectId || s.name.trim().toLowerCase() === l.subjectId.trim().toLowerCase());
+                return parentSubj && parentSubj.name.trim().toLowerCase() === subjectName;
+              }).map(l => l.number)
             );
 
             for (let i = 1; i <= targetCount; i++) {
@@ -286,26 +309,34 @@ export function useStudyData() {
           }
         }
 
-        // C.2) Purge duplicate lesson rows from Supabase
-        const lessonKeyMap = new Map<string, string[]>();
+        // C.2) Purge duplicate lesson rows from Supabase (preserving completed lessons!)
+        const lessonKeyGroupMap = new Map<string, Lesson[]>();
         for (const l of lessons) {
-          const key = `${l.subjectId}-${l.number}`;
-          if (!lessonKeyMap.has(key)) {
-            lessonKeyMap.set(key, []);
+          const parentSubj = subjects.find(s => s.id === l.subjectId || s.name.trim().toLowerCase() === l.subjectId.trim().toLowerCase());
+          const subjectNameKey = parentSubj ? parentSubj.name.trim().toLowerCase() : l.subjectId.trim().toLowerCase();
+          const key = `${subjectNameKey}-${l.number}`;
+          if (!lessonKeyGroupMap.has(key)) {
+            lessonKeyGroupMap.set(key, []);
           }
-          lessonKeyMap.get(key)!.push(l.id);
+          lessonKeyGroupMap.get(key)!.push(l);
         }
 
-        const duplicateLessonIds: string[] = [];
-        for (const ids of lessonKeyMap.values()) {
-          if (ids.length > 1) {
-            duplicateLessonIds.push(...ids.slice(1));
+        const duplicateLessonIdsToDelete: string[] = [];
+        for (const group of lessonKeyGroupMap.values()) {
+          if (group.length > 1) {
+            group.sort((a, b) => {
+              const scoreA = (a.theoryCompleted ? 10 : 0) + (a.reviewCompleted ? 5 : 0) + (a.questionsCount || 0);
+              const scoreB = (b.theoryCompleted ? 10 : 0) + (b.reviewCompleted ? 5 : 0) + (b.questionsCount || 0);
+              return scoreB - scoreA;
+            });
+            const toDelete = group.slice(1).map(l => l.id);
+            duplicateLessonIdsToDelete.push(...toDelete);
           }
         }
 
-        if (duplicateLessonIds.length > 0) {
-          for (let i = 0; i < duplicateLessonIds.length; i += 100) {
-            const batch = duplicateLessonIds.slice(i, i + 100);
+        if (duplicateLessonIdsToDelete.length > 0) {
+          for (let i = 0; i < duplicateLessonIdsToDelete.length; i += 100) {
+            const batch = duplicateLessonIdsToDelete.slice(i, i + 100);
             await supabase.from('lessons').delete().in('id', batch);
           }
         }
