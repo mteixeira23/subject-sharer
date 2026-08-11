@@ -195,8 +195,13 @@ export function useStudyData() {
             const nonSefazIds = nonSefazSubjects.map(s => s.id);
             for (let i = 0; i < nonSefazIds.length; i += 100) {
               const batch = nonSefazIds.slice(i, i + 100);
+              await supabase.from('schedule_events').delete().in('subject_id', batch);
+              await supabase.from('question_sessions').delete().in('subject_id', batch);
+              await supabase.from('pomodoro_sessions').delete().in('subject_id', batch);
+              await supabase.from('lessons').delete().in('subject_id', batch);
               await supabase.from('subjects').delete().in('id', batch);
             }
+            invalidate();
           }
 
           // A) Insert missing subjects
