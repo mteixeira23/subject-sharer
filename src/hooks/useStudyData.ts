@@ -630,17 +630,55 @@ export function useStudyData() {
 
   const updateLesson = useCallback(
     async (id: string, updates: Partial<Lesson>) => {
+      if (!userId) return;
+
       const row: Record<string, any> = {};
       if (updates.name !== undefined) row.name = updates.name;
       if (updates.theoryCompleted !== undefined) row.theory_completed = updates.theoryCompleted;
       if (updates.reviewCompleted !== undefined) row.review_completed = updates.reviewCompleted;
       if (updates.questionsCount !== undefined) row.questions_count = updates.questionsCount;
       if (updates.correctAnswers !== undefined) row.correct_answers = updates.correctAnswers;
-      const { error } = await supabase.from('lessons').update(row).eq('id', id);
-      if (error) throw error;
+
+      if (id.includes('-fallback-')) {
+        const parts = id.split('-fallback-');
+        const subjectId = parts[0];
+        const number = parseInt(parts[1], 10);
+        const subj = subjects.find(s => s.id === subjectId);
+
+        const { error } = await supabase.from('lessons').upsert(
+          {
+            user_id: userId,
+            subject_id: subjectId,
+            number: number,
+            name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
+            theory_completed: updates.theoryCompleted ?? false,
+            review_completed: updates.reviewCompleted ?? false,
+            questions_count: updates.questionsCount ?? 0,
+            correct_answers: updates.correctAnswers ?? 0,
+            cycle: 1,
+          },
+          { onConflict: 'user_id,subject_id,number' }
+        );
+        if (error) {
+          await supabase.from('lessons').insert({
+            user_id: userId,
+            subject_id: subjectId,
+            number: number,
+            name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
+            theory_completed: updates.theoryCompleted ?? false,
+            review_completed: updates.reviewCompleted ?? false,
+            questions_count: updates.questionsCount ?? 0,
+            correct_answers: updates.correctAnswers ?? 0,
+            cycle: 1,
+          });
+        }
+      } else {
+        const { error } = await supabase.from('lessons').update(row).eq('id', id);
+        if (error) throw error;
+      }
       invalidate();
     },
-    [invalidate],
+    [userId, subjects, invalidate],
   );
 
   const deleteLesson = useCallback(

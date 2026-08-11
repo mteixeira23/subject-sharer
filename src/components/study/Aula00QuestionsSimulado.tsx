@@ -12,7 +12,12 @@ import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
-export function Aula00QuestionsSimulado() {
+interface Aula00QuestionsSimuladoProps {
+  initialSubjectId?: string;
+  initialLessonNumber?: string;
+}
+
+export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber }: Aula00QuestionsSimuladoProps = {}) {
   const { data: studyData, addQuestionSession } = useStudy();
 
   // Filter studyData.subjects to ONLY SEFAZ-BA 13 subjects
@@ -34,8 +39,12 @@ export function Aula00QuestionsSimulado() {
     s => s.name.trim().toLowerCase() === 'contabilidade geral'
   );
 
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(contabilidadeSubj?.id || availableSubjects[0]?.id || '');
-  const [selectedLessonNumber, setSelectedLessonNumber] = useState<string>('0');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(
+    initialSubjectId || contabilidadeSubj?.id || availableSubjects[0]?.id || ''
+  );
+  const [selectedLessonNumber, setSelectedLessonNumber] = useState<string>(
+    initialLessonNumber !== undefined ? initialLessonNumber : '0'
+  );
 
   const activeSubjectObj = availableSubjects.find(s => s.id === selectedSubjectId) || availableSubjects[0];
   const activeSubjectName = activeSubjectObj ? activeSubjectObj.name : 'Contabilidade Geral';
