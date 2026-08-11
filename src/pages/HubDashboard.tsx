@@ -127,10 +127,10 @@ export default function HubDashboard() {
 
       {/* Simulado Modal */}
       <Dialog open={simuladoOpen} onOpenChange={setSimuladoOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-6">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-emerald-500" />
+        <DialogContent className="w-[96vw] sm:w-full max-w-4xl max-h-[92vh] overflow-y-auto p-3 sm:p-6 rounded-xl">
+          <DialogHeader className="pb-2 border-b">
+            <DialogTitle className="text-lg sm:text-xl font-bold flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-emerald-500 shrink-0" />
               Simulado por Matéria e Aula
             </DialogTitle>
           </DialogHeader>

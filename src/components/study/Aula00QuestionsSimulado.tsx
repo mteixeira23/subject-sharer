@@ -145,16 +145,16 @@ export function Aula00QuestionsSimulado() {
   const activeLessonTitle = getLessonName(activeSubjectName, Number(selectedLessonNumber));
 
   return (
-    <div className="space-y-6 my-2">
+    <div className="space-y-4 sm:space-y-6 my-1 sm:my-2">
       {/* Subject & Lesson Selection Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/40 p-3.5 rounded-lg border">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
-            <BookOpen className="h-3.5 w-3.5 text-primary" /> Selecione a Matéria SEFAZ-BA:
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 bg-muted/40 p-2.5 sm:p-3.5 rounded-lg border">
+        <div className="space-y-1">
+          <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
+            <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" /> Selecione a Matéria SEFAZ-BA:
           </Label>
           <Select value={selectedSubjectId} onValueChange={handleSubjectChange}>
-            <SelectTrigger className="w-full h-9 text-xs bg-background font-medium">
-              <SelectValue placeholder="Selecione a Matéria" />
+            <SelectTrigger className="w-full h-9 text-xs bg-background font-medium truncate">
+              <SelectValue placeholder="Selecione a Matéria" className="truncate" />
             </SelectTrigger>
             <SelectContent>
               {availableSubjects.map(s => (
@@ -166,13 +166,13 @@ export function Aula00QuestionsSimulado() {
           </Select>
         </div>
 
-        <div className="space-y-1.5">
-          <Label className="text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-primary" /> Selecione a Aula de {activeSubjectName}:
+        <div className="space-y-1">
+          <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" /> Selecione a Aula de {activeSubjectName}:
           </Label>
           <Select value={selectedLessonNumber} onValueChange={handleLessonChange}>
-            <SelectTrigger className="w-full h-9 text-xs bg-background font-medium">
-              <SelectValue placeholder="Selecione a Aula" />
+            <SelectTrigger className="w-full h-9 text-xs bg-background font-medium truncate">
+              <SelectValue placeholder="Selecione a Aula" className="truncate" />
             </SelectTrigger>
             <SelectContent>
               {dynamicLessonOptions.map(lOpt => (
@@ -187,61 +187,61 @@ export function Aula00QuestionsSimulado() {
 
       {/* Top Banner & Stats */}
       <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-background to-primary/5 shadow-md">
-        <CardHeader className="pb-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+        <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <CardTitle className="text-xl font-bold flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-                Simulado Interativo: {activeSubjectName} – {activeLessonTitle} ({totalQuestions} Questões)
+              <CardTitle className="text-sm sm:text-xl font-bold flex items-center gap-1.5 sm:gap-2 leading-tight">
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-pulse shrink-0" />
+                Simulado: {activeSubjectName} – {activeLessonTitle} ({totalQuestions} Questões)
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm mt-1">
                 Responda cada questão diretamente abaixo. O gabarito e a explicação detalhada aparecem imediatamente!
               </CardDescription>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleResetAll} className="gap-1 text-xs">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              <Button variant="outline" size="sm" onClick={handleResetAll} className="gap-1 text-xs h-8 sm:h-9 justify-center">
                 <RotateCcw className="h-3.5 w-3.5" /> Limpar Respostas
               </Button>
-              <Button size="sm" onClick={handleSaveToSystem} className="gap-1.5 text-xs font-semibold bg-primary text-primary-foreground">
+              <Button size="sm" onClick={handleSaveToSystem} className="gap-1.5 text-xs font-semibold bg-primary text-primary-foreground h-8 sm:h-9 justify-center">
                 <Save className="h-4 w-4" /> Salvar Desempenho no Sistema
               </Button>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3">
+        <CardContent className="p-3 sm:p-6 space-y-3 pt-0 sm:pt-0">
           {/* Progress Bar & Indicators */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-card/60 p-3 rounded-lg border">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 bg-card/60 p-2.5 sm:p-3 rounded-lg border text-center sm:text-left">
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Respondidas</p>
-              <p className="text-lg font-bold">{answeredCount} / {totalQuestions}</p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">Respondidas</p>
+              <p className="text-sm sm:text-lg font-bold">{answeredCount} / {totalQuestions}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Acertos</p>
-              <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{correctCount}</p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">Acertos</p>
+              <p className="text-sm sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">{correctCount}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Taxa de Acerto</p>
-              <p className="text-lg font-bold text-primary">{accuracyPercent}%</p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">Taxa de Acerto</p>
+              <p className="text-sm sm:text-lg font-bold text-primary">{accuracyPercent}%</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Progresso</p>
-              <div className="flex items-center gap-2 mt-1">
-                <Progress value={progressPercent} className="h-2 flex-1" />
-                <span className="text-xs font-bold">{progressPercent}%</span>
+              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">Progresso</p>
+              <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 justify-center sm:justify-start">
+                <Progress value={progressPercent} className="h-1.5 sm:h-2 flex-1" />
+                <span className="text-[11px] sm:text-xs font-bold">{progressPercent}%</span>
               </div>
             </div>
           </div>
 
           {/* Block Filters */}
-          <div className="flex items-center gap-1.5 flex-wrap pt-2">
-            <span className="text-xs text-muted-foreground font-semibold mr-1">Filtrar por Bloco:</span>
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar sm:flex-wrap pt-1">
+            <span className="text-[11px] sm:text-xs text-muted-foreground font-semibold mr-1 shrink-0">Blocos:</span>
             <Button
               size="sm"
               variant={filterBlock === 'all' ? 'default' : 'outline'}
               onClick={() => setFilterBlock('all')}
-              className="text-xs h-7 px-2.5"
+              className="text-[11px] sm:text-xs h-7 px-2.5 shrink-0"
             >
               Todas (50)
             </Button>
@@ -251,7 +251,7 @@ export function Aula00QuestionsSimulado() {
                 size="sm"
                 variant={filterBlock === num ? 'default' : 'outline'}
                 onClick={() => setFilterBlock(num)}
-                className="text-xs h-7 px-2.5"
+                className="text-[11px] sm:text-xs h-7 px-2.5 shrink-0"
               >
                 Bloco {num} (Q{(num - 1) * 10 + 1}-{num * 10})
               </Button>
@@ -261,7 +261,7 @@ export function Aula00QuestionsSimulado() {
       </Card>
 
       {/* Questions List */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {filteredQuestions.map((q) => {
           const isAnswered = answers[q.id] !== undefined;
           const isRevealed = revealed[q.id];
@@ -288,17 +288,17 @@ export function Aula00QuestionsSimulado() {
                   : 'border-l-primary/40 hover:border-l-primary'
               )}
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge variant="outline" className="font-mono text-xs font-semibold bg-muted">
-                        Questão {String(q.id).padStart(2, '0')}
+              <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Badge variant="outline" className="font-mono text-[10px] sm:text-xs font-semibold bg-muted">
+                        Q{String(q.id).padStart(2, '0')}
                       </Badge>
-                      <Badge className="bg-primary/10 text-primary border-primary/30 text-xs">
+                      <Badge className="bg-primary/10 text-primary border-primary/30 text-[10px] sm:text-xs">
                         {q.source}
                       </Badge>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-[10px] sm:text-xs truncate max-w-[200px] sm:max-w-none">
                         {q.topic}
                       </Badge>
                     </div>
@@ -307,7 +307,7 @@ export function Aula00QuestionsSimulado() {
                   {isAnswered && (
                     <Badge
                       className={cn(
-                        'gap-1 text-xs px-2.5 py-1 font-bold',
+                        'gap-1 text-[10px] sm:text-xs px-2 py-0.5 font-bold shrink-0',
                         isCorrect
                           ? 'bg-emerald-600 text-white dark:bg-emerald-500'
                           : 'bg-rose-600 text-white dark:bg-rose-500'
@@ -315,37 +315,37 @@ export function Aula00QuestionsSimulado() {
                     >
                       {isCorrect ? (
                         <>
-                          <CheckCircle2 className="h-3.5 w-3.5" /> Resposta Correta
+                          <CheckCircle2 className="h-3 w-3" /> Correta
                         </>
                       ) : (
                         <>
-                          <XCircle className="h-3.5 w-3.5" /> Incorreta
+                          <XCircle className="h-3 w-3" /> Incorreta
                         </>
                       )}
                     </Badge>
                   )}
                 </div>
 
-                <p className="text-sm md:text-base font-medium mt-3 leading-relaxed whitespace-pre-line text-foreground">
+                <p className="text-xs sm:text-base font-medium mt-2 sm:mt-3 leading-relaxed whitespace-pre-line text-foreground break-words">
                   {q.statement}
                 </p>
               </CardHeader>
 
-              <CardContent className="space-y-4 pt-0">
+              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0 space-y-3">
                 {/* Options Space */}
-                <div className="space-y-2 pt-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Selecione sua resposta abaixo:
+                <div className="space-y-2 pt-1">
+                  <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Selecione sua resposta:
                   </p>
 
                   {q.type === 'tf' ? (
-                    <div className="flex gap-3">
+                    <div className="flex gap-2 sm:gap-3">
                       {['Certo', 'Errado'].map((optionStr, optIdx) => {
                         const isSelected = answers[q.id] === optionStr;
                         const correctStr = q.correctAnswer === 0 ? 'Certo' : 'Errado';
                         const isThisCorrect = optionStr === correctStr;
 
-                        let btnCls = 'flex-1 py-3 text-sm font-semibold rounded-lg border transition-all ';
+                        let btnCls = 'flex-1 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold rounded-lg border transition-all ';
                         if (isRevealed) {
                           if (isThisCorrect) {
                             btnCls += 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500 font-bold';
@@ -366,7 +366,7 @@ export function Aula00QuestionsSimulado() {
                             onClick={() => handleSelectAnswer(q.id, optionStr)}
                             className={btnCls}
                           >
-                            <div className="flex items-center justify-center gap-2">
+                            <div className="flex items-center justify-center gap-1.5">
                               <span>{optionStr}</span>
                               {isRevealed && isThisCorrect && <Check className="h-4 w-4 text-emerald-600" />}
                             </div>
@@ -375,13 +375,13 @@ export function Aula00QuestionsSimulado() {
                       })}
                     </div>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-1.5 sm:space-y-2">
                       {q.options?.map((optText, optIdx) => {
                         const letter = String.fromCharCode(65 + optIdx); // A, B, C, D, E
                         const isSelected = answers[q.id] === optIdx;
                         const isThisCorrect = optIdx === q.correctAnswer;
 
-                        let rowCls = 'w-full text-left p-3 rounded-lg border text-sm transition-all flex items-start gap-3 ';
+                        let rowCls = 'w-full text-left p-2.5 sm:p-3 rounded-lg border text-xs sm:text-sm transition-all flex items-start gap-2.5 sm:gap-3 break-words ';
                         if (isRevealed) {
                           if (isThisCorrect) {
                             rowCls += 'bg-emerald-500/15 text-emerald-950 dark:text-emerald-200 border-emerald-500 font-medium ring-1 ring-emerald-500/50';
@@ -404,7 +404,7 @@ export function Aula00QuestionsSimulado() {
                           >
                             <span
                               className={cn(
-                                'h-6 w-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 border mt-0.5',
+                                'h-5 w-5 sm:h-6 sm:w-6 rounded-full text-[10px] sm:text-xs font-bold flex items-center justify-center shrink-0 border mt-0.5',
                                 isRevealed
                                   ? isThisCorrect
                                     ? 'bg-emerald-600 text-white border-emerald-600'
@@ -418,7 +418,7 @@ export function Aula00QuestionsSimulado() {
                             >
                               {letter}
                             </span>
-                            <span className="flex-1 leading-relaxed">{optText}</span>
+                            <span className="flex-1 leading-snug sm:leading-relaxed break-words text-xs sm:text-sm">{optText}</span>
                             {isRevealed && isThisCorrect && (
                               <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                             )}
@@ -431,11 +431,11 @@ export function Aula00QuestionsSimulado() {
 
                 {/* Explanation Box when revealed */}
                 {isRevealed && (
-                  <div className="mt-4 p-3.5 rounded-lg bg-muted/60 border border-border text-xs md:text-sm space-y-1.5">
+                  <div className="mt-3 p-2.5 sm:p-3.5 rounded-lg bg-muted/60 border border-border text-xs sm:text-sm space-y-1">
                     <p className="font-bold flex items-center gap-1.5 text-primary">
-                      <HelpCircle className="h-4 w-4" /> Gabarito Comentado:
+                      <HelpCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Gabarito Comentado:
                     </p>
-                    <p className="text-foreground leading-relaxed">
+                    <p className="text-foreground leading-relaxed break-words text-xs sm:text-sm">
                       {q.explanation}
                     </p>
                   </div>
