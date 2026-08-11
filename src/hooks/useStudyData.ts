@@ -632,88 +632,92 @@ export function useStudyData() {
     async (id: string, updates: Partial<Lesson>) => {
       if (!userId) return;
 
-      const row: Record<string, any> = {};
-      if (updates.name !== undefined) row.name = updates.name;
-      if (updates.theoryCompleted !== undefined) row.theory_completed = updates.theoryCompleted;
-      if (updates.reviewCompleted !== undefined) row.review_completed = updates.reviewCompleted;
-      if (updates.questionsCount !== undefined) row.questions_count = updates.questionsCount;
-      if (updates.correctAnswers !== undefined) row.correct_answers = updates.correctAnswers;
+      let targetSubjectId = '';
+      let targetNumber = 1;
 
-      // Optimistic cache update for instant UI checkbox check/uncheck
+      if (id.includes('-fallback-')) {
+        const parts = id.split('-fallback-');
+        targetSubjectId = parts[0];
+        targetNumber = parseInt(parts[1], 10);
+      } else {
+        const existing = lessons.find(l => l.id === id);
+        if (existing) {
+          targetSubjectId = existing.subjectId;
+          targetNumber = existing.number;
+        }
+      }
+
+      if (!targetSubjectId) return;
+
+      const subj = subjects.find(s => s.id === targetSubjectId);
+      const rowUpdates: Record<string, any> = {};
+      if (updates.name !== undefined) rowUpdates.name = updates.name;
+      if (updates.theoryCompleted !== undefined) rowUpdates.theory_completed = updates.theoryCompleted;
+      if (updates.reviewCompleted !== undefined) rowUpdates.review_completed = updates.reviewCompleted;
+      if (updates.questionsCount !== undefined) rowUpdates.questions_count = updates.questionsCount;
+      if (updates.correctAnswers !== undefined) rowUpdates.correct_answers = updates.correctAnswers;
+
+      // 1. Optimistically update local React Query state for 0ms lag
       queryClient.setQueryData(['study', userId, 'lessons'], (old: Lesson[] = []) => {
-        if (id.includes('-fallback-')) {
-          const parts = id.split('-fallback-');
-          const subjectId = parts[0];
-          const number = parseInt(parts[1], 10);
-          const subj = subjects.find(s => s.id === subjectId);
-          const existingIndex = old.findIndex(l => l.subjectId === subjectId && l.number === number);
-          const newLessonObj: Lesson = {
-            id,
-            subjectId,
-            number,
-            name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
+        const seen = new Set<string>();
+        const updated = old.map(l => {
+          if (l.subjectId === targetSubjectId && l.number === targetNumber) {
+            seen.add(l.id);
+            return { ...l, ...updates };
+          }
+          return l;
+        });
+
+        if (seen.size === 0) {
+          updated.push({
+            id: id,
+            subjectId: targetSubjectId,
+            number: targetNumber,
+            name: updates.name || (subj ? getLessonName(subj.name, targetNumber) : `Aula ${String(targetNumber - 1).padStart(2, '0')}`),
             theoryCompleted: updates.theoryCompleted ?? false,
             reviewCompleted: updates.reviewCompleted ?? false,
             questionsCount: updates.questionsCount ?? 0,
             correctAnswers: updates.correctAnswers ?? 0,
             cycle: 1,
             ...updates,
-          };
-          if (existingIndex >= 0) {
-            const copy = [...old];
-            copy[existingIndex] = { ...copy[existingIndex], ...updates };
-            return copy;
-          }
-          return [...old, newLessonObj];
+          });
         }
-        return old.map(l => (l.id === id ? { ...l, ...updates } : l));
+        return updated;
       });
 
+      // 2. Persist in Supabase cleanly
       try {
-        if (id.includes('-fallback-')) {
-          const parts = id.split('-fallback-');
-          const subjectId = parts[0];
-          const number = parseInt(parts[1], 10);
-          const subj = subjects.find(s => s.id === subjectId);
+        const { data: dbRows } = await supabase
+          .from('lessons')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('subject_id', targetSubjectId)
+          .eq('number', targetNumber);
 
-          const { error } = await supabase.from('lessons').upsert(
-            {
-              user_id: userId,
-              subject_id: subjectId,
-              number: number,
-              name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
-              theory_completed: updates.theoryCompleted ?? false,
-              review_completed: updates.reviewCompleted ?? false,
-              questions_count: updates.questionsCount ?? 0,
-              correct_answers: updates.correctAnswers ?? 0,
-              cycle: 1,
-            },
-            { onConflict: 'user_id,subject_id,number' }
-          );
-          if (error) {
-            await supabase.from('lessons').insert({
-              user_id: userId,
-              subject_id: subjectId,
-              number: number,
-              name: updates.name || (subj ? getLessonName(subj.name, number) : `Aula ${String(number - 1).padStart(2, '0')}`),
-              theory_completed: updates.theoryCompleted ?? false,
-              review_completed: updates.reviewCompleted ?? false,
-              questions_count: updates.questionsCount ?? 0,
-              correct_answers: updates.correctAnswers ?? 0,
-              cycle: 1,
-            });
-          }
+        if (dbRows && dbRows.length > 0) {
+          const ids = dbRows.map(r => r.id);
+          await supabase.from('lessons').update(rowUpdates).in('id', ids);
         } else {
-          const { error } = await supabase.from('lessons').update(row).eq('id', id);
-          if (error) throw error;
+          await supabase.from('lessons').insert({
+            user_id: userId,
+            subject_id: targetSubjectId,
+            number: targetNumber,
+            name: updates.name || (subj ? getLessonName(subj.name, targetNumber) : `Aula ${String(targetNumber - 1).padStart(2, '0')}`),
+            theory_completed: updates.theoryCompleted ?? false,
+            review_completed: updates.reviewCompleted ?? false,
+            questions_count: updates.questionsCount ?? 0,
+            correct_answers: updates.correctAnswers ?? 0,
+            cycle: 1,
+            ...rowUpdates,
+          });
         }
       } catch (err) {
-        console.error('Failed to update lesson:', err);
+        console.error('Failed to save lesson update in Supabase:', err);
       } finally {
         invalidate();
       }
     },
-    [userId, subjects, queryClient, invalidate],
+    [userId, lessons, subjects, queryClient, invalidate],
   );
 
   const deleteLesson = useCallback(
@@ -946,7 +950,7 @@ export function useStudyData() {
     [subjects],
   );
 
-  // Helper to get current cycle lessons only (deduplicated by subjectId & number)
+  // Helper to get current cycle lessons only (deduplicated & merged by subjectId & number)
   const currentCycleLessons = useMemo(() => {
     const list = lessons.filter(l => {
       const subject = subjects.find(s => s.id === l.subjectId);
@@ -955,13 +959,24 @@ export function useStudyData() {
       return (l.cycle ?? 1) === targetCycle;
     });
 
-    const seen = new Set<string>();
-    return list.filter(l => {
+    const map = new Map<string, Lesson>();
+    list.forEach(l => {
       const key = `${l.subjectId}-${l.number}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
+      if (!map.has(key)) {
+        map.set(key, { ...l });
+      } else {
+        const existing = map.get(key)!;
+        map.set(key, {
+          ...existing,
+          theoryCompleted: existing.theoryCompleted || l.theoryCompleted,
+          reviewCompleted: existing.reviewCompleted || l.reviewCompleted,
+          questionsCount: Math.max(existing.questionsCount || 0, l.questionsCount || 0),
+          correctAnswers: Math.max(existing.correctAnswers || 0, l.correctAnswers || 0),
+          name: existing.name || l.name,
+        });
+      }
     });
+    return Array.from(map.values());
   }, [lessons, subjects, contests]);
 
   // Enrich current cycle lessons with question_sessions counters dynamically
