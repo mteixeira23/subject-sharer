@@ -1000,15 +1000,16 @@ export function useStudyData() {
   );
 
   const getOverallProgress = useCallback(() => {
-    const totalLessons = enrichedCurrentCycleLessons.length;
-    const completedLessons = enrichedCurrentCycleLessons.filter(l => l.theoryCompleted && l.reviewCompleted).length;
+    const allOfficialLessons = activeSubjects.flatMap(s => getLessonsBySubject(s.id));
+    const totalLessons = allOfficialLessons.length;
+    const completedLessons = allOfficialLessons.filter(l => l.theoryCompleted && l.reviewCompleted).length;
 
-    const totalQuestions = enrichedCurrentCycleLessons.reduce((acc, l) => acc + l.questionsCount, 0);
-    const totalCorrect = enrichedCurrentCycleLessons.reduce((acc, l) => acc + l.correctAnswers, 0);
+    const totalQuestions = allOfficialLessons.reduce((acc, l) => acc + l.questionsCount, 0);
+    const totalCorrect = allOfficialLessons.reduce((acc, l) => acc + l.correctAnswers, 0);
     const performance = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
 
     return { totalLessons, completedLessons, progress: totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0, totalQuestions, totalCorrect, performance };
-  }, [enrichedCurrentCycleLessons]);
+  }, [activeSubjects, getLessonsBySubject]);
 
   const getWeakSubjects = useCallback(
     (limit = 3) =>
