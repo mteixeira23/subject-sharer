@@ -716,6 +716,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
 ];
 
 import { getLessonName } from '@/data/sefazBA';
+import { REAL_CONCURSO_QUESTIONS } from './realConcursoQuestions';
 
 export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number): QuestionData[] {
   const lessonTitle = getLessonName(subjectName, lessonNum);
@@ -726,7 +727,41 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     return AULA_00_QUESTIONS;
   }
 
-  return buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle);
+  let bank: QuestionData[] = [];
+
+  if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
+    bank = REAL_CONCURSO_QUESTIONS.tributario;
+  } else if (lowerSubj.includes('administrativo')) {
+    bank = REAL_CONCURSO_QUESTIONS.administrativo;
+  } else if (lowerSubj.includes('constitucional')) {
+    bank = REAL_CONCURSO_QUESTIONS.constitucional;
+  } else if (lowerSubj.includes('auditoria')) {
+    bank = REAL_CONCURSO_QUESTIONS.auditoria;
+  } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua')) {
+    bank = REAL_CONCURSO_QUESTIONS.portugues;
+  } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças') || lowerSubj.includes('administração')) {
+    bank = REAL_CONCURSO_QUESTIONS.economia;
+  } else if (lowerSubj.includes('estatística') || lowerSubj.includes('matemática')) {
+    bank = REAL_CONCURSO_QUESTIONS.estatistica;
+  } else if (lowerSubj.includes('informática')) {
+    bank = REAL_CONCURSO_QUESTIONS.informatica;
+  } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial')) {
+    bank = REAL_CONCURSO_QUESTIONS.igualdade_racial;
+  } else {
+    bank = REAL_CONCURSO_QUESTIONS.tributario;
+  }
+
+  return Array.from({ length: 50 }, (_, idx) => {
+    const qNum = idx + 1;
+    const baseQ = bank[idx % bank.length];
+
+    return {
+      ...baseQ,
+      id: qNum,
+      topic: `${lessonTitle}`,
+      statement: baseQ.statement.replace(/\[Questão \d+\]/, `[Questão ${qNum}]`),
+    };
+  });
 }
 
 function buildDomainSpecificQuestions(subjectName: string, lessonNum: number, lessonTitle: string): QuestionData[] {
