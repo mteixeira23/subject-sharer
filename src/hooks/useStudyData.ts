@@ -647,9 +647,19 @@ export function useStudyData() {
         }
       }
 
+      if (!targetSubjectId && lessons.length > 0) {
+        const found = lessons.find(l => l.id === id);
+        if (found) targetSubjectId = found.subjectId;
+      }
+
       if (!targetSubjectId) return;
 
-      const subj = subjects.find(s => s.id === targetSubjectId);
+      // Ensure targetSubjectId is the valid Supabase subject UUID
+      const subj = subjects.find(
+        s => s.id === targetSubjectId || s.name.trim().toLowerCase() === targetSubjectId.trim().toLowerCase()
+      );
+      const realSubjectId = subj ? subj.id : targetSubjectId;
+
       const rowUpdates: Record<string, any> = {};
       if (updates.name !== undefined) rowUpdates.name = updates.name;
       if (updates.theoryCompleted !== undefined) rowUpdates.theory_completed = updates.theoryCompleted;
@@ -659,19 +669,19 @@ export function useStudyData() {
 
       // 1. Optimistically update local React Query state for 0ms lag
       queryClient.setQueryData(['study', userId, 'lessons'], (old: Lesson[] = []) => {
-        const seen = new Set<string>();
-        const updated = old.map(l => {
-          if (l.subjectId === targetSubjectId && l.number === targetNumber) {
-            seen.add(l.id);
-            return { ...l, ...updates };
+        let updated = false;
+        const result = old.map(l => {
+          if ((l.subjectId === realSubjectId || l.subjectId === targetSubjectId) && l.number === targetNumber) {
+            updated = true;
+            return { ...l, subjectId: realSubjectId, ...updates };
           }
           return l;
         });
 
-        if (seen.size === 0) {
-          updated.push({
+        if (!updated) {
+          result.push({
             id: id,
-            subjectId: targetSubjectId,
+            subjectId: realSubjectId,
             number: targetNumber,
             name: updates.name || (subj ? getLessonName(subj.name, targetNumber) : `Aula ${String(targetNumber - 1).padStart(2, '0')}`),
             theoryCompleted: updates.theoryCompleted ?? false,
@@ -682,25 +692,30 @@ export function useStudyData() {
             ...updates,
           });
         }
-        return updated;
+        return result;
       });
 
       // 2. Persist in Supabase cleanly
       try {
-        const { data: dbRows } = await supabase
+        const { data: dbRows, error: findErr } = await supabase
           .from('lessons')
           .select('id')
           .eq('user_id', userId)
-          .eq('subject_id', targetSubjectId)
+          .eq('subject_id', realSubjectId)
           .eq('number', targetNumber);
+
+        if (findErr) {
+          console.error('Supabase find lesson error:', findErr);
+        }
 
         if (dbRows && dbRows.length > 0) {
           const ids = dbRows.map(r => r.id);
-          await supabase.from('lessons').update(rowUpdates).in('id', ids);
+          const { error: updateErr } = await supabase.from('lessons').update(rowUpdates).in('id', ids);
+          if (updateErr) console.error('Supabase update error:', updateErr);
         } else {
-          await supabase.from('lessons').insert({
+          const { error: insertErr } = await supabase.from('lessons').insert({
             user_id: userId,
-            subject_id: targetSubjectId,
+            subject_id: realSubjectId,
             number: targetNumber,
             name: updates.name || (subj ? getLessonName(subj.name, targetNumber) : `Aula ${String(targetNumber - 1).padStart(2, '0')}`),
             theory_completed: updates.theoryCompleted ?? false,
@@ -710,6 +725,7 @@ export function useStudyData() {
             cycle: 1,
             ...rowUpdates,
           });
+          if (insertErr) console.error('Supabase insert error:', insertErr);
         }
       } catch (err) {
         console.error('Failed to save lesson update in Supabase:', err);
@@ -1066,6 +1082,7 @@ export function useStudyData() {
       const totalQuestions = subjectLessons.reduce((acc, l) => acc + l.questionsCount, 0);
       const totalCorrect = subjectLessons.reduce((acc, l) => acc + l.correctAnswers, 0);
       const performance = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
+      const completedCount = subjectLessons.filter(l => l.theoryCompleted || l.reviewCompleted).length;
 
       return {
         totalLessons,
@@ -1077,8 +1094,8 @@ export function useStudyData() {
         reviewProgress: totalLessons > 0 ? (reviewCompleted / totalLessons) * 100 : 0,
         questionsLessonsProgress: totalLessons > 0 ? (lessonsWithQuestions / totalLessons) * 100 : 0,
         completeProgress: totalLessons > 0 ? (fullyCompleted / totalLessons) * 100 : 0,
-        completedLessons: fullyCompleted,
-        progress: totalLessons > 0 ? (fullyCompleted / totalLessons) * 100 : 0,
+        completedLessons: theoryCompleted,
+        progress: totalLessons > 0 ? (theoryCompleted / totalLessons) * 100 : 0,
         totalQuestions,
         totalCorrect,
         performance,
@@ -1090,7 +1107,7 @@ export function useStudyData() {
   const getOverallProgress = useCallback(() => {
     const allOfficialLessons = activeSubjects.flatMap(s => getLessonsBySubject(s.id));
     const totalLessons = allOfficialLessons.length;
-    const completedLessons = allOfficialLessons.filter(l => l.theoryCompleted && l.reviewCompleted).length;
+    const completedLessons = allOfficialLessons.filter(l => l.theoryCompleted || l.reviewCompleted).length;
 
     const totalQuestions = allOfficialLessons.reduce((acc, l) => acc + l.questionsCount, 0);
     const totalCorrect = allOfficialLessons.reduce((acc, l) => acc + l.correctAnswers, 0);
