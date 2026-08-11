@@ -264,6 +264,30 @@ export function useStudyData() {
           }
         }
 
+        // C.2) Purge duplicate lesson rows from Supabase
+        const lessonKeyMap = new Map<string, string[]>();
+        for (const l of lessons) {
+          const key = `${l.subjectId}-${l.number}`;
+          if (!lessonKeyMap.has(key)) {
+            lessonKeyMap.set(key, []);
+          }
+          lessonKeyMap.get(key)!.push(l.id);
+        }
+
+        const duplicateLessonIds: string[] = [];
+        for (const ids of lessonKeyMap.values()) {
+          if (ids.length > 1) {
+            duplicateLessonIds.push(...ids.slice(1));
+          }
+        }
+
+        if (duplicateLessonIds.length > 0) {
+          for (let i = 0; i < duplicateLessonIds.length; i += 100) {
+            const batch = duplicateLessonIds.slice(i, i + 100);
+            await supabase.from('lessons').delete().in('id', batch);
+          }
+        }
+
         // D) Purge old mock template schedule events and generate official SEFAZ-BA daily schedule
         const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
         const isSEFAZSubject = (subjId: string) => {
@@ -827,13 +851,21 @@ export function useStudyData() {
     [subjects],
   );
 
-  // Helper to get current cycle lessons only
+  // Helper to get current cycle lessons only (deduplicated by subjectId & number)
   const currentCycleLessons = useMemo(() => {
-    return lessons.filter(l => {
+    const list = lessons.filter(l => {
       const subject = subjects.find(s => s.id === l.subjectId);
       const contest = subject ? contests.find(c => c.id === subject.contestId) : null;
       const targetCycle = contest?.currentCycle ?? 1;
       return (l.cycle ?? 1) === targetCycle;
+    });
+
+    const seen = new Set<string>();
+    return list.filter(l => {
+      const key = `${l.subjectId}-${l.number}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
     });
   }, [lessons, subjects, contests]);
 
@@ -870,9 +902,16 @@ export function useStudyData() {
   const getLessonsBySubject = useCallback(
     (subjectId: string) => {
       const subject = subjects.find(s => s.id === subjectId);
-      const list = enrichedCurrentCycleLessons
+      const rawList = enrichedCurrentCycleLessons
         .filter(l => l.subjectId === subjectId)
         .sort((a, b) => a.number - b.number);
+
+      const seenNumbers = new Set<number>();
+      const list = rawList.filter(l => {
+        if (seenNumbers.has(l.number)) return false;
+        seenNumbers.add(l.number);
+        return true;
+      });
 
       if (list.length > 0) return list;
 
