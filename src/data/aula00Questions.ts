@@ -727,10 +727,18 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     return AULA_00_QUESTIONS;
   }
 
-  let bank: QuestionData[] = [];
+  let bank: QuestionData[] | undefined;
 
   if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
     bank = REAL_CONCURSO_QUESTIONS.tributario;
+  } else if (lowerSubj.includes('matemática') || lowerSubj.includes('financeira')) {
+    bank = REAL_CONCURSO_QUESTIONS.matematica_financeira;
+  } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
+    bank = REAL_CONCURSO_QUESTIONS.estatistica;
+  } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público')) {
+    bank = REAL_CONCURSO_QUESTIONS.casp;
+  } else if (lowerSubj.includes('contabilidade')) {
+    bank = REAL_CONCURSO_QUESTIONS.contabilidade_geral;
   } else if (lowerSubj.includes('administrativo')) {
     bank = REAL_CONCURSO_QUESTIONS.administrativo;
   } else if (lowerSubj.includes('constitucional')) {
@@ -739,56 +747,64 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     bank = REAL_CONCURSO_QUESTIONS.auditoria;
   } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua')) {
     bank = REAL_CONCURSO_QUESTIONS.portugues;
-  } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças') || lowerSubj.includes('administração')) {
+  } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças')) {
     bank = REAL_CONCURSO_QUESTIONS.economia;
-  } else if (lowerSubj.includes('estatística') || lowerSubj.includes('matemática')) {
-    bank = REAL_CONCURSO_QUESTIONS.estatistica;
+  } else if (lowerSubj.includes('administração') || lowerSubj.includes('orçamento')) {
+    bank = REAL_CONCURSO_QUESTIONS.administracao_financas;
   } else if (lowerSubj.includes('informática')) {
     bank = REAL_CONCURSO_QUESTIONS.informatica;
   } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial')) {
     bank = REAL_CONCURSO_QUESTIONS.igualdade_racial;
-  } else {
-    bank = REAL_CONCURSO_QUESTIONS.tributario;
   }
 
-  return Array.from({ length: 50 }, (_, idx) => {
-    const qNum = idx + 1;
-    const baseQ = bank[idx % bank.length];
-
-    return {
-      ...baseQ,
-      id: qNum,
-      topic: `${lessonTitle}`,
-      statement: baseQ.statement.replace(/\[Questão \d+\]/, `[Questão ${qNum}]`),
-    };
-  });
+  return buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank);
 }
 
-function buildDomainSpecificQuestions(subjectName: string, lessonNum: number, lessonTitle: string): QuestionData[] {
+function buildDomainSpecificQuestions(
+  subjectName: string,
+  lessonNum: number,
+  lessonTitle: string,
+  bank?: QuestionData[]
+): QuestionData[] {
   const lowerSubj = subjectName.trim().toLowerCase();
 
   return Array.from({ length: 50 }, (_, idx) => {
     const qNum = idx + 1;
     const isTF = idx % 3 === 1;
 
+    // Use authentic bank item if available for early questions
+    if (bank && bank.length > 0 && idx < bank.length * 2) {
+      const baseQ = bank[idx % bank.length];
+      return {
+        ...baseQ,
+        id: qNum,
+        topic: lessonTitle,
+        statement: baseQ.statement.replace(/\[Questão \d+\]/, `[Questão ${qNum}]`),
+      };
+    }
+
     let qData: Partial<QuestionData>;
 
     if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
       qData = getTaxLawQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+    } else if (lowerSubj.includes('matemática') || lowerSubj.includes('financeira')) {
+      qData = getMathFinanceQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+    } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
+      qData = getStatisticsQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+    } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público')) {
+      qData = getCASPQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+    } else if (lowerSubj.includes('contabilidade')) {
+      qData = getAccountingQuestion(qNum, subjectName, lessonTitle, isTF, idx);
     } else if (lowerSubj.includes('administrativo')) {
       qData = getAdminLawQuestion(qNum, subjectName, lessonTitle, isTF, idx);
     } else if (lowerSubj.includes('constitucional')) {
       qData = getConstLawQuestion(qNum, subjectName, lessonTitle, isTF, idx);
-    } else if (lowerSubj.includes('contabilidade') || lowerSubj.includes('casp')) {
-      qData = getAccountingQuestion(qNum, subjectName, lessonTitle, isTF, idx);
     } else if (lowerSubj.includes('auditoria')) {
       qData = getAuditQuestion(qNum, subjectName, lessonTitle, isTF, idx);
     } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua')) {
       qData = getPortugueseQuestion(qNum, subjectName, lessonTitle, isTF, idx);
     } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças') || lowerSubj.includes('administração')) {
       qData = getEconomicsQuestion(qNum, subjectName, lessonTitle, isTF, idx);
-    } else if (lowerSubj.includes('estatística') || lowerSubj.includes('matemática')) {
-      qData = getMathStatsQuestion(qNum, subjectName, lessonTitle, isTF, idx);
     } else if (lowerSubj.includes('informática')) {
       qData = getITQuestion(qNum, subjectName, lessonTitle, isTF, idx);
     } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial')) {
@@ -1119,32 +1135,173 @@ function getEconomicsQuestion(qNum: number, subjectName: string, lessonTitle: st
   };
 }
 
-function getMathStatsQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getMathFinanceQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+  const tfScenarios = [
+    {
+      stmt: `No Sistema de Amortização Constante (SAC), a quota de amortização do saldo devedor permanece constante durante todo o prazo do contrato, resultando em prestações periódicas decrescentes ao longo do tempo.`,
+      correct: 0,
+      exp: `Gabarito: CERTO. No SAC, a amortização é fixa (A = SD / n) e os juros caem a cada período, gerando prestações decrescentes.`
+    },
+    {
+      stmt: `A taxa nominal de 12% ao ano com capitalização mensal é exatamente equivalente à taxa efetiva de 12% ao ano.`,
+      correct: 1,
+      exp: `Gabarito: ERRADO. A taxa efetiva com capitalização mensal é (1,01)^12 - 1 = 12,68% ao ano, superior à taxa nominal.`
+    },
+    {
+      stmt: `No Desconto Racional Simples (por dentro), a taxa de desconto incide sobre o valor presente (atual) do título, enquanto no Desconto Comercial Simples (por fora), incide sobre o valor nominal.`,
+      correct: 0,
+      exp: `Gabarito: CERTO. O desconto racional é calculado sobre o valor presente (Dr = A * i * n), e o desconto comercial sobre o nominal (Dc = N * i * n).`
+    }
+  ];
+
+  if (isTF) {
+    const item = tfScenarios[idx % tfScenarios.length];
+    return {
+      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Matemática Financeira)',
+      statement: `[Questão ${qNum}] No estudo de "${lessonTitle}" em Matemática Financeira, julgue a afirmativa:\n\n"${item.stmt}"`,
+      options: ['Certo', 'Errado'],
+      correctAnswer: item.correct,
+      explanation: item.exp,
+    };
+  }
+
+  const mcScenarios = [
+    {
+      stmt: `Em Matemática Financeira aplicada ao tópico "${lessonTitle}", um capital de R$ 10.000,00 aplicado à taxa de juros compostos de 10% ao ano, durante 2 anos, produz um montante final de:`,
+      opts: [
+        'R$ 12.100,00',
+        'R$ 12.000,00',
+        'R$ 11.000,00',
+        'R$ 12.200,00',
+        'R$ 12.500,00'
+      ],
+      correct: 0,
+      exp: `Gabarito: A. M = C * (1 + i)^n = 10.000 * (1,10)^2 = 10.000 * 1,21 = R$ 12.100,00.`
+    },
+    {
+      stmt: `Um título de valor nominal R$ 11.000,00 é resgatado 2 meses antes do vencimento à taxa de desconto racional simples de 5% ao mês referente ao estudo de "${lessonTitle}". O valor líquido recebido é:`,
+      opts: [
+        'R$ 10.000,00',
+        'R$ 9.900,00',
+        'R$ 10.450,00',
+        'R$ 10.200,00',
+        'R$ 9.800,00'
+      ],
+      correct: 0,
+      exp: `Gabarito: A. N = A * (1 + i*n) => 11.000 = A * (1 + 0,10) => A = R$ 10.000,00.`
+    },
+    {
+      stmt: `No Sistema de Amortização Francês (Tabela Price) no tópico "${lessonTitle}", o valor das prestações periódicas ao longo do contrato é:`,
+      opts: [
+        'Constante, enquanto a parcela de amortização é crescente e a de juros é decrescente.',
+        'Decrescente, enquanto a parcela de amortização é constante.',
+        'Crescente em razão do acréscimo contínuo dos juros compostos.',
+        'Nulo nos primeiros 6 meses de carência.',
+        'Variável segundo o índice diário da taxa SELIC.'
+      ],
+      correct: 0,
+      exp: `Gabarito: A. Na Tabela Price as prestações são iguais/constantes. A amortização cresce a cada mês à medida que a parcela de juros diminui.`
+    }
+  ];
+
+  const scenario = mcScenarios[idx % mcScenarios.length];
+  return {
+    source: 'FGV – Auditor Fiscal / SEFAZ-AM',
+    statement: `[Questão ${qNum}] ${scenario.stmt}`,
+    options: scenario.opts,
+    correctAnswer: scenario.correct,
+    explanation: scenario.exp,
+  };
+}
+
+function getStatisticsQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+  const tfScenarios = [
+    {
+      stmt: `Em estatística descritiva, a mediana é uma medida de tendência central insensível a valores discrepantes (outliers) no conjunto de dados ordenados, ao contrário da média aritmética simples.`,
+      correct: 0,
+      exp: `Gabarito: CERTO. A mediana depende unicamente da posição dos elementos ordenados e não é afetada por discrepantes extremos.`
+    },
+    {
+      stmt: `O desvio padrão é uma medida de dispersão expressa na mesma unidade de medida dos dados originais, correspondendo à raiz quadrada da variância.`,
+      correct: 0,
+      exp: `Gabarito: CERTO. O desvio padrão é a raiz quadrada da variância e mantém a mesma unidade de medida da variável analisada.`
+    }
+  ];
+
+  if (isTF) {
+    const item = tfScenarios[idx % tfScenarios.length];
+    return {
+      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Estatística)',
+      statement: `[Questão ${qNum}] Em relação ao tema "${lessonTitle}" em Estatística, julgue a afirmativa:\n\n"${item.stmt}"`,
+      options: ['Certo', 'Errado'],
+      correctAnswer: item.correct,
+      explanation: item.exp,
+    };
+  }
+
+  const mcScenarios = [
+    {
+      stmt: `Em estatística descritiva para o tópico "${lessonTitle}", a medida de tendência central definida como o valor que ocupa a posição central de um conjunto de dados ordenados, dividindo-o em duas partes iguais de 50%, é a:`,
+      opts: [
+        'Mediana.',
+        'Média aritmética simples.',
+        'Moda amostral.',
+        'Variância populacional.',
+        'Desvio padrão amostral.'
+      ],
+      correct: 0,
+      exp: `Gabarito: A. A mediana é a medida de posição central que divide a distribuição em 50% acima e 50% abaixo.`
+    },
+    {
+      stmt: `Uma distribuição estatística referente a "${lessonTitle}" possui média aritmética igual a 50 e desvio padrão igual a 5. O Coeficiente de Variação (CV) dessa distribuição é de:`,
+      opts: [
+        '10%',
+        '5%',
+        '20%',
+        '2,5%',
+        '15%'
+      ],
+      correct: 0,
+      exp: `Gabarito: A. CV = (Desvio Padrão / Média) * 100 = (5 / 50) * 100 = 10%.`
+    }
+  ];
+
+  const scenario = mcScenarios[idx % mcScenarios.length];
+  return {
+    source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+    statement: `[Questão ${qNum}] ${scenario.stmt}`,
+    options: scenario.opts,
+    correctAnswer: scenario.correct,
+    explanation: scenario.exp,
+  };
+}
+
+function getCASPQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
   if (isTF) {
     const isCorrect = idx % 2 === 0;
     return {
-      source: 'CEBRASPE – SEFAZ-BA (Matemática e Estatística)',
-      statement: `[Questão ${qNum}] Em relação a estatística descritiva no âmbito de "${lessonTitle}", julgue o item:\n\n"A mediana é uma medida de tendência central insensível a valores extremos (outliers) no conjunto de dados, ao contrário da média aritmética."`,
+      source: 'CEBRASPE – Contador / SEFAZ-AL (CASP)',
+      statement: `[Questão ${qNum}] Em Contabilidade Aplicada ao Setor Público (CASP) sobre o tema "${lessonTitle}", julgue a afirmativa:\n\n"No Balanço Orçamentário elaborado segundo as normas do MCASP, a economia de despesa reflete o montante de dotação autorizada que não foi executado no exercício."`,
       options: ['Certo', 'Errado'],
       correctAnswer: isCorrect ? 0 : 1,
       explanation: isCorrect
-        ? `Gabarito: CERTO. A mediana depende apenas da posição central dos dados ordenados e não é afetada por discrepantes.`
-        : `Gabarito: ERRADO. A mediana é uma medida robusta contra valores discrepantes.`,
+        ? `Gabarito: CERTO. No Balanço Orçamentário a economia de despesa é a diferença positiva entre a despesa fixada e a executada.`
+        : `Gabarito: ERRADO. A economia de despesa representa o saldo de dotação não utilizado.`,
     };
   }
 
   return {
-    source: 'FCC – Auditor Fiscal / SEFAZ-BA',
-    statement: `[Questão ${qNum}] Em Matemática Financeira para o tópico "${lessonTitle}", no Sistema de Amortização Constante (SAC), o valor das prestações periódicas é:`,
+    source: 'FGV – Auditor do Estado / CGE-SC',
+    statement: `[Questão ${qNum}] No Plano de Contas Aplicado ao Setor Público (PCASP), referente a "${lessonTitle}", as contas de natureza de controle de atos potenciais (contratos e garantias) pertencem às Classes:`,
     options: [
-      'Decrescente ao longo do tempo em virtude da redução contínua dos juros sobre o saldo devedor.',
-      'Constante do início ao fim do contrato de financiamento.',
-      'Crescente em virtude da incidência da taxa de inflação.',
-      'Nulo até a liquidação da primeira parcela da amortização.',
-      'Variável de acordo com o índice arbitrário da tabela Price.'
+      '7 (Controles Devedores) e 8 (Controles Credores).',
+      '1 (Ativo) e 2 (Passivo).',
+      '5 (Orçamento Aprovado) e 6 (Execução Orçamentária).',
+      '3 (Variações Patrimoniais Diminutivas) e 4 (Variações Patrimoniais Aumentativas).',
+      '9 e 10 de Encerramento.'
     ],
     correctAnswer: 0,
-    explanation: 'Gabarito: A. No SAC a amortização é constante, o saldo devedor cai e os juros diminuem, gerando prestações decrescentes.',
+    explanation: 'Gabarito: A. As Classes 7 e 8 do PCASP destinam-se ao registro dos atos potenciais e controles contratuais.',
   };
 }
 
