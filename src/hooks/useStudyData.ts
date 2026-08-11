@@ -669,7 +669,7 @@ export function useStudyData() {
 
   const updateLesson = useCallback(
     async (id: string, updates: Partial<Lesson>, subjectIdHint?: string, lessonNumberHint?: number) => {
-      if (!userId) return;
+      const activeUserId = userId || 'default-user';
 
       let targetSubjectId = subjectIdHint || '';
       let targetNumber = lessonNumberHint || 0;
@@ -712,10 +712,12 @@ export function useStudyData() {
       if (updates.correctAnswers !== undefined) rowUpdates.correct_answers = updates.correctAnswers;
 
       if (subj && updates.theoryCompleted !== undefined) {
-        localStorage.setItem(`lesson_flag_${userId}_${subj.name.trim().toLowerCase()}_${targetNumber}_theory`, String(updates.theoryCompleted));
+        localStorage.setItem(`lesson_flag_${activeUserId}_${subj.name.trim().toLowerCase()}_${targetNumber}_theory`, String(updates.theoryCompleted));
+        localStorage.setItem(`lesson_flag_default-user_${subj.name.trim().toLowerCase()}_${targetNumber}_theory`, String(updates.theoryCompleted));
       }
       if (subj && updates.reviewCompleted !== undefined) {
-        localStorage.setItem(`lesson_flag_${userId}_${subj.name.trim().toLowerCase()}_${targetNumber}_review`, String(updates.reviewCompleted));
+        localStorage.setItem(`lesson_flag_${activeUserId}_${subj.name.trim().toLowerCase()}_${targetNumber}_review`, String(updates.reviewCompleted));
+        localStorage.setItem(`lesson_flag_default-user_${subj.name.trim().toLowerCase()}_${targetNumber}_review`, String(updates.reviewCompleted));
       }
 
       // 1. Optimistically update local React Query state for 0ms lag across all matching subject representations
@@ -723,7 +725,7 @@ export function useStudyData() {
         ? new Set(subjects.filter(s => s.name.trim().toLowerCase() === subj.name.trim().toLowerCase()).map(s => s.id))
         : new Set([realSubjectId, targetSubjectId]);
 
-      queryClient.setQueryData(['study', userId, 'lessons'], (old: Lesson[] = []) => {
+      const updater = (old: Lesson[] = []) => {
         let updated = false;
         const result = old.map(l => {
           const lSubj = subjects.find(s => s.id === l.subjectId || s.name.trim().toLowerCase() === l.subjectId.trim().toLowerCase());
@@ -753,7 +755,11 @@ export function useStudyData() {
           });
         }
         return result;
-      });
+      };
+
+      queryClient.setQueryData(['study', userId, 'lessons'], updater);
+      queryClient.setQueryData(['study', undefined, 'lessons'], updater);
+      queryClient.setQueryData(['study', 'default-user', 'lessons'], updater);
 
       // 2. Persist in Supabase cleanly across all matching subject rows
       try {
@@ -1130,9 +1136,11 @@ export function useStudyData() {
       });
 
       // Apply LocalStorage fail-safe override
+      const activeUserId = userId || 'default-user';
       numberMap.forEach((l, num) => {
-        const lsTheory = localStorage.getItem(`lesson_flag_${userId}_${subject?.name.trim().toLowerCase()}_${num}_theory`);
-        const lsReview = localStorage.getItem(`lesson_flag_${userId}_${subject?.name.trim().toLowerCase()}_${num}_review`);
+        const sName = subject?.name.trim().toLowerCase();
+        const lsTheory = localStorage.getItem(`lesson_flag_${userId}_${sName}_${num}_theory`) ?? localStorage.getItem(`lesson_flag_${activeUserId}_${sName}_${num}_theory`) ?? localStorage.getItem(`lesson_flag_default-user_${sName}_${num}_theory`);
+        const lsReview = localStorage.getItem(`lesson_flag_${userId}_${sName}_${num}_review`) ?? localStorage.getItem(`lesson_flag_${activeUserId}_${sName}_${num}_review`) ?? localStorage.getItem(`lesson_flag_default-user_${sName}_${num}_review`);
         if (lsTheory !== null) l.theoryCompleted = l.theoryCompleted || lsTheory === 'true';
         if (lsReview !== null) l.reviewCompleted = l.reviewCompleted || lsReview === 'true';
       });
@@ -1143,13 +1151,17 @@ export function useStudyData() {
       if (subject) {
         for (let i = 1; i <= targetCount; i++) {
           if (!seenNumbers.has(i)) {
+            const sName = subject.name.trim().toLowerCase();
+            const lsTheory = localStorage.getItem(`lesson_flag_${userId}_${sName}_${i}_theory`) ?? localStorage.getItem(`lesson_flag_${activeUserId}_${sName}_${i}_theory`) ?? localStorage.getItem(`lesson_flag_default-user_${sName}_${i}_theory`);
+            const lsReview = localStorage.getItem(`lesson_flag_${userId}_${sName}_${i}_review`) ?? localStorage.getItem(`lesson_flag_${activeUserId}_${sName}_${i}_review`) ?? localStorage.getItem(`lesson_flag_default-user_${sName}_${i}_review`);
+
             result.push({
               id: `${subject.id}-fallback-${i}`,
               subjectId: subject.id,
               number: i,
               name: getLessonName(subject.name, i),
-              theoryCompleted: false,
-              reviewCompleted: false,
+              theoryCompleted: lsTheory === 'true',
+              reviewCompleted: lsReview === 'true',
               questionsCount: 0,
               correctAnswers: 0,
               cycle: 1,
