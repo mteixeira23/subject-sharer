@@ -668,27 +668,32 @@ export function useStudyData() {
   );
 
   const updateLesson = useCallback(
-    async (id: string, updates: Partial<Lesson>) => {
+    async (id: string, updates: Partial<Lesson>, subjectIdHint?: string, lessonNumberHint?: number) => {
       if (!userId) return;
 
-      let targetSubjectId = '';
-      let targetNumber = 1;
+      let targetSubjectId = subjectIdHint || '';
+      let targetNumber = lessonNumberHint || 0;
 
-      if (id.includes('-fallback-')) {
-        const parts = id.split('-fallback-');
-        targetSubjectId = parts[0];
-        targetNumber = parseInt(parts[1], 10);
-      } else {
-        const existing = lessons.find(l => l.id === id);
-        if (existing) {
-          targetSubjectId = existing.subjectId;
-          targetNumber = existing.number;
+      if (!targetSubjectId || !targetNumber) {
+        if (id.includes('-fallback-')) {
+          const parts = id.split('-fallback-');
+          targetSubjectId = parts[0];
+          targetNumber = parseInt(parts[1], 10);
+        } else {
+          const existing = lessons.find(l => l.id === id);
+          if (existing) {
+            targetSubjectId = existing.subjectId;
+            targetNumber = existing.number;
+          }
         }
       }
 
       if (!targetSubjectId && lessons.length > 0) {
         const found = lessons.find(l => l.id === id);
-        if (found) targetSubjectId = found.subjectId;
+        if (found) {
+          targetSubjectId = found.subjectId;
+          if (!targetNumber) targetNumber = found.number;
+        }
       }
 
       if (!targetSubjectId) return;

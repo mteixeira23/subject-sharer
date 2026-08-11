@@ -472,8 +472,8 @@ export default function Estudos() {
                               {displayName}
                             </span>
                           </TableCell>
-                          <TableCell><Checkbox checked={lesson.theoryCompleted} onCheckedChange={(c) => updateLesson(lesson.id, { theoryCompleted: !!c })} /></TableCell>
-                          <TableCell><Checkbox checked={lesson.reviewCompleted} onCheckedChange={(c) => updateLesson(lesson.id, { reviewCompleted: !!c })} /></TableCell>
+                          <TableCell><Checkbox checked={lesson.theoryCompleted} onCheckedChange={(c) => activeSubject && updateLesson(lesson.id, { theoryCompleted: !!c }, activeSubject.id, lesson.number)} /></TableCell>
+                          <TableCell><Checkbox checked={lesson.reviewCompleted} onCheckedChange={(c) => activeSubject && updateLesson(lesson.id, { reviewCompleted: !!c }, activeSubject.id, lesson.number)} /></TableCell>
                           <TableCell>{lesson.questionsCount}</TableCell>
                           <TableCell>{lesson.correctAnswers}</TableCell>
                           <TableCell><span className={cn(perf >= 70 ? 'text-success' : perf >= 50 ? 'text-warning' : perf > 0 ? 'text-danger' : 'text-muted-foreground')}>{lesson.questionsCount > 0 ? `${perf.toFixed(1)}%` : '-'}</span></TableCell>
