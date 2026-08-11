@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -82,6 +82,7 @@ export function useStudyData() {
   const queryClient = useQueryClient();
   const userId = user?.id;
   const [seeding, setSeeding] = useState(false);
+  const hasSeededRef = useRef(false);
 
   const invalidate = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['study', userId] });
@@ -185,7 +186,8 @@ export function useStudyData() {
   // ── Seed / Sync initial data for users ──────────────────────────────────
 
   useEffect(() => {
-    if (!userId || loadingContests || loadingSubjects || loadingLessons || seeding) return;
+    if (!userId || loadingContests || loadingSubjects || loadingLessons || seeding || hasSeededRef.current) return;
+    hasSeededRef.current = true;
 
     const seedAndSync = async () => {
       setSeeding(true);
@@ -760,11 +762,9 @@ export function useStudyData() {
         }
       } catch (err) {
         console.error('Failed to save lesson update in Supabase:', err);
-      } finally {
-        invalidate();
       }
     },
-    [userId, lessons, subjects, queryClient, invalidate],
+    [userId, lessons, subjects, queryClient],
   );
 
   const deleteLesson = useCallback(
