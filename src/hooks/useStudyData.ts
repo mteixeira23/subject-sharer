@@ -113,16 +113,22 @@ export function useStudyData() {
   });
 
   const { data: lessons = [], isLoading: loadingLessons } = useQuery({
-    queryKey: ['study', userId, 'lessons'],
+    queryKey: ['study', userId, 'lessons', subjects],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await supabase.from('lessons').select('*').eq('user_id', userId);
       if (error) throw error;
       const rawLessons = (data ?? []).map(rowToLesson);
 
+      const subjectMap = new Map<string, string>();
+      subjects.forEach(s => {
+        subjectMap.set(s.id, s.name.trim().toLowerCase());
+      });
+
       const map = new Map<string, Lesson>();
       rawLessons.forEach(l => {
-        const key = `${l.subjectId}-${l.number}`;
+        const sName = subjectMap.get(l.subjectId) || l.subjectId.trim().toLowerCase();
+        const key = `${sName}-${l.number}`;
         if (!map.has(key)) {
           map.set(key, { ...l });
         } else {
@@ -728,13 +734,17 @@ export function useStudyData() {
         return result;
       });
 
-      // 2. Persist in Supabase cleanly
+      // 2. Persist in Supabase cleanly across all matching subject rows
       try {
+        const sameNameSubjectIds = subj
+          ? subjects.filter(s => s.name.trim().toLowerCase() === subj.name.trim().toLowerCase()).map(s => s.id)
+          : [realSubjectId];
+
         const { data: dbRows, error: findErr } = await supabase
           .from('lessons')
           .select('id')
           .eq('user_id', userId)
-          .eq('subject_id', realSubjectId)
+          .in('subject_id', sameNameSubjectIds)
           .eq('number', targetNumber);
 
         if (findErr) {
