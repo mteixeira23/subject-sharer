@@ -15,11 +15,12 @@ function rowToContest(r: any): Contest {
 }
 
 function rowToSubject(r: any): Subject {
+  const sefazDef = SEFAZ_BA_SUBJECTS.find(s => s.name.trim().toLowerCase() === r.name.trim().toLowerCase());
   return {
     id: r.id,
     contestId: r.contest_id,
     name: r.name,
-    totalLessons: r.total_lessons,
+    totalLessons: sefazDef ? sefazDef.totalLessons : (r.total_lessons || 1),
     color: r.color,
   };
 }
@@ -923,37 +924,45 @@ export function useStudyData() {
   const getLessonsBySubject = useCallback(
     (subjectId: string) => {
       const subject = subjects.find(s => s.id === subjectId);
+      const sefazDef = subject
+        ? SEFAZ_BA_SUBJECTS.find(s => s.name.trim().toLowerCase() === subject.name.trim().toLowerCase())
+        : null;
+      const targetCount = sefazDef ? sefazDef.totalLessons : (subject?.totalLessons || 1);
+
       const rawList = enrichedCurrentCycleLessons
         .filter(l => l.subjectId === subjectId)
         .sort((a, b) => a.number - b.number);
 
       const seenNumbers = new Set<number>();
-      const list = rawList.filter(l => {
-        if (seenNumbers.has(l.number)) return false;
-        seenNumbers.add(l.number);
-        return true;
+      const result: Lesson[] = [];
+
+      rawList.forEach(l => {
+        if (l.number <= targetCount && !seenNumbers.has(l.number)) {
+          seenNumbers.add(l.number);
+          result.push(l);
+        }
       });
 
-      if (list.length > 0) return list;
-
-      if (!subject) return [];
-      const sefazDef = SEFAZ_BA_SUBJECTS.find(s => s.name.trim().toLowerCase() === subject.name.trim().toLowerCase());
-      const totalCount = sefazDef ? sefazDef.totalLessons : (subject.totalLessons || 1);
-      const fallbackList: Lesson[] = [];
-      for (let i = 1; i <= totalCount; i++) {
-        fallbackList.push({
-          id: `${subjectId}-fallback-${i}`,
-          subjectId: subjectId,
-          number: i,
-          name: getLessonName(subject.name, i),
-          theoryCompleted: false,
-          reviewCompleted: false,
-          questionsCount: 0,
-          correctAnswers: 0,
-          cycle: 1,
-        });
+      if (subject) {
+        for (let i = 1; i <= targetCount; i++) {
+          if (!seenNumbers.has(i)) {
+            result.push({
+              id: `${subjectId}-fallback-${i}`,
+              subjectId: subjectId,
+              number: i,
+              name: getLessonName(subject.name, i),
+              theoryCompleted: false,
+              reviewCompleted: false,
+              questionsCount: 0,
+              correctAnswers: 0,
+              cycle: 1,
+            });
+          }
+        }
       }
-      return fallbackList;
+
+      result.sort((a, b) => a.number - b.number);
+      return result;
     },
     [enrichedCurrentCycleLessons, subjects],
   );
