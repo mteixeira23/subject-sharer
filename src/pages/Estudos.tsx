@@ -42,6 +42,7 @@ function SectionDivider({ label }: { label: string }) {
 }
 
 export default function Estudos() {
+  const [, setTick] = useState(0);
   const {
     data, getOverallProgress, getSubjectProgress, getWeakSubjects, getTodayStudyTime,
     addSubject, updateSubject, deleteSubject, getLessonsBySubject, addLesson, updateLesson, deleteLesson,
@@ -472,8 +473,28 @@ export default function Estudos() {
                               {displayName}
                             </span>
                           </TableCell>
-                          <TableCell><Checkbox checked={lesson.theoryCompleted} onCheckedChange={(c) => activeSubject && updateLesson(lesson.id, { theoryCompleted: !!c }, activeSubject.id, lesson.number)} /></TableCell>
-                          <TableCell><Checkbox checked={lesson.reviewCompleted} onCheckedChange={(c) => activeSubject && updateLesson(lesson.id, { reviewCompleted: !!c }, activeSubject.id, lesson.number)} /></TableCell>
+                          <TableCell>
+                            <Checkbox 
+                              checked={Boolean(lesson.theoryCompleted)} 
+                              onCheckedChange={(c) => {
+                                if (activeSubject) {
+                                  updateLesson(lesson.id, { theoryCompleted: !!c }, activeSubject.id, lesson.number);
+                                  setTick(t => t + 1);
+                                }
+                              }} 
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Checkbox 
+                              checked={Boolean(lesson.reviewCompleted)} 
+                              onCheckedChange={(c) => {
+                                if (activeSubject) {
+                                  updateLesson(lesson.id, { reviewCompleted: !!c }, activeSubject.id, lesson.number);
+                                  setTick(t => t + 1);
+                                }
+                              }} 
+                            />
+                          </TableCell>
                           <TableCell>{lesson.questionsCount}</TableCell>
                           <TableCell>{lesson.correctAnswers}</TableCell>
                           <TableCell><span className={cn(perf >= 70 ? 'text-success' : perf >= 50 ? 'text-warning' : perf > 0 ? 'text-danger' : 'text-muted-foreground')}>{lesson.questionsCount > 0 ? `${perf.toFixed(1)}%` : '-'}</span></TableCell>

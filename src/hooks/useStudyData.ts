@@ -113,7 +113,7 @@ export function useStudyData() {
   });
 
   const { data: lessons = [], isLoading: loadingLessons } = useQuery({
-    queryKey: ['study', userId, 'lessons', subjects],
+    queryKey: ['study', userId, 'lessons'],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await supabase.from('lessons').select('*').eq('user_id', userId);
@@ -757,9 +757,10 @@ export function useStudyData() {
         return result;
       };
 
-      queryClient.setQueryData(['study', userId, 'lessons'], updater);
-      queryClient.setQueryData(['study', undefined, 'lessons'], updater);
-      queryClient.setQueryData(['study', 'default-user', 'lessons'], updater);
+      queryClient.setQueriesData({ queryKey: ['study'] }, (old: any) => {
+        if (Array.isArray(old)) return updater(old);
+        return old;
+      });
 
       // 2. Persist in Supabase cleanly across all matching subject rows
       try {
