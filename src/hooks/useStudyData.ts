@@ -711,6 +711,13 @@ export function useStudyData() {
       if (updates.questionsCount !== undefined) rowUpdates.questions_count = updates.questionsCount;
       if (updates.correctAnswers !== undefined) rowUpdates.correct_answers = updates.correctAnswers;
 
+      if (subj && updates.theoryCompleted !== undefined) {
+        localStorage.setItem(`lesson_flag_${userId}_${subj.name.trim().toLowerCase()}_${targetNumber}_theory`, String(updates.theoryCompleted));
+      }
+      if (subj && updates.reviewCompleted !== undefined) {
+        localStorage.setItem(`lesson_flag_${userId}_${subj.name.trim().toLowerCase()}_${targetNumber}_review`, String(updates.reviewCompleted));
+      }
+
       // 1. Optimistically update local React Query state for 0ms lag across all matching subject representations
       const sameNameSubjectIds = subj
         ? new Set(subjects.filter(s => s.name.trim().toLowerCase() === subj.name.trim().toLowerCase()).map(s => s.id))
@@ -1104,15 +1111,34 @@ export function useStudyData() {
         })
         .sort((a, b) => a.number - b.number);
 
-      const seenNumbers = new Set<number>();
-      const result: Lesson[] = [];
-
+      const numberMap = new Map<number, Lesson>();
       rawList.forEach(l => {
-        if (l.number <= targetCount && !seenNumbers.has(l.number)) {
-          seenNumbers.add(l.number);
-          result.push(l);
+        if (l.number <= targetCount) {
+          if (!numberMap.has(l.number)) {
+            numberMap.set(l.number, { ...l });
+          } else {
+            const existing = numberMap.get(l.number)!;
+            numberMap.set(l.number, {
+              ...existing,
+              theoryCompleted: existing.theoryCompleted || l.theoryCompleted,
+              reviewCompleted: existing.reviewCompleted || l.reviewCompleted,
+              questionsCount: Math.max(existing.questionsCount || 0, l.questionsCount || 0),
+              correctAnswers: Math.max(existing.correctAnswers || 0, l.correctAnswers || 0),
+            });
+          }
         }
       });
+
+      // Apply LocalStorage fail-safe override
+      numberMap.forEach((l, num) => {
+        const lsTheory = localStorage.getItem(`lesson_flag_${userId}_${subject?.name.trim().toLowerCase()}_${num}_theory`);
+        const lsReview = localStorage.getItem(`lesson_flag_${userId}_${subject?.name.trim().toLowerCase()}_${num}_review`);
+        if (lsTheory !== null) l.theoryCompleted = l.theoryCompleted || lsTheory === 'true';
+        if (lsReview !== null) l.reviewCompleted = l.reviewCompleted || lsReview === 'true';
+      });
+
+      const result: Lesson[] = Array.from(numberMap.values());
+      const seenNumbers = new Set<number>(result.map(r => r.number));
 
       if (subject) {
         for (let i = 1; i <= targetCount; i++) {
