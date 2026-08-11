@@ -187,8 +187,24 @@ export function useStudyData() {
         const currentSubjects = [...subjects];
 
         if (activeContestId) {
+          // A.0) Purge non-SEFAZ-BA subjects from Supabase database
+          const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
+          const nonSefazSubjects = currentSubjects.filter(s => !sefazNames.has(s.name.trim().toLowerCase()));
+
+          if (nonSefazSubjects.length > 0) {
+            const nonSefazIds = nonSefazSubjects.map(s => s.id);
+            for (let i = 0; i < nonSefazIds.length; i += 100) {
+              const batch = nonSefazIds.slice(i, i + 100);
+              await supabase.from('subjects').delete().in('id', batch);
+            }
+          }
+
           // A) Insert missing subjects
-          const existingSubjectNames = new Set(currentSubjects.map(s => s.name.trim().toLowerCase()));
+          const existingSubjectNames = new Set(
+            currentSubjects
+              .filter(s => sefazNames.has(s.name.trim().toLowerCase()))
+              .map(s => s.name.trim().toLowerCase())
+          );
           const missingSubjects = SEFAZ_BA_SUBJECTS.filter(
             s => !existingSubjectNames.has(s.name.trim().toLowerCase())
           );
@@ -199,7 +215,7 @@ export function useStudyData() {
               contest_id: activeContestId,
               name: s.name,
               total_lessons: s.totalLessons,
-              color: s.color || SUBJECT_COLORS[(currentSubjects.length + i) % SUBJECT_COLORS.length],
+              color: s.color || SUBJECT_COLORS[i % SUBJECT_COLORS.length],
             }));
 
             const { data: insertedSubjects, error: subjErr } = await supabase
@@ -450,10 +466,10 @@ export function useStudyData() {
     seedAndSync();
   }, [userId, loadingContests, loadingSubjects, loadingLessons, contests, subjects, lessons, seeding, invalidate]);
 
-  // ── Active subjects deduplication ─────────────────────────────────────
+  // ── Active subjects (Strictly 13 SEFAZ-BA subjects) ───────────────────
   const activeSubjects = useMemo(() => {
-    const activeContestId = contests[0]?.id;
-    const list = activeContestId ? subjects.filter(s => s.contestId === activeContestId) : subjects;
+    const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
+    const list = subjects.filter(s => sefazNames.has(s.name.trim().toLowerCase()));
     const seen = new Set<string>();
     return list.filter(s => {
       const key = s.name.trim().toLowerCase();
@@ -461,7 +477,7 @@ export function useStudyData() {
       seen.add(key);
       return true;
     });
-  }, [subjects, contests]);
+  }, [subjects]);
 
   // ── Aggregated data object ───────────────────────────────────────────────
 
