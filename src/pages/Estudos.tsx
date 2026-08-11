@@ -246,8 +246,11 @@ export default function Estudos() {
 
 
   // ── Matérias: subject detail view ──
-  const lessons = selectedSubject ? getLessonsBySubject(selectedSubject.id) : [];
-  const subjectProgress = selectedSubject ? getSubjectProgress(selectedSubject.id) : null;
+  const activeSubject = selectedSubject
+    ? (data.subjects.find(s => s.id === selectedSubject.id || s.name.trim().toLowerCase() === selectedSubject.name.trim().toLowerCase()) || selectedSubject)
+    : null;
+  const lessons = activeSubject ? getLessonsBySubject(activeSubject.id) : [];
+  const subjectProgress = activeSubject ? getSubjectProgress(activeSubject.id) : null;
 
   return (
     <div className="flex-1 p-4 md:p-6 space-y-4 md:space-y-6">
@@ -408,19 +411,19 @@ export default function Estudos() {
       {/* ═══════ MATÉRIAS ═══════ */}
       <SectionDivider label="Matérias" />
 
-      {selectedSubject && subjectProgress ? (
+      {activeSubject && subjectProgress ? (
         <>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" onClick={() => setSelectedSubject(null)}><ArrowLeft className="h-5 w-5" /></Button>
               <div className="flex items-center gap-3">
-                <div className="h-4 w-4 rounded-full" style={{ backgroundColor: selectedSubject.color }} />
-                <h2 className="text-xl font-bold">{selectedSubject.name}</h2>
+                <div className="h-4 w-4 rounded-full" style={{ backgroundColor: activeSubject.color }} />
+                <h2 className="text-xl font-bold">{activeSubject.name}</h2>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon" onClick={(e) => handleEditSubject(selectedSubject, e)}><Pencil className="h-4 w-4" /></Button>
-              <Button variant="outline" size="icon" onClick={(e) => handleDeleteSubjectClick(selectedSubject, e)}><Trash2 className="h-4 w-4" /></Button>
+              <Button variant="outline" size="icon" onClick={(e) => handleEditSubject(activeSubject, e)}><Pencil className="h-4 w-4" /></Button>
+              <Button variant="outline" size="icon" onClick={(e) => handleDeleteSubjectClick(activeSubject, e)}><Trash2 className="h-4 w-4" /></Button>
             </div>
           </div>
 
@@ -456,14 +459,14 @@ export default function Estudos() {
                       const perf = lesson.questionsCount > 0 ? (lesson.correctAnswers / lesson.questionsCount) * 100 : 0;
                       const displayName = lesson.name && lesson.name.trim() !== ''
                         ? lesson.name
-                        : (selectedSubject ? getLessonName(selectedSubject.name, lesson.number) : `Aula ${String(lesson.number - 1).padStart(2, '0')}`);
+                        : (activeSubject ? getLessonName(activeSubject.name, lesson.number) : `Aula ${String(lesson.number - 1).padStart(2, '0')}`);
                       return (
                         <TableRow key={lesson.id}>
                           <TableCell className="font-medium">{lesson.number}</TableCell>
                           <TableCell>
                             <span 
                               className="font-medium cursor-pointer hover:underline hover:text-emerald-500 transition-colors"
-                              onClick={() => selectedSubject && handleOpenSimuladoForLesson(selectedSubject.id, lesson.number)}
+                              onClick={() => activeSubject && handleOpenSimuladoForLesson(activeSubject.id, lesson.number)}
                               title="Clique para fazer o simulado de 50 questões desta aula"
                             >
                               {displayName}
@@ -480,7 +483,7 @@ export default function Estudos() {
                                 variant="outline" 
                                 size="sm" 
                                 className="h-7 px-2 text-xs gap-1 text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10 font-semibold"
-                                onClick={() => selectedSubject && handleOpenSimuladoForLesson(selectedSubject.id, lesson.number)}
+                                onClick={() => activeSubject && handleOpenSimuladoForLesson(activeSubject.id, lesson.number)}
                                 title="Fazer simulado de 50 questões desta aula"
                               >
                                 <Sparkles className="h-3.5 w-3.5" />

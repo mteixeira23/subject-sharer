@@ -966,10 +966,10 @@ export function useStudyData() {
     [subjects],
   );
 
-  // Helper to get current cycle lessons only (deduplicated & merged by subjectId & number)
+  // Helper to get current cycle lessons only (deduplicated & merged by subject name & number)
   const currentCycleLessons = useMemo(() => {
     const list = lessons.filter(l => {
-      const subject = subjects.find(s => s.id === l.subjectId);
+      const subject = subjects.find(s => s.id === l.subjectId || s.name.trim().toLowerCase() === l.subjectId.trim().toLowerCase());
       const contest = subject ? contests.find(c => c.id === subject.contestId) : null;
       const targetCycle = contest?.currentCycle ?? 1;
       return (l.cycle ?? 1) === targetCycle;
@@ -977,9 +977,12 @@ export function useStudyData() {
 
     const map = new Map<string, Lesson>();
     list.forEach(l => {
-      const key = `${l.subjectId}-${l.number}`;
+      const subject = subjects.find(s => s.id === l.subjectId || s.name.trim().toLowerCase() === l.subjectId.trim().toLowerCase());
+      const subjectNameKey = subject ? subject.name.trim().toLowerCase() : l.subjectId.trim().toLowerCase();
+      const key = `${subjectNameKey}-${l.number}`;
+
       if (!map.has(key)) {
-        map.set(key, { ...l });
+        map.set(key, { ...l, subjectId: subject ? subject.id : l.subjectId });
       } else {
         const existing = map.get(key)!;
         map.set(key, {
@@ -1000,7 +1003,7 @@ export function useStudyData() {
     const subjectMap = new Map<string, string>(subjects.map(s => [s.id, s.name]));
     return currentCycleLessons.map(lesson => {
       const lessonSessions = questionSessions.filter(
-        s => s.subjectId === lesson.subjectId && s.lessonNumber === lesson.number
+        s => (s.subjectId === lesson.subjectId || subjectMap.get(s.subjectId) === subjectMap.get(lesson.subjectId)) && s.lessonNumber === lesson.number
       );
       const sessionQuestions = lessonSessions.reduce((acc, s) => acc + s.questionsCount, 0);
       const sessionCorrect = lessonSessions.reduce((acc, s) => acc + s.correctAnswers, 0);
@@ -1027,14 +1030,23 @@ export function useStudyData() {
 
   const getLessonsBySubject = useCallback(
     (subjectId: string) => {
-      const subject = subjects.find(s => s.id === subjectId);
+      const subject = subjects.find(
+        s => s.id === subjectId || s.name.trim().toLowerCase() === subjectId.trim().toLowerCase()
+      );
       const sefazDef = subject
         ? SEFAZ_BA_SUBJECTS.find(s => s.name.trim().toLowerCase() === subject.name.trim().toLowerCase())
         : null;
       const targetCount = sefazDef ? sefazDef.totalLessons : (subject?.totalLessons || 1);
 
       const rawList = enrichedCurrentCycleLessons
-        .filter(l => l.subjectId === subjectId)
+        .filter(l => {
+          if (l.subjectId === subjectId) return true;
+          if (subject) {
+            const lSubj = subjects.find(s => s.id === l.subjectId || s.name.trim().toLowerCase() === l.subjectId.trim().toLowerCase());
+            return lSubj && lSubj.name.trim().toLowerCase() === subject.name.trim().toLowerCase();
+          }
+          return false;
+        })
         .sort((a, b) => a.number - b.number);
 
       const seenNumbers = new Set<number>();
@@ -1051,8 +1063,8 @@ export function useStudyData() {
         for (let i = 1; i <= targetCount; i++) {
           if (!seenNumbers.has(i)) {
             result.push({
-              id: `${subjectId}-fallback-${i}`,
-              subjectId: subjectId,
+              id: `${subject.id}-fallback-${i}`,
+              subjectId: subject.id,
               number: i,
               name: getLessonName(subject.name, i),
               theoryCompleted: false,
@@ -1079,12 +1091,12 @@ export function useStudyData() {
       const reviewCompleted = subjectLessons.filter(l => l.reviewCompleted).length;
       const fullyCompleted = subjectLessons.filter(l => l.theoryCompleted && l.reviewCompleted && l.questionsCount > 0).length;
       const lessonsWithQuestions = subjectLessons.filter(l => l.questionsCount > 0).length;
-      const totalQuestions = subjectLessons.reduce((acc, l) => acc + l.questionsCount, 0);
-      const totalCorrect = subjectLessons.reduce((acc, l) => acc + l.correctAnswers, 0);
+      const totalQuestions = subjectLessons.reduce((acc, l) => acc + (l.questionsCount || 0), 0);
+      const totalCorrect = subjectLessons.reduce((acc, l) => acc + (l.correctAnswers || 0), 0);
       const performance = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
-      const completedCount = subjectLessons.filter(l => l.theoryCompleted || l.reviewCompleted).length;
 
       return {
+        completedLessons: theoryCompleted,
         totalLessons,
         theoryCompleted,
         reviewCompleted,
@@ -1094,7 +1106,6 @@ export function useStudyData() {
         reviewProgress: totalLessons > 0 ? (reviewCompleted / totalLessons) * 100 : 0,
         questionsLessonsProgress: totalLessons > 0 ? (lessonsWithQuestions / totalLessons) * 100 : 0,
         completeProgress: totalLessons > 0 ? (fullyCompleted / totalLessons) * 100 : 0,
-        completedLessons: theoryCompleted,
         progress: totalLessons > 0 ? (theoryCompleted / totalLessons) * 100 : 0,
         totalQuestions,
         totalCorrect,
