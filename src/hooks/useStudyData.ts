@@ -706,13 +706,22 @@ export function useStudyData() {
       if (updates.questionsCount !== undefined) rowUpdates.questions_count = updates.questionsCount;
       if (updates.correctAnswers !== undefined) rowUpdates.correct_answers = updates.correctAnswers;
 
-      // 1. Optimistically update local React Query state for 0ms lag
+      // 1. Optimistically update local React Query state for 0ms lag across all matching subject representations
+      const sameNameSubjectIds = subj
+        ? new Set(subjects.filter(s => s.name.trim().toLowerCase() === subj.name.trim().toLowerCase()).map(s => s.id))
+        : new Set([realSubjectId, targetSubjectId]);
+
       queryClient.setQueryData(['study', userId, 'lessons'], (old: Lesson[] = []) => {
         let updated = false;
         const result = old.map(l => {
-          if ((l.subjectId === realSubjectId || l.subjectId === targetSubjectId) && l.number === targetNumber) {
+          const lSubj = subjects.find(s => s.id === l.subjectId || s.name.trim().toLowerCase() === l.subjectId.trim().toLowerCase());
+          const isMatch = (lSubj && subj && lSubj.name.trim().toLowerCase() === subj.name.trim().toLowerCase())
+            || sameNameSubjectIds.has(l.subjectId)
+            || l.subjectId === targetSubjectId;
+
+          if (isMatch && l.number === targetNumber) {
             updated = true;
-            return { ...l, subjectId: realSubjectId, ...updates };
+            return { ...l, ...updates };
           }
           return l;
         });
