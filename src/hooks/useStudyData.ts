@@ -1248,8 +1248,8 @@ export function useStudyData() {
   );
 
   const getOverallProgress = useCallback(() => {
-    const allOfficialLessons = activeSubjects.flatMap(s => getLessonsBySubject(s.id));
-    const totalLessons = allOfficialLessons.length;
+    const allOfficialLessons = subjects.flatMap(s => getLessonsBySubject(s.id));
+    const totalLessons = allOfficialLessons.length > 0 ? Math.min(235, allOfficialLessons.length) : 235;
     const completedLessons = allOfficialLessons.filter(l => l.theoryCompleted || l.reviewCompleted).length;
 
     const totalQuestions = allOfficialLessons.reduce((acc, l) => acc + l.questionsCount, 0);
@@ -1257,7 +1257,7 @@ export function useStudyData() {
     const performance = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
 
     return { totalLessons, completedLessons, progress: totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0, totalQuestions, totalCorrect, performance };
-  }, [activeSubjects, getLessonsBySubject]);
+  }, [subjects, getLessonsBySubject]);
 
   const getWeakSubjects = useCallback(
     (limit = 3) =>
