@@ -735,25 +735,19 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     bank = REAL_CONCURSO_QUESTIONS.matematica_financeira;
   } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
     bank = REAL_CONCURSO_QUESTIONS.estatistica;
-  } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público')) {
-    bank = REAL_CONCURSO_QUESTIONS.casp;
-  } else if (lowerSubj.includes('contabilidade')) {
-    bank = REAL_CONCURSO_QUESTIONS.contabilidade_geral;
-  } else if (lowerSubj.includes('administrativo')) {
-    bank = REAL_CONCURSO_QUESTIONS.administrativo;
-  } else if (lowerSubj.includes('constitucional')) {
-    bank = REAL_CONCURSO_QUESTIONS.constitucional;
+  } else if (lowerSubj.includes('contabil') || lowerSubj.includes('casp')) {
+    bank = REAL_CONCURSO_QUESTIONS.contabilidade;
+  } else if (lowerSubj.includes('direito') || lowerSubj.includes('constituc') || lowerSubj.includes('administ')) {
+    bank = REAL_CONCURSO_QUESTIONS.direito;
   } else if (lowerSubj.includes('auditoria')) {
     bank = REAL_CONCURSO_QUESTIONS.auditoria;
-  } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua')) {
+  } else if (lowerSubj.includes('portug')) {
     bank = REAL_CONCURSO_QUESTIONS.portugues;
   } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças')) {
     bank = REAL_CONCURSO_QUESTIONS.economia;
-  } else if (lowerSubj.includes('administração') || lowerSubj.includes('orçamento')) {
-    bank = REAL_CONCURSO_QUESTIONS.administracao_financas;
-  } else if (lowerSubj.includes('informática')) {
+  } else if (lowerSubj.includes('informát') || lowerSubj.includes('tecnologia')) {
     bank = REAL_CONCURSO_QUESTIONS.informatica;
-  } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial')) {
+  } else if (lowerSubj.includes('racial') || lowerSubj.includes('igualdade')) {
     bank = REAL_CONCURSO_QUESTIONS.igualdade_racial;
   }
 
@@ -772,9 +766,10 @@ function buildDomainSpecificQuestions(
     const qNum = idx + 1;
     const isTF = idx % 3 === 1;
 
-    // Use authentic bank item if available for early questions
-    if (bank && bank.length > 0 && idx < bank.length * 2) {
-      const baseQ = bank[idx % bank.length];
+    // Use authentic bank item if available, rotated dynamically by lessonNum
+    if (bank && bank.length > 0 && idx % 5 === 0) {
+      const bankIdx = (lessonNum * 7 + Math.floor(idx / 5)) % bank.length;
+      const baseQ = bank[bankIdx];
       return {
         ...baseQ,
         id: qNum,
@@ -786,31 +781,31 @@ function buildDomainSpecificQuestions(
     let qData: Partial<QuestionData>;
 
     if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
-      qData = getTaxLawQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getTaxLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('matemática') || lowerSubj.includes('financeira')) {
-      qData = getMathFinanceQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getMathFinanceQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
-      qData = getStatisticsQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getStatisticsQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público')) {
-      qData = getCASPQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getCASPQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('contabilidade')) {
-      qData = getAccountingQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getAccountingQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('administrativo')) {
-      qData = getAdminLawQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getAdminLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('constitucional')) {
-      qData = getConstLawQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getConstLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('auditoria')) {
-      qData = getAuditQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getAuditQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua')) {
-      qData = getPortugueseQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getPortugueseQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças') || lowerSubj.includes('administração')) {
-      qData = getEconomicsQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getEconomicsQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('informática')) {
-      qData = getITQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getITQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial')) {
-      qData = getRacialEqualityQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getRacialEqualityQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else {
-      qData = getGeneralFiscalQuestion(qNum, subjectName, lessonTitle, isTF, idx);
+      qData = getGeneralFiscalQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     }
 
     return {
@@ -826,12 +821,12 @@ function buildDomainSpecificQuestions(
   });
 }
 
-// ── DOMAIN GENERATORS WITH DISTINCT QUESTIONS ──────────────────────────────────
+// ── DOMAIN GENERATORS WITH DISTINCT QUESTIONS PER LESSON ──────────────────────
 
-function getTaxLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getTaxLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
   const tfItems = [
     {
-      stmt: `Em conformidade com o CTN, a outorga de isenção e a anistia tributária dependem de lei específica federal, estadual ou municipal que regule exclusivamente a matéria ou o tributo incidente.`,
+      stmt: `Em conformidade com o CTN, a outorga de isenção e a anistia tributária dependem de lei específica que regule exclusivamente a matéria ou o tributo incidente.`,
       correct: 0,
       exp: `CERTO. Art. 150, § 6º da CF/88 e Art. 176 do CTN exigem lei específica para isenção e anistia.`
     },
@@ -851,17 +846,19 @@ function getTaxLawQuestion(qNum: number, subjectName: string, lessonTitle: strin
       exp: `CERTO. Art. 113, § 1º do CTN define a obrigação tributária principal.`
     },
     {
-      stmt: `A restituição de tributos que comportem, por sua natureza, transferência do encargo financeiro somente será feita a quem prove haver assumido referido encargo, ou, no caso de tê-lo transferido a terceiro, estar por este expressamente autorizado a recebê-la.`,
-      correct: 0,
-      exp: `CERTO. Inteligência do Art. 166 do CTN e da Súmula 546 do STF (tributos indiretos como o ICMS).`
+      stmt: `As imunidades tributárias genéricas previstas no Artigo 150, VI da CF/88 aplicam-se a impostos, taxas e contribuições de melhoria de forma indistinta.`,
+      correct: 1,
+      exp: `ERRADO. As imunidades do Art. 150, VI da CF/88 aplicam-se exclusivamente aos IMPOSTOS.`
     }
   ];
 
+  const seed = lessonNum * 13 + idx;
+
   if (isTF) {
-    const item = tfItems[idx % tfItems.length];
+    const item = tfItems[seed % tfItems.length];
     return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
-      statement: `[Questão ${qNum}] No âmbito do Direito Tributário referente ao tópico "${lessonTitle}", julgue o item a seguir:\n\n"${item.stmt}"`,
+      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Direito Tributário)',
+      statement: `[Questão ${qNum}] No âmbito de "${lessonTitle}" em Direito Tributário, julgue a afirmativa:\n\n"${item.stmt}"`,
       options: ['Certo', 'Errado'],
       correctAnswer: item.correct,
       explanation: item.exp,
@@ -907,7 +904,7 @@ function getTaxLawQuestion(qNum: number, subjectName: string, lessonTitle: strin
     }
   ];
 
-  const scenario = mcScenarios[idx % mcScenarios.length];
+  const scenario = mcScenarios[seed % mcScenarios.length];
   return {
     source: 'FGV – Auditor Fiscal / SEFAZ-BA',
     statement: `[Questão ${qNum}] ${scenario.stmt}`,
@@ -917,11 +914,13 @@ function getTaxLawQuestion(qNum: number, subjectName: string, lessonTitle: strin
   };
 }
 
-function getAdminLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getAdminLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 17 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Direito Administrativo)',
       statement: `[Questão ${qNum}] A respeito das normas atinentes a "${lessonTitle}" em Direito Administrativo, julgue a afirmativa:\n\n"Em consonância com a Nova Lei de Licitações (Lei nº 14.133/2021), a inexigibilidade de licitação é cabível quando houver inviabilidade de competição, como na contratação de profissional do setor artístico consagrado pela crítica especializada."`,
       options: ['Certo', 'Errado'],
       correctAnswer: isCorrect ? 0 : 1,
@@ -958,7 +957,7 @@ function getAdminLawQuestion(qNum: number, subjectName: string, lessonTitle: str
     }
   ];
 
-  const scenario = mcScenarios[idx % mcScenarios.length];
+  const scenario = mcScenarios[seed % mcScenarios.length];
   return {
     source: 'FCC – Auditor Fiscal / SEFAZ-PE',
     statement: `[Questão ${qNum}] ${scenario.stmt}`,
@@ -968,11 +967,13 @@ function getAdminLawQuestion(qNum: number, subjectName: string, lessonTitle: str
   };
 }
 
-function getConstLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getConstLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 19 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
-      source: 'CEBRASPE – SEFAZ-BA',
+      source: 'CEBRASPE – SEFAZ-BA (Direito Constitucional)',
       statement: `[Questão ${qNum}] Considerando os direitos fundamentais e o tópico "${lessonTitle}", julgue a afirmativa:\n\n"A casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito ou desastre, ou para prestar socorro, ou, durante o dia, por determinação judicial."`,
       options: ['Certo', 'Errado'],
       correctAnswer: isCorrect ? 0 : 1,
@@ -997,12 +998,14 @@ function getConstLawQuestion(qNum: number, subjectName: string, lessonTitle: str
   };
 }
 
-function getAccountingQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getAccountingQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 23 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
-      statement: `[Questão ${qNum}] De acordo com a Estrutura Conceitual para Relatório Financeiro (CPC 00 R2) e a temática de "${lessonTitle}", julgue o item:\n\n"Ativo é um recurso econômico presente controlado pela entidade como resultado de eventos passados, sendo recurso econômico um direito que tem o potencial de produzir benefícios econômicos."`,
+      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Contabilidade)',
+      statement: `[Questão ${qNum}] De acordo com a Estrutura Conceitual para Relatório Financeiro (CPC 00 R2) e a temática de "${lessonTitle}", julgue a afirmativa:\n\n"Ativo é um recurso econômico presente controlado pela entidade como resultado de eventos passados, sendo recurso econômico um direito que tem o potencial de produzir benefícios econômicos."`,
       options: ['Certo', 'Errado'],
       correctAnswer: isCorrect ? 0 : 1,
       explanation: isCorrect
@@ -1038,7 +1041,7 @@ function getAccountingQuestion(qNum: number, subjectName: string, lessonTitle: s
     }
   ];
 
-  const scenario = mcScenarios[idx % mcScenarios.length];
+  const scenario = mcScenarios[seed % mcScenarios.length];
   return {
     source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
     statement: `[Questão ${qNum}] ${scenario.stmt}`,
@@ -1048,11 +1051,13 @@ function getAccountingQuestion(qNum: number, subjectName: string, lessonTitle: s
   };
 }
 
-function getAuditQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getAuditQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 29 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Auditoria)',
       statement: `[Questão ${qNum}] Acerca dos procedimentos de auditoria em "${lessonTitle}", julgue a afirmativa:\n\n"A confirmação externa (circularização) consiste na obtenção de evidência de auditoria direta de um terceiro (parte confirmante) em formato escrito, em papel ou por meio eletrônico."`,
       options: ['Certo', 'Errado'],
       correctAnswer: isCorrect ? 0 : 1,
@@ -1077,9 +1082,11 @@ function getAuditQuestion(qNum: number, subjectName: string, lessonTitle: string
   };
 }
 
-function getPortugueseQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getPortugueseQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 31 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
       source: 'CEBRASPE – SEFAZ-BA (Língua Portuguesa)',
       statement: `[Questão ${qNum}] Quanto às regras gramaticais e ao tema "${lessonTitle}", julgue o item:\n\n"Na frase 'Trata-se de processos fiscais complexos', o verbo 'tratar' permanece obrigatoriamente no singular por acompanhar a partícula de indeterminação do sujeito 'se' intermediada pela preposição 'de'."`,
@@ -1106,9 +1113,11 @@ function getPortugueseQuestion(qNum: number, subjectName: string, lessonTitle: s
   };
 }
 
-function getEconomicsQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getEconomicsQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 37 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
       source: 'CEBRASPE – SEFAZ-BA (Economia e Finanças)',
       statement: `[Questão ${qNum}] No contexto das Finanças Públicas e da LRF aplicáveis a "${lessonTitle}", julgue o item:\n\n"A Lei de Responsabilidade Fiscal (LC 101/2000) veda expressamente a realização de operações de crédito que excedam o montante das despesas de capital, ressalvadas as autorizadas mediante créditos suplementares ou especiais com finalidade precisa, aprovados pelo Poder Legislativo por maioria absoluta (Regra de Ouro)."`,
@@ -1135,7 +1144,9 @@ function getEconomicsQuestion(qNum: number, subjectName: string, lessonTitle: st
   };
 }
 
-function getMathFinanceQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getMathFinanceQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 41 + idx;
+
   const tfScenarios = [
     {
       stmt: `No Sistema de Amortização Constante (SAC), a quota de amortização do saldo devedor permanece constante durante todo o prazo do contrato, resultando em prestações periódicas decrescentes ao longo do tempo.`,
@@ -1155,7 +1166,7 @@ function getMathFinanceQuestion(qNum: number, subjectName: string, lessonTitle: 
   ];
 
   if (isTF) {
-    const item = tfScenarios[idx % tfScenarios.length];
+    const item = tfScenarios[seed % tfScenarios.length];
     return {
       source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Matemática Financeira)',
       statement: `[Questão ${qNum}] No estudo de "${lessonTitle}" em Matemática Financeira, julgue a afirmativa:\n\n"${item.stmt}"`,
@@ -1204,7 +1215,7 @@ function getMathFinanceQuestion(qNum: number, subjectName: string, lessonTitle: 
     }
   ];
 
-  const scenario = mcScenarios[idx % mcScenarios.length];
+  const scenario = mcScenarios[seed % mcScenarios.length];
   return {
     source: 'FGV – Auditor Fiscal / SEFAZ-AM',
     statement: `[Questão ${qNum}] ${scenario.stmt}`,
@@ -1214,7 +1225,9 @@ function getMathFinanceQuestion(qNum: number, subjectName: string, lessonTitle: 
   };
 }
 
-function getStatisticsQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getStatisticsQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 43 + idx;
+
   const tfScenarios = [
     {
       stmt: `Em estatística descritiva, a mediana é uma medida de tendência central insensível a valores discrepantes (outliers) no conjunto de dados ordenados, ao contrário da média aritmética simples.`,
@@ -1229,7 +1242,7 @@ function getStatisticsQuestion(qNum: number, subjectName: string, lessonTitle: s
   ];
 
   if (isTF) {
-    const item = tfScenarios[idx % tfScenarios.length];
+    const item = tfScenarios[seed % tfScenarios.length];
     return {
       source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Estatística)',
       statement: `[Questão ${qNum}] Em relação ao tema "${lessonTitle}" em Estatística, julgue a afirmativa:\n\n"${item.stmt}"`,
@@ -1266,7 +1279,7 @@ function getStatisticsQuestion(qNum: number, subjectName: string, lessonTitle: s
     }
   ];
 
-  const scenario = mcScenarios[idx % mcScenarios.length];
+  const scenario = mcScenarios[seed % mcScenarios.length];
   return {
     source: 'FCC – Auditor Fiscal / SEFAZ-PE',
     statement: `[Questão ${qNum}] ${scenario.stmt}`,
@@ -1276,9 +1289,11 @@ function getStatisticsQuestion(qNum: number, subjectName: string, lessonTitle: s
   };
 }
 
-function getCASPQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getCASPQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 47 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
       source: 'CEBRASPE – Contador / SEFAZ-AL (CASP)',
       statement: `[Questão ${qNum}] Em Contabilidade Aplicada ao Setor Público (CASP) sobre o tema "${lessonTitle}", julgue a afirmativa:\n\n"No Balanço Orçamentário elaborado segundo as normas do MCASP, a economia de despesa reflete o montante de dotação autorizada que não foi executado no exercício."`,
@@ -1305,9 +1320,11 @@ function getCASPQuestion(qNum: number, subjectName: string, lessonTitle: string,
   };
 }
 
-function getITQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getITQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 53 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
       source: 'CEBRASPE – SEFAZ-BA (TI)',
       statement: `[Questão ${qNum}] No que tange à Segurança da Informação no tópico "${lessonTitle}", julgue a afirmativa:\n\n"A criptografia assimétrica (ou de chave pública) utiliza duas chaves distintas porém matematicamente relacionadas: uma chave pública para codificar e uma chave privada para decodificar."`,
@@ -1334,9 +1351,11 @@ function getITQuestion(qNum: number, subjectName: string, lessonTitle: string, i
   };
 }
 
-function getRacialEqualityQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getRacialEqualityQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 59 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
       source: 'CEBRASPE – SEFAZ-BA (Igualdade Racial)',
       statement: `[Questão ${qNum}] Em consonância com a Lei nº 12.288/2010 (Estatuto da Igualdade Racial) e a Lei Estadual da Bahia nº 13.182/2014, julgue o item relativo a "${lessonTitle}":\n\n"Entende-se por ações afirmativas os programas e medidas especiais adotados pelo Estado e pela iniciativa privada para a reparação das distorções e desigualdades sociais e demais práticas discriminatórias adotadas nas relações públicas e privadas."`,
@@ -1363,9 +1382,11 @@ function getRacialEqualityQuestion(qNum: number, subjectName: string, lessonTitl
   };
 }
 
-function getGeneralFiscalQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number): Partial<QuestionData> {
+function getGeneralFiscalQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const seed = lessonNum * 61 + idx;
+
   if (isTF) {
-    const isCorrect = idx % 2 === 0;
+    const isCorrect = seed % 2 === 0;
     return {
       source: 'CEBRASPE – SEFAZ-BA',
       statement: `[Questão ${qNum}] No âmbito dos conhecimentos fiscais inerentes a "${lessonTitle}", julgue a afirmativa:\n\n"A atividade administrativa de lançamento é vinculada e obrigatória, sob pena de responsabilidade funcional da autoridade fiscal."`,

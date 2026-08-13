@@ -298,47 +298,65 @@ export const FINANCAS_PUBLICAS_LESSON_NAMES: Record<number, string> = {
 };
 
 export function getLessonName(subjectName: string, lessonNumber: number): string {
+  const key = lessonNumber + 1;
+  const keyAlt = lessonNumber;
   const nameClean = (subjectName || '').trim().toLowerCase();
-  if (nameClean.includes('constitucional') && DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber]) {
-    return DIREITO_CONSTITUCIONAL_LESSON_NAMES[lessonNumber];
+
+  const resolve = (dict: Record<number, string>) => dict[key] || dict[keyAlt];
+
+  if (nameClean.includes('constitucional')) {
+    const res = resolve(DIREITO_CONSTITUCIONAL_LESSON_NAMES);
+    if (res) return res;
   }
-  if ((nameClean.includes('portug') || nameClean.includes('língua') || nameClean.includes('lingua')) && PORTUGUES_LESSON_NAMES[lessonNumber]) {
-    return PORTUGUES_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('portug') || nameClean.includes('língua') || nameClean.includes('lingua')) {
+    const res = resolve(PORTUGUES_LESSON_NAMES);
+    if (res) return res;
   }
-  if (nameClean.includes('racial') && IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber]) {
-    return IGUALDADE_RACIAL_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('racial')) {
+    const res = resolve(IGUALDADE_RACIAL_LESSON_NAMES);
+    if (res) return res;
   }
-  if (nameClean.includes('contabilid') && !nameClean.includes('casp') && CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber]) {
-    return CONTABILIDADE_GERAL_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('contabilid') && !nameClean.includes('casp')) {
+    const res = resolve(CONTABILIDADE_GERAL_LESSON_NAMES);
+    if (res) return res;
   }
-  if ((nameClean.includes('casp') || nameClean.includes('setor público') || nameClean.includes('setor publico')) && CASP_LESSON_NAMES[lessonNumber]) {
-    return CASP_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('casp') || nameClean.includes('setor público') || nameClean.includes('setor publico')) {
+    const res = resolve(CASP_LESSON_NAMES);
+    if (res) return res;
   }
-  if (nameClean.includes('administrativo') && DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber]) {
-    return DIREITO_ADMINISTRATIVO_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('administrativo')) {
+    const res = resolve(DIREITO_ADMINISTRATIVO_LESSON_NAMES);
+    if (res) return res;
   }
-  if ((nameClean.includes('finanças') || nameClean.includes('financas') || nameClean.includes('afo') || nameClean.includes('orçamento')) && FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber]) {
-    return FINANCAS_PUBLICAS_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('finanças') || nameClean.includes('financas') || nameClean.includes('afo') || nameClean.includes('orçamento')) {
+    const res = resolve(FINANCAS_PUBLICAS_LESSON_NAMES);
+    if (res) return res;
   }
-  if (nameClean.includes('auditoria') && AUDITORIA_LESSON_NAMES[lessonNumber]) {
-    return AUDITORIA_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('auditoria')) {
+    const res = resolve(AUDITORIA_LESSON_NAMES);
+    if (res) return res;
   }
-  if (nameClean.includes('estat') && ESTATISTICA_LESSON_NAMES[lessonNumber]) {
-    return ESTATISTICA_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('estat')) {
+    const res = resolve(ESTATISTICA_LESSON_NAMES);
+    if (res) return res;
   }
-  if (nameClean.includes('tribut') && DIREITO_TRIBUTARIO_LESSON_NAMES[lessonNumber]) {
-    return DIREITO_TRIBUTARIO_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('tribut')) {
+    const res = resolve(DIREITO_TRIBUTARIO_LESSON_NAMES);
+    if (res) return res;
   }
-  if (nameClean.includes('matem') && MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber]) {
-    return MATEMATICA_FINANCEIRA_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('matem')) {
+    const res = resolve(MATEMATICA_FINANCEIRA_LESSON_NAMES);
+    if (res) return res;
   }
-  if ((nameClean.includes('inform') || nameClean.includes('tecnologia')) && INFORMATICA_LESSON_NAMES[lessonNumber]) {
-    return INFORMATICA_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('inform') || nameClean.includes('tecnologia')) {
+    const res = resolve(INFORMATICA_LESSON_NAMES);
+    if (res) return res;
   }
-  if (nameClean.includes('economia') && ECONOMIA_LESSON_NAMES[lessonNumber]) {
-    return ECONOMIA_LESSON_NAMES[lessonNumber];
+  if (nameClean.includes('economia')) {
+    const res = resolve(ECONOMIA_LESSON_NAMES);
+    if (res) return res;
   }
-  return `Aula ${String(Math.max(0, lessonNumber - 1)).padStart(2, '0')}`;
+  return `Aula ${String(Math.max(0, lessonNumber)).padStart(2, '0')}`;
 }
 
 export function generateInitialData(): {

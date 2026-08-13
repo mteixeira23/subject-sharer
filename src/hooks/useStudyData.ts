@@ -101,7 +101,7 @@ export function useStudyData() {
     enabled: !!userId,
   });
 
-  const { data: subjects = [], isLoading: loadingSubjects } = useQuery({
+  const { data: rawSubjects = [], isLoading: loadingSubjects } = useQuery({
     queryKey: ['study', userId, 'subjects'],
     queryFn: async () => {
       if (!userId) return [];
@@ -111,6 +111,39 @@ export function useStudyData() {
     },
     enabled: !!userId,
   });
+
+  // Strictly enforce 13 SEFAZ-BA subjects
+  const sefazNames = useMemo(() => new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase())), []);
+
+  const subjects = useMemo(() => {
+    const list = rawSubjects.filter(s => sefazNames.has(s.name.trim().toLowerCase()));
+    const seen = new Set<string>();
+    const result: Subject[] = [];
+    for (const s of list) {
+      const key = s.name.trim().toLowerCase();
+      if (!seen.has(key)) {
+        seen.add(key);
+        const sefazDef = SEFAZ_BA_SUBJECTS.find(def => def.name.trim().toLowerCase() === key);
+        result.push({
+          ...s,
+          totalLessons: sefazDef ? sefazDef.totalLessons : s.totalLessons,
+        });
+      }
+    }
+
+    // Fallback if rawSubjects is empty or unauthenticated
+    if (result.length === 0) {
+      return SEFAZ_BA_SUBJECTS.map((s, idx) => ({
+        id: `sefaz-subject-${idx + 1}`,
+        contestId: s.contestId || 'sefaz-ba-2025',
+        name: s.name,
+        totalLessons: s.totalLessons,
+        color: s.color || SUBJECT_COLORS[idx % SUBJECT_COLORS.length],
+      }));
+    }
+
+    return result;
+  }, [rawSubjects, sefazNames]);
 
   const { data: lessons = [], isLoading: loadingLessons } = useQuery({
     queryKey: ['study', userId, 'lessons'],
@@ -155,7 +188,6 @@ export function useStudyData() {
       const { data, error } = await supabase.from('schedule_events').select('*').eq('user_id', userId);
       if (error) throw error;
       const rawEvents = (data ?? []).map(rowToScheduleEvent);
-      const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
       return rawEvents.filter(ev => {
         const s = subjects.find(sub => sub.id === ev.subjectId);
         if (!s) return false;
@@ -192,7 +224,14 @@ export function useStudyData() {
   // ── Seed / Sync initial data for users ──────────────────────────────────
 
   useEffect(() => {
-    if (!userId || loadingContests || loadingSubjects || loadingLessons || seeding || hasSeededRef.current) return;
+    if (!userId || loadingContests || loadingSubjects || loadingLessons || seeding) return;
+
+    const hasInvalidSubjects = rawSubjects.some(s => !sefazNames.has(s.name.trim().toLowerCase()));
+    const missingSubjects = SEFAZ_BA_SUBJECTS.some(def =>
+      !rawSubjects.some(s => s.name.trim().toLowerCase() === def.name.trim().toLowerCase())
+    );
+
+    if (!hasInvalidSubjects && !missingSubjects && hasSeededRef.current) return;
     hasSeededRef.current = true;
 
     const seedAndSync = async () => {
@@ -212,12 +251,11 @@ export function useStudyData() {
         }
 
         // Ensure all subjects exist and all lessons exist for each subject
-        const currentSubjects = [...subjects];
+        const currentSubjects = [...rawSubjects];
 
         if (activeContestId) {
           // A.0) Purge non-SEFAZ-BA subjects from Supabase database
-          const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
-          const nonSefazSubjects = currentSubjects.filter(s => !sefazNames.has(s.name.trim().toLowerCase()));
+          const nonSefazSubjects = rawSubjects.filter(s => !sefazNames.has(s.name.trim().toLowerCase()));
 
           if (nonSefazSubjects.length > 0) {
             const nonSefazIds = nonSefazSubjects.map(s => s.id);

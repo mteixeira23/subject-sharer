@@ -20,7 +20,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, Target, TrendingUp, AlertTriangle, Plus, Clock, ArrowLeft, Pencil, Trash2, RotateCcw, History, Sparkles } from 'lucide-react';
+import { BookOpen, Target, TrendingUp, AlertTriangle, Plus, Clock, ArrowLeft, Pencil, Trash2, RotateCcw, History, Sparkles, CalendarCheck } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Subject, Lesson, QuestionSession, SUBJECT_COLORS } from '@/types/study';
 import { getLessonName } from '@/data/sefazBA';
 import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
+import { StudyPlanModal } from '@/components/study/StudyPlanModal';
 import { cn } from '@/lib/utils';
 
 function SectionDivider({ label }: { label: string }) {
@@ -146,6 +147,7 @@ export default function Estudos() {
   const [simuladoDialogOpen, setSimuladoDialogOpen] = useState(false);
   const [simuladoSubjectId, setSimuladoSubjectId] = useState<string | undefined>(undefined);
   const [simuladoLessonNumber, setSimuladoLessonNumber] = useState<string | undefined>(undefined);
+  const [studyPlanDialogOpen, setStudyPlanDialogOpen] = useState(false);
 
   const handleOpenSimuladoForLesson = (subjectId: string, lessonNumber: number) => {
     setSimuladoSubjectId(subjectId);
@@ -265,6 +267,15 @@ export default function Estudos() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <PomodoroTimer compact />
+          <Button
+            size="sm"
+            onClick={() => setStudyPlanDialogOpen(true)}
+            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold gap-1.5 shadow-sm"
+          >
+            <CalendarCheck className="h-4 w-4" />
+            <span className="hidden sm:inline">Plano de Estudo</span>
+            <span className="sm:hidden">Plano</span>
+          </Button>
           <Button
             size="sm"
             onClick={() => setSimuladoDialogOpen(true)}
@@ -773,6 +784,9 @@ export default function Estudos() {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Plano de Estudo Diário Modal */}
+      <StudyPlanModal open={studyPlanDialogOpen} onOpenChange={setStudyPlanDialogOpen} />
     </div>
   );
 }
