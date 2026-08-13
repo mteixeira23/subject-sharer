@@ -146,21 +146,28 @@ export function useStudyData() {
   }, [rawSubjects, sefazNames]);
 
   const { data: lessons = [], isLoading: loadingLessons } = useQuery({
-    queryKey: ['study', userId, 'lessons'],
+    queryKey: ['study', userId, 'lessons', subjects],
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await supabase.from('lessons').select('*').eq('user_id', userId);
       if (error) throw error;
-      const rawLessons = (data ?? []).map(rowToLesson);
+      const allLessons = (data ?? []).map(rowToLesson);
 
-      const subjectMap = new Map<string, string>();
+      const subjectIdSet = new Set(subjects.map(s => s.id));
+      const subjectNameMap = new Map<string, string>();
       subjects.forEach(s => {
-        subjectMap.set(s.id, s.name.trim().toLowerCase());
+        subjectNameMap.set(s.id, s.name.trim().toLowerCase());
+        subjectNameMap.set(s.name.trim().toLowerCase(), s.name.trim().toLowerCase());
+      });
+
+      const rawLessons = allLessons.filter(l => {
+        if (subjectIdSet.has(l.subjectId)) return true;
+        return subjectNameMap.has(l.subjectId.trim().toLowerCase());
       });
 
       const map = new Map<string, Lesson>();
       rawLessons.forEach(l => {
-        const sName = subjectMap.get(l.subjectId) || l.subjectId.trim().toLowerCase();
+        const sName = subjectNameMap.get(l.subjectId) || l.subjectId.trim().toLowerCase();
         const key = `${sName}-${l.number}`;
         if (!map.has(key)) {
           map.set(key, { ...l });
