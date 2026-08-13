@@ -278,6 +278,17 @@ export default function Estudos() {
           </Button>
           <Button
             size="sm"
+            variant="outline"
+            onClick={async () => {
+              await study.resetToSefazBA();
+            }}
+            className="border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 font-semibold gap-1.5 shadow-sm"
+          >
+            <RotateCcw className="h-4 w-4 text-cyan-400" />
+            <span className="hidden sm:inline">Restaurar 13 Matérias</span>
+          </Button>
+          <Button
+            size="sm"
             onClick={() => setSimuladoDialogOpen(true)}
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1.5 shadow-sm"
           >

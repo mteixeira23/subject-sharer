@@ -1550,10 +1550,68 @@ export function useStudyData() {
     }
   }, [userId, invalidate]);
 
+  const resetToSefazBA = useCallback(async () => {
+    setSeeding(true);
+    try {
+      if (userId) {
+        const { data: subData } = await supabase.from('subjects').select('*').eq('user_id', userId);
+        const allSubs = subData ?? [];
+        const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
+
+        const nonSefazSubs = allSubs.filter(s => !sefazNames.has(s.name.trim().toLowerCase()));
+        if (nonSefazSubs.length > 0) {
+          const nonSefazIds = nonSefazSubs.map(s => s.id);
+          for (let i = 0; i < nonSefazIds.length; i += 100) {
+            const batch = nonSefazIds.slice(i, i + 100);
+            await supabase.from('schedule_events').delete().in('subject_id', batch);
+            await supabase.from('question_sessions').delete().in('subject_id', batch);
+            await supabase.from('pomodoro_sessions').delete().in('subject_id', batch);
+            await supabase.from('lessons').delete().in('subject_id', batch);
+            await supabase.from('subjects').delete().in('id', batch);
+          }
+        }
+
+        let activeContestId = contests[0]?.id;
+        if (!activeContestId) {
+          const { data: contestRow } = await supabase
+            .from('contests')
+            .insert({ user_id: userId, name: 'SEFAZ-BA 2025' })
+            .select('id')
+            .single();
+          if (contestRow) activeContestId = contestRow.id;
+        }
+
+        const existingNames = new Set(allSubs.filter(s => sefazNames.has(s.name.trim().toLowerCase())).map(s => s.name.trim().toLowerCase()));
+        const missingDefs = SEFAZ_BA_SUBJECTS.filter(s => !existingNames.has(s.name.trim().toLowerCase()));
+
+        if (missingDefs.length > 0 && activeContestId) {
+          const rowsToInsert = missingDefs.map((s, i) => ({
+            user_id: userId,
+            contest_id: activeContestId,
+            name: s.name,
+            total_lessons: s.totalLessons,
+            color: s.color || SUBJECT_COLORS[i % SUBJECT_COLORS.length],
+          }));
+          await supabase.from('subjects').insert(rowsToInsert);
+        }
+      }
+
+      hasSeededRef.current = false;
+      invalidate();
+      toast.success('Matérias redefinidas com sucesso: 13 Matérias SEFAZ-BA (235 Aulas)!');
+    } catch (e) {
+      console.error('Reset to SEFAZ-BA failed', e);
+      toast.error('Erro ao redefinir matérias');
+    } finally {
+      setSeeding(false);
+    }
+  }, [userId, contests, invalidate]);
+
   return {
     data,
     isLoading,
     syncSefazSchedule,
+    resetToSefazBA,
     // Contest
     addContest,
     updateContest,

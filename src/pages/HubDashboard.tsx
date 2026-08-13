@@ -83,6 +83,17 @@ export default function HubDashboard() {
           <Button
             variant="outline"
             size="sm"
+            onClick={async () => {
+              await study.resetToSefazBA();
+            }}
+            className="gap-2 text-xs border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 font-semibold"
+          >
+            <RotateCcw className="h-3.5 w-3.5 text-cyan-400" />
+            <span>Restaurar 13 Matérias SEFAZ-BA</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleSyncSchedule}
             disabled={isSyncing}
             className="gap-2 text-xs border-primary/40 hover:bg-primary/10"
