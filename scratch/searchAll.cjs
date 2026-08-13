@@ -26,8 +26,7 @@ function searchAll(dir, searchStr) {
   }
 }
 
-const root = path.join(__dirname, '..');
-console.log("Searching in root:", root);
-searchAll(root, 'Legislação Tributária da Bahia');
-searchAll(root, 'Contabilidade de Custos');
-searchAll(root, 'Matemática e RLM');
+const root = path.join(__dirname, '../src');
+console.log("Searching in:", root);
+searchAll(root, 'Total de Aulas');
+searchAll(root, 'Matérias');

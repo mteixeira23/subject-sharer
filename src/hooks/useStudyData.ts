@@ -116,34 +116,33 @@ export function useStudyData() {
   const sefazNames = useMemo(() => new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase())), []);
 
   const subjects = useMemo(() => {
-    const list = rawSubjects.filter(s => sefazNames.has(s.name.trim().toLowerCase()));
-    const seen = new Set<string>();
-    const result: Subject[] = [];
-    for (const s of list) {
+    const dbMap = new Map<string, Subject>();
+    rawSubjects.forEach(s => {
       const key = s.name.trim().toLowerCase();
-      if (!seen.has(key)) {
-        seen.add(key);
-        const sefazDef = SEFAZ_BA_SUBJECTS.find(def => def.name.trim().toLowerCase() === key);
-        result.push({
-          ...s,
-          totalLessons: sefazDef ? sefazDef.totalLessons : s.totalLessons,
-        });
+      if (!dbMap.has(key)) {
+        dbMap.set(key, s);
       }
-    }
+    });
 
-    // Fallback if rawSubjects is empty or unauthenticated
-    if (result.length === 0) {
-      return SEFAZ_BA_SUBJECTS.map((s, idx) => ({
+    return SEFAZ_BA_SUBJECTS.map((def, idx) => {
+      const key = def.name.trim().toLowerCase();
+      const dbMatch = dbMap.get(key);
+      if (dbMatch) {
+        return {
+          ...dbMatch,
+          totalLessons: def.totalLessons,
+          color: dbMatch.color || def.color || SUBJECT_COLORS[idx % SUBJECT_COLORS.length],
+        };
+      }
+      return {
         id: `sefaz-subject-${idx + 1}`,
-        contestId: s.contestId || 'sefaz-ba-2025',
-        name: s.name,
-        totalLessons: s.totalLessons,
-        color: s.color || SUBJECT_COLORS[idx % SUBJECT_COLORS.length],
-      }));
-    }
-
-    return result;
-  }, [rawSubjects, sefazNames]);
+        contestId: def.contestId || 'sefaz-ba-2025',
+        name: def.name,
+        totalLessons: def.totalLessons,
+        color: def.color || SUBJECT_COLORS[idx % SUBJECT_COLORS.length],
+      };
+    });
+  }, [rawSubjects]);
 
   const { data: lessons = [], isLoading: loadingLessons } = useQuery({
     queryKey: ['study', userId, 'lessons', subjects],
@@ -556,18 +555,7 @@ export function useStudyData() {
     seedAndSync();
   }, [userId, loadingContests, loadingSubjects, loadingLessons, contests, subjects, lessons, seeding, invalidate]);
 
-  // ── Active subjects (Strictly 13 SEFAZ-BA subjects) ───────────────────
-  const activeSubjects = useMemo(() => {
-    const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
-    const list = subjects.filter(s => sefazNames.has(s.name.trim().toLowerCase()));
-    const seen = new Set<string>();
-    return list.filter(s => {
-      const key = s.name.trim().toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  }, [subjects]);
+  const activeSubjects = subjects;
 
   // ── Aggregated data object ───────────────────────────────────────────────
 
