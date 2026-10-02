@@ -12,7 +12,7 @@ services:
     labels:
       - "traefik.enable=true"
       # TODO: Substitua 'progresso.seudominio.com.br' pelo seu domínio real
-      - "traefik.http.routers.meuprogresso.rule=Host(`progresso.seudominio.com.br`)"
+      - "traefik.http.routers.meuprogresso.rule=Host(`habitus.singulariconsult.com.br`)"
       - "traefik.http.routers.meuprogresso.entrypoints=websecure"
       - "traefik.http.routers.meuprogresso.tls.certresolver=letsencrypt" # Certifique-se de que o nome do resolver é 'letsencrypt' no seu Traefik
       - "traefik.http.services.meuprogresso.loadbalancer.server.port=80"
