@@ -48,7 +48,7 @@ export default function Estudos() {
     data, getOverallProgress, getSubjectProgress, getWeakSubjects, getTodayStudyTime,
     addSubject, updateSubject, deleteSubject, getLessonsBySubject, addLesson, updateLesson, deleteLesson,
     updateQuestionSession, deleteQuestionSession, getStudyTimeBySubject, deletePomodoroSession,
-    startNewCycle, getCycleHistory,
+    startNewCycle, getCycleHistory, resetToSefazBA,
   } = useStudy();
 
   function formatStudyTime(seconds: number): string {
