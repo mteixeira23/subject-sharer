@@ -170,11 +170,11 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                 <DialogTitle className="text-xl font-bold flex items-center gap-2">
                   Plano de Estudo Diário - SEFAZ-BA
                   <Badge variant="secondary" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
-                    144 Dias
+                    88 Dias
                   </Badge>
                 </DialogTitle>
                 <DialogDescription className="text-xs text-muted-foreground mt-0.5">
-                  Planejamento estratégico dia a dia: 235 Aulas + Treinamento FGV + Reta Final
+                  Planejamento estratégico dia a dia: 235 Aulas + Treinamento Cesgranrio + Reta Final
                 </DialogDescription>
               </div>
             </div>
@@ -199,7 +199,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
               <BookOpen className="h-5 w-5 text-emerald-400 shrink-0" />
               <div>
                 <div className="text-xs text-muted-foreground">Fase 1: Aulas Teóricas</div>
-                <div className="text-sm font-semibold text-foreground">Dias 1 a 98 (235 Aulas)</div>
+                <div className="text-sm font-semibold text-foreground">Dias 1 a 60 (235 Aulas)</div>
               </div>
             </div>
 
@@ -207,7 +207,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
               <Zap className="h-5 w-5 text-amber-400 shrink-0" />
               <div>
                 <div className="text-xs text-muted-foreground">Fase 2: Intensivo Cesgranrio</div>
-                <div className="text-sm font-semibold text-foreground">Dias 99 a 128 (Simulados)</div>
+                <div className="text-sm font-semibold text-foreground">Dias 61 a 78 (Simulados)</div>
               </div>
             </div>
 
@@ -215,7 +215,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
               <Trophy className="h-5 w-5 text-cyan-400 shrink-0" />
               <div>
                 <div className="text-xs text-muted-foreground">Fase 3: Reta Final</div>
-                <div className="text-sm font-semibold text-foreground">Dias 129 a 144 (Memorização)</div>
+                <div className="text-sm font-semibold text-foreground">Dias 79 a 88 (Memorização)</div>
               </div>
             </div>
           </div>
