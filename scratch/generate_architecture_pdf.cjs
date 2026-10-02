@@ -1,0 +1,673 @@
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+console.log("Building complete Architecture & System Development 0 to 100% PDF...");
+
+const htmlContent = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia Definitivo: Construção de Sistemas Robustos e Escaláveis (Do 0 ao 100%)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --accent: #10b981;
+      --bg-dark: #0f172a;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --code-bg: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @page {
+      size: A4;
+      margin: 22mm 18mm 22mm 18mm;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      background-color: #f8fafc;
+      line-height: 1.7;
+      font-size: 14.5px;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 30px auto;
+      background: #ffffff;
+      padding: 80px 90px;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    }
+
+    @media print {
+      body {
+        background-color: #ffffff;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* Print Bar */
+    .print-bar {
+      background: #0f172a;
+      color: white;
+      padding: 20px 30px;
+      border-radius: 14px;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+
+    .btn-print {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    /* Cover Page */
+    .cover-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 880px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 60px;
+      margin-bottom: 70px;
+    }
+
+    .cover-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 24px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    .cover-title {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.12;
+      color: var(--bg-dark);
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    .cover-subtitle {
+      font-size: 21px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 50px;
+      line-height: 1.5;
+    }
+
+    .cover-meta {
+      border-top: 2px solid #f1f5f9;
+      padding-top: 36px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .cover-meta strong {
+      color: var(--text-main);
+    }
+
+    /* Headings */
+    h1, h2, h3, h4 {
+      color: var(--bg-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-top: 50px;
+      margin-bottom: 24px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 12px;
+    }
+
+    h2 {
+      font-size: 23px;
+      margin-top: 40px;
+      margin-bottom: 18px;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-top: 30px;
+      margin-bottom: 14px;
+      color: #334155;
+    }
+
+    p {
+      margin-bottom: 18px;
+      color: #334155;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-bottom: 24px;
+      padding-left: 28px;
+    }
+
+    li {
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.7;
+    }
+
+    /* Code Blocks */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 3px 7px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: #f8fafc;
+      padding: 24px;
+      border-radius: 14px;
+      overflow-x: auto;
+      margin-bottom: 28px;
+      font-size: 13.5px;
+      line-height: 1.65;
+      border: 1px solid #1e293b;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border: none;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: var(--bg-dark);
+      border-top: 1px solid var(--border);
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    /* Alert / Callouts */
+    .alert {
+      padding: 20px 24px;
+      border-radius: 14px;
+      margin-bottom: 28px;
+      font-size: 14.5px;
+      border-left: 6px solid;
+      line-height: 1.7;
+    }
+
+    .alert-note {
+      background: #eff6ff;
+      border-color: #0284c7;
+      color: #0369a1;
+    }
+
+    .alert-tip {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #065f46;
+    }
+
+    .alert-warning {
+      background: #fefce8;
+      border-color: #ca8a04;
+      color: #713f12;
+    }
+
+    .alert-caution {
+      background: #fef2f2;
+      border-color: #dc2626;
+      color: #7f1d1d;
+    }
+
+    .alert-title {
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    /* TOC Box */
+    .toc-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 32px;
+      border-radius: 14px;
+      margin-bottom: 50px;
+    }
+
+    .toc-box h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 22px;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .toc-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .toc-list li {
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+
+    .toc-list a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .toc-list a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 70px;
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Print Control Bar -->
+    <div class="print-bar no-print">
+      <div>
+        <strong style="font-size: 17px;">🚀 Guia de Engenharia: Construção de Sistemas Robustos (0 a 100%)</strong>
+        <p style="margin: 0; font-size: 13.5px; color: #94a3b8;">Roteiro Completo de Engenharia de Software, Arquitetura & Agentic Workflows</p>
+      </div>
+      <button class="btn-print" onclick="window.print()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H7a2 2 0 00-2 2v4h14z"></path></svg>
+        Baixar PDF / Imprimir
+      </button>
+    </div>
+
+    <!-- Cover Page -->
+    <div class="cover-page">
+      <div>
+        <div class="cover-brand">🛡️ System Architecture & Engineering Roadmap</div>
+        <h1 class="cover-title">Como Construir um Sistema<br>Robusto e Escalável:<br>O Guia de 0% a 100%</h1>
+        <p class="cover-subtitle">Roteiro Passo a Passo Minucioso de Arquitetura de Software, Modelagem Relacional, Segurança RLS, Cache Server-Side, CI/CD e Agentes Autônomos com Antigravity</p>
+      </div>
+
+      <div class="cover-meta">
+        <div>
+          <p><strong>Autoridade Técnica:</strong> Arquitetura de Software & Agentic Coding</p>
+          <p><strong>Escopo:</strong> Web Apps, Cloud Databases, Security & Automation</p>
+        </div>
+        <div>
+          <p><strong>Edição:</strong> Completa & Minuciosa (2026)</p>
+          <p><strong>Formato:</strong> Manual Prático de Produção</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc-box">
+      <h2>📑 As 10 Etapas da Jornada (Do 0% ao 100%)</h2>
+      <ul class="toc-list">
+        <li><strong>Fase 1 (0% a 10%):</strong> <a href="#f1">Concepção, Requisitos & Modelagem Domain-Driven (DDD)</a></li>
+        <li><strong>Fase 2 (10% a 20%):</strong> <a href="#f2">Configuração do Repositório, Regras & Antigravity Setup</a></li>
+        <li><strong>Fase 3 (20% a 35%):</strong> <a href="#f3">Arquitetura de Banco de Dados, Migrações & Segurança RLS</a></li>
+        <li><strong>Fase 4 (35% a 50%):</strong> <a href="#f4">Design System, UI/UX & Componentização Escalonável</a></li>
+        <li><strong>Fase 5 (50% a 65%):</strong> <a href="#f5">Camada de Dados, Cache Server-Side & Gerenciamento de Estado</a></li>
+        <li><strong>Fase 6 (65% a 75%):</strong> <a href="#f6">Autenticação, Autorização (RBAC) & Segurança OWASP</a></li>
+        <li><strong>Fase 7 (75% a 85%):</strong> <a href="#f7">Integrações de APIs, Real-time WebSockets & Resiliência</a></li>
+        <li><strong>Fase 8 (85% a 92%):</strong> <a href="#f8">Testes Automatizados & Auditoria de Core Web Vitals</a></li>
+        <li><strong>Fase 9 (92% a 97%):</strong> <a href="#f9">Infraestrutura Cloud, Pipelines CI/CD & Deploy de Produção</a></li>
+        <li><strong>Fase 10 (97% a 100%):</strong> <a href="#f10">Manutenção Evolutiva, Telemetria & Automação com Agentes</a></li>
+      </ul>
+    </div>
+
+    <!-- FASE 1 -->
+    <section id="f1" class="page-break">
+      <h1>Fase 1: 0% a 10% - Concepção, Requisitos & Modelagem DDD</h1>
+      
+      <p>Construir um sistema robusto começa antes de qualquer linha de código. O maior erro em engenharia de software é iniciar o desenvolvimento sem alinhar o modelo de domínio com as regras de negócio.</p>
+
+      <h2>1.1 Entrevista de Arquitetura com Antigravity (Slash Command <code>/grill-me</code>)</h2>
+      <p>Inicie a fase 0 acionando a entrevista de arquitetura para resolver ambiguidades, regras de permissão e volume de dados esperado:</p>
+
+      <div class="alert alert-note">
+        <div class="alert-title">📌 Perguntas Fundamentais de Arquitetura</div>
+        <ul>
+          <li><strong>Volume de Dados:</strong> Quantos usuários simultâneos e registros por segundo o sistema atenderá?</li>
+          <li><strong>Consistência:</strong> O sistema exige consistência ACID estrita (ex: financeiro) ou consistência eventual (ex: redes sociais)?</li>
+          <li><strong>Multi-Tenancy:</strong> Os dados serão isolados por empresa/cliente (Tenant ID) ou é uma base de usuário único?</li>
+        </ul>
+      </div>
+
+      <h2>1.2 Modelagem de Domínio & Esquema Relacional</h2>
+      <p>Desenhe as entidades centrais utilizando relacionamentos de chave estrangeira (Foreign Keys), tipos de dados estritos (UUID, TIMESTAMP WITH TIME ZONE, DECIMAL para dinheiro) e restrições de integridade (UNIQUE, NOT NULL, CHECK).</p>
+    </section>
+
+    <!-- FASE 2 -->
+    <section id="f2" class="page-break">
+      <h1>Fase 2: 10% a 20% - Repositório, Regras & Antigravity Setup</h1>
+
+      <p>Estabeleça a estrutura do projeto com regras de desenvolvimento automáticas salvas no repositório.</p>
+
+      <h2>2.1 Arquivo <code>AGENTS.md</code> do Repositório</h2>
+      <p>Crie na raiz do seu projeto o arquivo de regras permanentes que orientará o Antigravity em todas as refatorações:</p>
+
+      <pre><code># Diretrizes Rígidas do Sistema
+
+## Stack Tecnológica
+- Frontend: React 18 + Vite + TypeScript (strict mode).
+- Backend / Database: PostgreSQL no Supabase com Row Level Security (RLS).
+- Cache & Estado Server-Side: React Query (@tanstack/react-query).
+
+## Regras Invioláveis de Código
+1. Proibido utilizar 'any' no TypeScript. Defina interfaces exatas em src/types.
+2. Todas as mutações no banco devem invalidar explicitamente as chaves de cache do React Query.
+3. Após qualquer edição, sempre execute:
+   - npx tsc --noEmit (verificação de tipos)
+   - npm run build (compilação de produção)
+4. Trate todos os erros assíncronos com try/catch e exiba notificações Sonner amigáveis.</code></pre>
+    </section>
+
+    <!-- FASE 3 -->
+    <section id="f3" class="page-break">
+      <h1>Fase 3: 20% a 35% - Banco de Dados Relacional, Migrações & RLS</h1>
+
+      <p>O banco de dados é o coração do seu sistema. Para um sistema escalável, aplique o versionamento rigoroso de código SQL via migrações e isolamento de segurança por linha (Row Level Security - RLS).</p>
+
+      <h2>3.1 Exemplo de Migração SQL Versionada com RLS (Supabase/Postgres)</h2>
+
+      <pre><code>-- Migration: 20260813_init_schema.sql
+
+-- 1. Criar Tabela de Clientes
+CREATE TABLE public.clients (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  balance NUMERIC(15, 2) DEFAULT 0.00 NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- 2. Criar Índices de Alta Performance (B-Tree)
+CREATE INDEX idx_clients_user_id ON public.clients(user_id);
+CREATE INDEX idx_clients_email ON public.clients(email);
+
+-- 3. Habilitar Row Level Security (RLS)
+ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
+
+-- 4. Criar Política Rígida: Usuário só lê seus próprios dados
+CREATE POLICY "Users can read own clients" 
+ON public.clients 
+FOR SELECT 
+USING (auth.uid() = user_id);
+
+-- 5. Criar Política Rígida: Usuário só insere dados para seu próprio user_id
+CREATE POLICY "Users can insert own clients" 
+ON public.clients 
+FOR INSERT 
+WITH CHECK (auth.uid() = user_id);</code></pre>
+    </section>
+
+    <!-- FASE 4 -->
+    <section id="f4" class="page-break">
+      <h1>Fase 4: 35% a 50% - Design System, UI/UX & Componentização</h1>
+
+      <p>Sistemas robustos utilizam um <strong>Design System atômico</strong>, baseado em componentes desacoplados e previsíveis.</p>
+
+      <h2>4.1 Estrutura de Componentes Primitivos</h2>
+      <ul>
+        <li><strong>UI Primitives (Radix UI / Shadcn):</strong> Utilização de componentes primitivos acessíveis (Dialog, Popover, Select, Dropdown) sem reacessar o DOM diretamente.</li>
+        <li><strong>Tokens HSL de Cores:</strong> Suporte nativo a temas Light/Dark via CSS Variables HSL.</li>
+        <li><strong>Tratamento de Estados Visuais:</strong> Skeleton screens durante o carregamento (isLoading), telas vazias (empty states) e capturadores de erro (ErrorBoundary).</li>
+      </ul>
+    </section>
+
+    <!-- FASE 5 -->
+    <section id="f5" class="page-break">
+      <h1>Fase 5: 50% a 65% - Camada de Dados, Cache Server-Side & Estado</h1>
+
+      <p>Para escalar sem travar a interface do usuário, desacople o estado local (UI) do estado de servidor (Server-Side State).</p>
+
+      <h2>5.1 Gerenciamento de Estado com React Query</h2>
+
+      <pre><code>// Custom Hook para busca de dados com cache inteligente
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+
+export function useClients(userId: string) {
+  const queryClient = useQueryClient();
+
+  // Fetching com Cache e Invalidação Reativa
+  const { data: clients = [], isLoading } = useQuery({
+    queryKey: ['clients', userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('clients').select('*');
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 1000 * 60 * 5, // Dados válidos por 5 minutos
+    enabled: !!userId,
+  });
+
+  // Mutação Otimista (Optimistic Update)
+  const addClientMutation = useMutation({
+    mutationFn: async (newClient: { name: string; email: string }) => {
+      const { data, error } = await supabase.from('clients').insert([newClient]).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients', userId] });
+    },
+  });
+
+  return { clients, isLoading, addClient: addClientMutation.mutateAsync };
+}</code></pre>
+    </section>
+
+    <!-- FASE 6 -->
+    <section id="f6" class="page-break">
+      <h1>Fase 6: 65% a 75% - Autenticação, Autorização (RBAC) & OWASP</h1>
+
+      <div class="alert alert-warning">
+        <div class="alert-title">🛡️ Protocolo de Segurança de Aplicação</div>
+        <ul>
+          <li><strong>Autenticação JWT:</strong> Armazenamento seguro de sessões com expiração e refresh tokens automáticos.</li>
+          <li><strong>Controle de Acesso por Papel (RBAC):</strong> Verificação em duas camadas: rotas protegidas no frontend e tabelas user_roles com RLS no banco.</li>
+          <li><strong>Higienização de Entradas:</strong> Validação de schemas via Zod para impedir SQL Injection e XSS.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FASE 7 -->
+    <section id="f7" class="page-break">
+      <h1>Fase 7: 75% a 85% - Integração de APIs, WebSockets & Resiliência</h1>
+
+      <p>Sistemas distribuídos devem tratar falhas de rede de forma graciosa:</p>
+      <ul>
+        <li><strong>Comunicação em Tempo Real:</strong> Assinaturas WebSockets para atualizações instantâneas sem necessidade de F5.</li>
+        <li><strong>Resiliência de Rede:</strong> Algoritmos de Exponential Backoff com jitter e Circuit Breakers para evitar sobrecarga nas APIs externas.</li>
+      </ul>
+    </section>
+
+    <!-- FASE 8 -->
+    <section id="f8" class="page-break">
+      <h1>Fase 8: 85% a 92% - Testes Automatizados & Core Web Vitals</h1>
+
+      <p>Garantia de qualidade antes de publicar em produção:</p>
+      <ul>
+        <li><strong>Testes Estáticos de Tipagem:</strong> Execução do compilador TypeScript (npx tsc --noEmit).</li>
+        <li><strong>Testes E2E (End-to-End):</strong> Automação de fluxos do usuário via Playwright ou Chrome DevTools MCP.</li>
+        <li><strong>Auditoria de Performance:</strong> Verificação de métricas Core Web Vitals (LCP &lt; 2.5s, INP &lt; 200ms, CLS &lt; 0.1).</li>
+      </ul>
+    </section>
+
+    <!-- FASE 9 E 10 -->
+    <section id="f9" class="page-break">
+      <h1>Fase 9 & 10: 92% a 100% - CI/CD, Deploy & Manutenção Autônoma</h1>
+
+      <h2>9.1 Pipeline de CI/CD em GitHub Actions</h2>
+      <pre><code>name: Continuous Integration & Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run build</code></pre>
+
+      <h2>10.1 Manutenção Autônoma com Antigravity SDK</h2>
+      <p>Utilize o SDK em Python do Antigravity para rodar verificações de segurança e manutenção autônoma do repositório no servidor de CI/CD.</p>
+
+      <div class="alert alert-tip">
+        <div class="alert-title">🎯 Conclusão: O Sistema 100% Pronto</div>
+        Seguindo estas 10 fases, seu sistema terá arquitetura limpa, segurança em nível de linha no banco, zero erros de tipagem, cache reativo, resiliência de rede e CI/CD autônomo!
+      </div>
+    </section>
+
+    <footer>
+      Guia Definitivo: Construção de Sistemas Robustos e Escaláveis (Do 0 ao 100%) • Antigravity Engineering Series
+    </footer>
+
+  </div>
+
+</body>
+</html>
+`;
+
+const htmlFilePath = path.join(__dirname, '../guia_sistema_robusto_escalavel.html');
+const pdfFilePath = 'C:\\Users\\marcos.teixeira\\Desktop\\guia_sistema_robusto_escalavel.pdf';
+
+fs.writeFileSync(htmlFilePath, htmlContent, 'utf8');
+console.log("System Architecture HTML generated at:", htmlFilePath);
+
+const edgePaths = [
+  'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+  'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
+];
+
+let browserPath = null;
+for (const p of edgePaths) {
+  if (fs.existsSync(p)) {
+    browserPath = p;
+    break;
+  }
+}
+
+if (browserPath) {
+  console.log(`Printing Architecture PDF using browser at: ${browserPath}...`);
+  const cmd = `"${browserPath}" --headless --disable-gpu --print-to-pdf="${pdfFilePath}" "${htmlFilePath}"`;
+  try {
+    execSync(cmd);
+    const stats = fs.statSync(pdfFilePath);
+    console.log(`SUCCESS! Architecture PDF generated on Desktop: ${pdfFilePath} (${stats.size} bytes)`);
+  } catch (err) {
+    console.error("Error generating Architecture PDF:", err.message);
+  }
+} else {
+  console.error("Browser not found.");
+}

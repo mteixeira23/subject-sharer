@@ -131,7 +131,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
     return allDays.filter(day => {
       // Phase filter
       if (selectedPhase === 'phase1' && day.phase !== 'Fase 1: Cobertura de Aulas') return false;
-      if (selectedPhase === 'phase2' && day.phase !== 'Fase 2: Intensivo FGV') return false;
+      if (selectedPhase === 'phase2' && day.phase !== 'Fase 2: Intensivo Cesgranrio') return false;
       if (selectedPhase === 'phase3' && day.phase !== 'Fase 3: Reta Final') return false;
 
       // Status filter
@@ -206,7 +206,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
             <div className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border">
               <Zap className="h-5 w-5 text-amber-400 shrink-0" />
               <div>
-                <div className="text-xs text-muted-foreground">Fase 2: Intensivo FGV</div>
+                <div className="text-xs text-muted-foreground">Fase 2: Intensivo Cesgranrio</div>
                 <div className="text-sm font-semibold text-foreground">Dias 99 a 128 (Simulados)</div>
               </div>
             </div>

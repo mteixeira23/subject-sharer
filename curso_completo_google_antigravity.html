@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curso Completo: Dominando o Google Antigravity (AGY)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #e0e7ff;
+      --accent: #06b6d4;
+      --bg-dark: #0f172a;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      background-color: #f8fafc;
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 60px 70px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background-color: #ffffff;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* Cover Page */
+    .cover-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 800px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 40px;
+      margin-bottom: 50px;
+    }
+
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      width: fit-content;
+      margin-bottom: 24px;
+    }
+
+    .cover-title {
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--bg-dark);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .cover-subtitle {
+      font-size: 20px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 32px;
+    }
+
+    .cover-meta {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .cover-meta strong {
+      color: var(--text-main);
+    }
+
+    /* Print Action Bar */
+    .print-bar {
+      background: #1e293b;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-print {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .btn-print:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Headings */
+    h1, h2, h3, h4 {
+      color: var(--bg-dark);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    h2 {
+      font-size: 26px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      font-size: 19px;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      color: #334155;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: #334155;
+      font-size: 15px;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 15px;
+      color: #334155;
+    }
+
+    /* Code & Pre */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: #f8fafc;
+      padding: 18px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border: none;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: var(--bg-dark);
+    }
+
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    /* Alerts / Callouts */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14.5px;
+      border-left: 4px solid;
+    }
+
+    .alert-note {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      color: #1e40af;
+    }
+
+    .alert-tip {
+      background: #f0fdf4;
+      border-color: #22c55e;
+      color: #166534;
+    }
+
+    .alert-warning {
+      background: #fffbe6;
+      border-color: #eab308;
+      color: #854d0e;
+    }
+
+    .alert-caution {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    .alert-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Toc Box */
+    .toc-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+
+    .toc-box h3 {
+      margin-top: 0;
+      margin-bottom: 14px;
+    }
+
+    .toc-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .toc-list li {
+      margin-bottom: 10px;
+    }
+
+    .toc-list a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .toc-list a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 60px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Print Control Bar -->
+    <div class="print-bar no-print">
+      <div>
+        <strong>📄 Apostila Oficial do Curso (Formato PDF)</strong>
+        <p style="margin: 0; font-size: 13px; color: #94a3b8;">Clique no botão ao lado para salvar ou imprimir em PDF com layout profissional.</p>
+      </div>
+      <button class="btn-print" onclick="window.print()">🖨️ Salvar como PDF</button>
+    </div>
+
+    <!-- Cover Page -->
+    <div class="cover-page">
+      <div>
+        <div class="cover-badge">✨ Antigravity Technical Series</div>
+        <h1 class="cover-title">Curso Completo:<br>Dominando o Google Antigravity (AGY)</h1>
+        <p class="cover-subtitle">Guia Prático, Engenharia de Agentes Autônomos & Padrões de Produção</p>
+      </div>
+
+      <div class="cover-meta">
+        <div>
+          <p><strong>Plataforma:</strong> Google DeepMind Antigravity</p>
+          <p><strong>Versão:</strong> 2.0 / AGY CLI</p>
+        </div>
+        <div>
+          <p><strong>Formato:</strong> Manual Técnico de Capacitação</p>
+          <p><strong>Data:</strong> Agosto de 2026</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc-box">
+      <h3>📑 Sumário Geral do Curso</h3>
+      <ul class="toc-list">
+        <li>1. <a href="#m1">Módulo 1: Introdução & Arquitetura Agentic Coding</a></li>
+        <li>2. <a href="#m2">Módulo 2: O Fluxo de Pair Programming & Ferramentas do Sistema</a></li>
+        <li>3. <a href="#m3">Módulo 3: Slash Commands & Modos Avançados de Trabalho</a></li>
+        <li>4. <a href="#m4">Módulo 4: Sistema de Customizações (Rules, Skills & Plugins)</a></li>
+        <li>5. <a href="#m5">Módulo 5: Protocolo MCP & Orquestração de Subagentes</a></li>
+        <li>6. <a href="#m6">Módulo 6: Antigravity SDK em Python & Automação CI/CD</a></li>
+        <li>7. <a href="#m7">Módulo 7: Troubleshooting, Prevenção de Perda de Dados & Boas Práticas</a></li>
+      </ul>
+    </div>
+
+    <!-- Content Sections -->
+
+    <section id="m1">
+      <h2>1. Módulo 1: Introdução & Arquitetura Agentic Coding</h2>
+      
+      <div class="alert alert-note">
+        <div class="alert-title">📌 O que é o Google Antigravity?</div>
+        O Google Antigravity (AGY) é uma plataforma de desenvolvimento autônomo orientada a agentes. Diferente de chats passivos, o Antigravity possui acesso direto ao sistema de arquivos local, terminal do sistema operacional, subagentes paralelos e ferramentas de teste/inspeção visual em tempo real.
+      </div>
+
+      <h3>1.1 Assistente Tradicional vs. Antigravity Agentic Engine</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Recurso</th>
+            <th>Assistentes de Chat Comuns</th>
+            <th>Google Antigravity (AGY)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Autonomia</strong></td>
+            <td>Responde trechos isolados de texto</td>
+            <td>Lê, edita, compila e valida o código no disco</td>
+          </tr>
+          <tr>
+            <td><strong>Verificação</strong></td>
+            <td>Humano precisa copiar, colar e testar</td>
+            <td>Executa suítes de testes (`npm test`, `pytest`) autônomas</td>
+          </tr>
+          <tr>
+            <td><strong>Multiprocessamento</strong></td>
+            <td>Monolítico e sequencial</td>
+            <td>Orquestra múltiplos subagentes simultâneos</td>
+          </tr>
+          <tr>
+            <td><strong>Conectividade</strong></td>
+            <td>Restrito ao texto digitado</td>
+            <td>Chrome DevTools MCP, Bancos de Dados, Terminais</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="page-break"></div>
+
+    <section id="m2">
+      <h2>2. Módulo 2: O Fluxo de Pair Programming & Ferramentas do Sistema</h2>
+      <p>O Pair Programming com o Antigravity exige uma postura baseada em rigor técnico e evidência empírica:</p>
+      
+      <ul>
+        <li><strong>Nunca Adivinhar Código ou Estrutura:</strong> O agente inspeciona os arquivos relevantes do projeto antes de propor edições.</li>
+        <li><strong>Diagnóstico Baseado em Logs Reais:</strong> Diante de erros de build, a primeira ação é ler a pilha de erro completa e não truncada.</li>
+        <li><strong>Preservação de Contratos de API:</strong> Edições em assinaturas de funções exigem a atualização de todas as chamadas no repositório.</li>
+      </ul>
+
+      <h3>2.1 Os Artefatos de Transparência</h3>
+      <p>Para manter o desenvolvedor no controle total, o Antigravity gera dois documentos dinâmicos:</p>
+      <ul>
+        <li><code>implementation_plan.md</code>: Plano técnico com metas, análise de risco, lista de arquivos criados/editados e plano de testes.</li>
+        <li><code>walkthrough.md</code>: Resumo detalhado do trabalho concluído com evidências e testes executados.</li>
+      </ul>
+    </section>
+
+    <section id="m3">
+      <h2>3. Módulo 3: Slash Commands & Modos Avançados de Trabalho</h2>
+      <p>Os Slash Commands são atalhos para ativar fluxos inteligentes na plataforma:</p>
+
+      <pre><code>/grill-me     -> Entrevista interativa de arquitetura
+/goal         -> Ativa modo de execução autônoma ininterrupta
+/learn        -> Grava novos padrões e regras aprendidas na sessão
+/schedule     -> Configura temporizadores ou agendamentos cron
+/browser      -> Inicia automação e testes visuais no navegador</code></pre>
+    </section>
+
+    <div class="page-break"></div>
+
+    <section id="m4">
+      <h2>4. Módulo 4: Sistema de Customizações (Rules, Skills & Plugins)</h2>
+      <p>O Antigravity permite moldar o comportamento da I.A. através de arquivos Markdown declarativos:</p>
+
+      <h3>4.1 Exemplo de Arquivo de Regras (<code>AGENTS.md</code> ou <code>rules/*.md</code>)</h3>
+      <pre><code># Diretrizes do Repositório
+
+- **Linguagem**: TypeScript com modo estrito habilitado (`strict: true`).
+- **Validação**: Execute `npx tsc --noEmit` após modificações estruturais.
+- **Segurança**: Nunca faça commit de chaves API ou credenciais de produção.</code></pre>
+
+      <h3>4.2 Exemplo de `SKILL.md` (Manual Técnico Reutilizável)</h3>
+      <pre><code>---
+name: deploy-firebase
+description: Guia de compilação e publicação de aplicações no Firebase Hosting.
+---
+
+# Procedimento de Deploy
+
+1. Garanta que as dependências foram instaladas: `npm install`.
+2. Gere o pacote de produção: `npm run build`.
+3. Publique no Firebase: `npx -y firebase-tools@latest deploy --only hosting`.</code></pre>
+    </section>
+
+    <section id="m5">
+      <h2>5. Módulo 5: Protocolo MCP & Orquestração de Subagentes</h2>
+      <p>Com o **Model Context Protocol (MCP)**, o Antigravity conecta-se ao DevTools do Chrome, BigQuery e serviços de banco de dados para inspecionar métricas em tempo de execução e auditar acessibilidade.</p>
+
+      <div class="alert alert-tip">
+        <div class="alert-title">💡 Dica de Orquestração</div>
+        Use o comando de subagentes para disparar tarefas simultâneas: enquanto um subagente analisa um log de erro extenso, o agente principal continua implementando a interface.
+      </div>
+    </section>
+
+    <div class="page-break"></div>
+
+    <section id="m6">
+      <h2>6. Módulo 6: Antigravity SDK em Python & Automação CI/CD</h2>
+      <p>Para automação em pipelines de servidores de integração contínua sem interface gráfica, o SDK em Python oferece controle completo:</p>
+
+      <pre><code>from antigravity import AgentSession, TaskGoal
+
+session = AgentSession(workspace_path="./meu-projeto")
+
+goal = TaskGoal(
+    instruction="Auditar todos os componentes e verificar cobertura de testes unitários",
+    auto_approve_edits=True
+)
+
+result = session.execute(goal)
+print(f"Status do Agente: {result.status}")</code></pre>
+    </section>
+
+    <section id="m7">
+      <h2>7. Módulo 7: Troubleshooting & Prevenção de Perda de Dados</h2>
+
+      <div class="alert alert-caution">
+        <div class="alert-title">⚠️ Regra de Segurança Rígida</div>
+        Comandos irreversíveis de remoção de dados (<code>DROP TABLE</code>, <code>TRUNCATE</code>, <code>rm -rf</code> em produção) exigem obrigatoriamente confirmação explícita do desenvolvedor antes de serem executados.
+      </div>
+
+      <h3>Checklist de Verificação Diária</h3>
+      <ul>
+        <li>[ ] Inspeção do repositório antes de grandes refatorações.</li>
+        <li>[ ] Verificação do plano de testes em <code>implementation_plan.md</code>.</li>
+        <li>[ ] Execução autônoma do comando de build (<code>npm run build</code> / `pytest`).</li>
+        <li>[ ] Gravação de novos aprendizados com o comando <code>/learn</code>.</li>
+      </ul>
+    </section>
+
+    <footer>
+      Curso Completo Google Antigravity (AGY) • Desenvolvido para Capacitação Prática e Alta Performance em Engenharia de Agentes
+    </footer>
+
+  </div>
+
+</body>
+</html>

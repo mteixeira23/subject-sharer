@@ -3,7 +3,7 @@ export interface PlanTask {
   dayNumber: number;
   dateStr: string;
   weekNumber: number;
-  phase: 'Fase 1: Cobertura de Aulas' | 'Fase 2: Intensivo FGV' | 'Fase 3: Reta Final';
+  phase: 'Fase 1: Cobertura de Aulas' | 'Fase 2: Intensivo Cesgranrio' | 'Fase 3: Reta Final';
   shift: string;
   subject?: string;
   lesson?: string;
@@ -15,7 +15,7 @@ export interface DayPlan {
   dayNumber: number;
   dateStr: string;
   weekNumber: number;
-  phase: 'Fase 1: Cobertura de Aulas' | 'Fase 2: Intensivo FGV' | 'Fase 3: Reta Final';
+  phase: 'Fase 1: Cobertura de Aulas' | 'Fase 2: Intensivo Cesgranrio' | 'Fase 3: Reta Final';
   tasks: PlanTask[];
 }
 
@@ -319,16 +319,15 @@ const LESSON_SEQUENCE: { subject: string; lesson: string }[] = [
 export function buildSefazBAPlan(): DayPlan[] {
   const days: DayPlan[] = [];
 
-  // Start date: 10/08/2026
-  const startDate = new Date(2026, 7, 10); // Aug 10, 2026
+  // Start date: 05/10/2026
+  const startDate = new Date(2026, 9, 5); // Oct 5, 2026 (Month is 0-indexed)
 
   let seqIdx = 0;
 
-  // ── FASE 1: Days 1 to 98 ──
-  for (let d = 1; d <= 98; d++) {
+  // 🎯 FASE 1: Cobertura Acelerada (Dias 1 a 60)
+  for (let d = 1; d <= 60; d++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + (d - 1));
-    const dayOfWeek = currentDate.getDay(); // 0 is Sun
     const weekNum = Math.ceil(d / 7);
     const dateFormatted = currentDate.toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -336,78 +335,25 @@ export function buildSefazBAPlan(): DayPlan[] {
       year: 'numeric'
     });
 
-    const isSunday = dayOfWeek === 0;
-
     const tasks: PlanTask[] = [];
-
-    if (!isSunday && seqIdx < LESSON_SEQUENCE.length) {
-      const item1 = LESSON_SEQUENCE[seqIdx++];
-      tasks.push({
-        id: `day-${d}-t1`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 1: Cobertura de Aulas',
-        shift: 'Turno 1',
-        subject: item1.subject,
-        lesson: item1.lesson,
-        title: `${item1.subject} - ${item1.lesson}`,
-        description: 'Estudo Teórico + Resolução de 15 a 20 Questões FGV por assunto'
-      });
-
-      if (seqIdx < LESSON_SEQUENCE.length) {
-        const item2 = LESSON_SEQUENCE[seqIdx++];
-        tasks.push({
-          id: `day-${d}-t2`,
-          dayNumber: d,
-          dateStr: dateFormatted,
-          weekNumber: weekNum,
-          phase: 'Fase 1: Cobertura de Aulas',
-          shift: 'Turno 2',
-          subject: item2.subject,
-          lesson: item2.lesson,
-          title: `${item2.subject} - ${item2.lesson}`,
-          description: 'Estudo Teórico + Resolução de 15 a 20 Questões FGV por assunto'
-        });
-      }
-
-      tasks.push({
-        id: `day-${d}-t3`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 1: Cobertura de Aulas',
-        shift: 'Turno 3',
-        title: 'Revisão D-1 & Anotações',
-        description: 'Revisão de 24h dos pontos estudados no dia anterior + Alimentação dos Flashcards'
-      });
-    } else {
-      // Sunday in Phase 1
-      if (seqIdx < LESSON_SEQUENCE.length) {
-        const item1 = LESSON_SEQUENCE[seqIdx++];
-        tasks.push({
-          id: `day-${d}-t1`,
-          dayNumber: d,
-          dateStr: dateFormatted,
-          weekNumber: weekNum,
-          phase: 'Fase 1: Cobertura de Aulas',
-          shift: 'Turno 1',
-          subject: item1.subject,
-          lesson: item1.lesson,
-          title: `${item1.subject} - ${item1.lesson}`,
-          description: 'Estudo Teórico + 15-20 Questões FGV'
-        });
-      }
-      tasks.push({
-        id: `day-${d}-t2`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 1: Cobertura de Aulas',
-        shift: 'Turno 2 & 3 (Revisão Semanal)',
-        title: 'Revisão Geral Semanal & Caderno de Erros',
-        description: 'Revisão completa dos pontos marcados na semana + Resolução do Caderno de Erros'
-      });
+    
+    // We want to process 4 lessons a day to finish 235 in 60 days
+    for(let i=1; i<=4; i++) {
+        if (seqIdx < LESSON_SEQUENCE.length) {
+            const item = LESSON_SEQUENCE[seqIdx++];
+            tasks.push({
+                id: `day-${d}-t${i}`,
+                dayNumber: d,
+                dateStr: dateFormatted,
+                weekNumber: weekNum,
+                phase: 'Fase 1: Cobertura de Aulas',
+                shift: `Turno ${i}`,
+                subject: item.subject,
+                lesson: item.lesson,
+                title: `${item.subject} - ${item.lesson}`,
+                description: 'Estudo Híbrido: Resumos + Bateria Cesgranrio'
+            });
+        }
     }
 
     days.push({
@@ -419,11 +365,10 @@ export function buildSefazBAPlan(): DayPlan[] {
     });
   }
 
-  // ── FASE 2: Days 99 to 128 (Intensivo FGV) ──
-  for (let d = 99; d <= 128; d++) {
+  // 🎯 FASE 2: Intensivo Cesgranrio (Dias 61 a 78) - 18 dias
+  for (let d = 61; d <= 78; d++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + (d - 1));
-    const dayOfWeek = currentDate.getDay();
     const weekNum = Math.ceil(d / 7);
     const dateFormatted = currentDate.toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -431,74 +376,40 @@ export function buildSefazBAPlan(): DayPlan[] {
       year: 'numeric'
     });
 
-    const isSunday = dayOfWeek === 0;
     const tasks: PlanTask[] = [];
 
-    if (isSunday) {
-      tasks.push({
-        id: `day-${d}-t1`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 2: Intensivo FGV',
-        shift: 'Manhã (4h)',
-        title: '🏆 SIMULADO COMPLETO FGV (P1 + P2)',
-        description: 'Resolução de 100 questões em tempo real de prova sem consultas externas'
-      });
-      tasks.push({
-        id: `day-${d}-t2`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 2: Intensivo FGV',
-        shift: 'Tarde/Noite',
-        title: 'Correção de Gabarito & Análise do Caderno de Erros',
-        description: 'Revisão detalhada de cada questão errada e reforço de artigos da legislação'
-      });
-    } else {
-      tasks.push({
-        id: `day-${d}-t1`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 2: Intensivo FGV',
-        shift: 'Manhã (60min)',
-        title: 'Releitura de Resumos e Esquemas de Alta Incidência',
-        description: 'Revisão focada de Contabilidade, Direito Tributário, Auditoria e Legislação'
-      });
-      tasks.push({
-        id: `day-${d}-t2`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 2: Intensivo FGV',
-        shift: 'Tarde (120min)',
-        title: 'Bateria de 50 Questões FGV por Assunto',
-        description: 'Resolução massiva de baterias FGV por assunto com cronômetro ativado'
-      });
-      tasks.push({
-        id: `day-${d}-t3`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 2: Intensivo FGV',
-        shift: 'Noite (60min)',
-        title: 'Análise de Gabarito & Caderno de Erros',
-        description: 'Registro de pegadinhas e conceitos que causaram erros nas baterias do dia'
-      });
-    }
+    tasks.push({
+      id: `day-${d}-t1`,
+      dayNumber: d,
+      dateStr: dateFormatted,
+      weekNumber: weekNum,
+      phase: 'Fase 2: Intensivo Cesgranrio',
+      shift: 'Turno 1 & 2',
+      title: 'Simulado Completo / Provas Anteriores Cesgranrio',
+      description: 'Resolução de prova completa na íntegra com cronômetro'
+    });
+    tasks.push({
+      id: `day-${d}-t2`,
+      dayNumber: d,
+      dateStr: dateFormatted,
+      weekNumber: weekNum,
+      phase: 'Fase 2: Intensivo Cesgranrio',
+      shift: 'Turno 3',
+      title: 'Análise de Erros e Correção de Lacunas',
+      description: 'Revisão profunda das questões erradas no simulado'
+    });
 
     days.push({
       dayNumber: d,
       dateStr: dateFormatted,
       weekNumber: weekNum,
-      phase: 'Fase 2: Intensivo FGV',
+      phase: 'Fase 2: Intensivo Cesgranrio',
       tasks
     });
   }
 
-  // ── FASE 3: Days 129 to 144 (Reta Final) ──
-  for (let d = 129; d <= 144; d++) {
+  // 🎯 FASE 3: Reta Final (Dias 79 a 88) - 10 dias
+  for (let d = 79; d <= 88; d++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + (d - 1));
     const weekNum = Math.ceil(d / 7);
@@ -510,80 +421,37 @@ export function buildSefazBAPlan(): DayPlan[] {
 
     const tasks: PlanTask[] = [];
 
-    if (d <= 133) {
+    if (d === 88) {
       tasks.push({
-        id: `day-${d}-t1`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 3: Reta Final',
-        shift: 'Turno 1 & 2',
-        title: 'Leitura Integral da Lei Seca (CTN, LRF, Lei 14.133, Lei 7.716 e BA)',
-        description: 'Leitura atenta dos artigos mais cobrados na FGV e destaques da legislação'
-      });
-      tasks.push({
-        id: `day-${d}-t2`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 3: Reta Final',
-        shift: 'Turno 3',
-        title: 'Revisão de Fórmulas e Cálculos Fiscais',
-        description: 'Fórmulas de Estatística Descritiva e Matemática Financeira (SAC/Price/VPL/TIR)'
-      });
-    } else if (d <= 138) {
-      tasks.push({
-        id: `day-${d}-t1`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 3: Reta Final',
-        shift: 'Turno 1 & 2',
-        title: 'Revisão de Pronunciamentos CPCs e NBCs de Auditoria',
-        description: 'Revisão de CPC 00, 01, 03, 16, 25, 27 e NBC TAs de Auditoria Independente'
-      });
-      tasks.push({
-        id: `day-${d}-t2`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 3: Reta Final',
-        shift: 'Turno 3',
-        title: 'Bateria Rápida de 30 Questões de Revisão Geral',
-        description: 'Simulado rápido de memorização curta para manter a agilidade mental'
-      });
-    } else if (d <= 143) {
-      tasks.push({
-        id: `day-${d}-t1`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 3: Reta Final',
-        shift: 'Turno 1 & 2',
-        title: 'Decoreba de Prazos, Alíquotas e Exceções Constitucionais',
-        description: 'Memorização de prazos de prescrição, decadência, alíquotas do ICMS e exceções'
-      });
-      tasks.push({
-        id: `day-${d}-t2`,
-        dayNumber: d,
-        dateStr: dateFormatted,
-        weekNumber: weekNum,
-        phase: 'Fase 3: Reta Final',
-        shift: 'Turno 3',
-        title: 'Leitura de Esquemas de Memorização Rápida',
-        description: 'Revisão final de tabelas comparativas e mapas mentais do Caderno de Erros'
-      });
-    } else {
-      // Day 144 (Véspera)
-      tasks.push({
-        id: `day-144-t1`,
-        dayNumber: 144,
+        id: `day-88-t1`,
+        dayNumber: 88,
         dateStr: dateFormatted,
         weekNumber: weekNum,
         phase: 'Fase 3: Reta Final',
         shift: 'Dia Inteiro',
-        title: '🏁 VÉSPERA DA PROVA SEFAZ-BA - Descanso e Preparação Mental',
-        description: 'Leitura leve apenas de esquemas, separação de documentos, canetas e boa alimentação'
+        title: '🌟 VÉSPERA DA PROVA SEFAZ-BA - Descanso e Preparação Mental',
+        description: 'Leitura leve de esquemas, separação de documentos, canetas e boa alimentação'
+      });
+    } else {
+      tasks.push({
+        id: `day-${d}-t1`,
+        dayNumber: d,
+        dateStr: dateFormatted,
+        weekNumber: weekNum,
+        phase: 'Fase 3: Reta Final',
+        shift: 'Turno 1 & 2',
+        title: 'Decoreba Cesgranrio: Prazos, Alíquotas e Exceções',
+        description: 'Memorização de prazos de prescrição, alíquotas do ICMS e literalidade da Lei'
+      });
+      tasks.push({
+        id: `day-${d}-t2`,
+        dayNumber: d,
+        dateStr: dateFormatted,
+        weekNumber: weekNum,
+        phase: 'Fase 3: Reta Final',
+        shift: 'Turno 3',
+        title: 'Leitura Focada na Lei Seca',
+        description: 'Revisão final de tabelas comparativas e Lei Complementar 87/96 (Kandir)'
       });
     }
 
