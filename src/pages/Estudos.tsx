@@ -280,7 +280,7 @@ export default function Estudos() {
             size="sm"
             variant="outline"
             onClick={async () => {
-              await study.resetToSefazBA();
+              await resetToSefazBA();
             }}
             className="border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 font-semibold gap-1.5 shadow-sm"
           >
