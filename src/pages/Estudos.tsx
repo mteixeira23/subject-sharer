@@ -48,7 +48,7 @@ export default function Estudos() {
     data, getOverallProgress, getSubjectProgress, getWeakSubjects, getTodayStudyTime,
     addSubject, updateSubject, deleteSubject, getLessonsBySubject, addLesson, updateLesson, deleteLesson,
     updateQuestionSession, deleteQuestionSession, getStudyTimeBySubject, deletePomodoroSession,
-    startNewCycle, getCycleHistory,
+    startNewCycle, getCycleHistory, resetToSefazBA,
   } = useStudy();
 
   function formatStudyTime(seconds: number): string {
@@ -280,7 +280,7 @@ export default function Estudos() {
             size="sm"
             variant="outline"
             onClick={async () => {
-              await study.resetToSefazBA();
+              await resetToSefazBA();
             }}
             className="border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 font-semibold gap-1.5 shadow-sm"
           >
