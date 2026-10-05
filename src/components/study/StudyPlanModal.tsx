@@ -143,16 +143,6 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
       });
     }
   };
-      day.tasks.forEach(t => {
-        next[t.id] = newState;
-      });
-      return next;
-    });
-
-    if (newState) {
-      toast.success(`Todas as tarefas do Dia ${day.dayNumber} concluídas! 🎉`);
-    }
-  };
 
   // Filter logic
   const filteredDays = useMemo(() => {
