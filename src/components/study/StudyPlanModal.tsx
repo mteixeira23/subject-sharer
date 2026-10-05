@@ -122,6 +122,34 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
     });
 
     if (newState) {
+      toast.success(`Todas as tarefas do Dia ${day.dayNumber} concluídas! 🚀`);
+      
+      // Auto-sync all lessons in this day to global studyData
+      day.tasks.forEach(task => {
+        if (task.subject && task.lesson) {
+          try {
+            const sub = studyData.subjects.find(
+              s => s.name.trim().toLowerCase() === task.subject?.trim().toLowerCase()
+            );
+            if (sub) {
+              const matchLessonNum = task.lesson.match(/\d+/);
+              if (matchLessonNum) {
+                const lessonNumber = parseInt(matchLessonNum[0]);
+                updateLesson(sub.id, { theoryCompleted: true }, sub.id, lessonNumber);
+              }
+            }
+          } catch (e) {}
+        }
+      });
+    }
+  };
+      day.tasks.forEach(t => {
+        next[t.id] = newState;
+      });
+      return next;
+    });
+
+    if (newState) {
       toast.success(`Todas as tarefas do Dia ${day.dayNumber} concluídas! 🎉`);
     }
   };
