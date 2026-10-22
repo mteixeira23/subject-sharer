@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,18 +36,26 @@ const UFBA_STORAGE_KEY = 'ufba_cgu_sprint_plan_completed_tasks_v1';
 export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
   const { data: studyData, updateLesson } = useStudy();
 
-  // Switch between UFBA Priority Sprint and SEFAZ-BA Original Plan
+  // Active plan switcher: 'ufba' | 'sefaz'
   const [activePlanType, setActivePlanType] = useState<'ufba' | 'sefaz'>('ufba');
 
-  // Days memoized for both plans
+  // Both plans memoized
   const sefazDays = useMemo(() => buildSefazBAPlan(), []);
   const ufbaDays = useMemo(() => buildUfbaSprintPlan(), []);
 
   const allDays = activePlanType === 'ufba' ? ufbaDays : sefazDays;
-  const currentStorageKey = activePlanType === 'ufba' ? UFBA_STORAGE_KEY : SEFAZ_STORAGE_KEY;
 
-  // Map of completed task IDs -> boolean for the active plan
-  const [completedTaskIds, setCompletedTaskIds] = useState<Record<string, boolean>>(() => {
+  // Stored task IDs for both plans
+  const [sefazTaskIds, setSefazTaskIds] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem(SEFAZ_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const [ufbaTaskIds, setUfbaTaskIds] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem(UFBA_STORAGE_KEY);
       return saved ? JSON.parse(saved) : {};
@@ -56,108 +64,192 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
     }
   });
 
-  // Reload tasks when switching plan type so nothing is lost or crossed
+  // Cross-plan completed lesson keys: "subject_lowercase|lesson_lowercase"
+  const [crossPlanCompletedKeys, setCrossPlanCompletedKeys] = useState<Set<string>>(() => new Set());
+
+  // Build the master map of completed lessons from:
+  // 1. Supabase (studyData.lessons with theoryCompleted)
+  // 2. Existing SEFAZ tasks in localStorage
+  // 3. Existing UFBA tasks in localStorage
+  useEffect(() => {
+    const keys = new Set<string>();
+
+    // 1. From Supabase studyData
+    if (studyData?.subjects && studyData?.lessons) {
+      const subjMap = new Map<string, string>();
+      studyData.subjects.forEach(s => {
+        subjMap.set(s.id, s.name.trim().toLowerCase());
+      });
+
+      studyData.lessons.forEach(l => {
+        if (l.theoryCompleted) {
+          const sName = subjMap.get(l.subjectId);
+          if (sName) {
+            const padNum = l.number < 10 ? `0${l.number}` : `${l.number}`;
+            keys.add(`${sName}|aula ${padNum}`);
+            keys.add(`${sName}|aula ${l.number}`);
+          }
+        }
+      });
+    }
+
+    // 2. From SEFAZ localStorage tasks
+    sefazDays.forEach(day => {
+      day.tasks.forEach(task => {
+        if (sefazTaskIds[task.id] && task.subject && task.lesson) {
+          keys.add(`${task.subject.trim().toLowerCase()}|${task.lesson.trim().toLowerCase()}`);
+        }
+      });
+    });
+
+    // 3. From UFBA localStorage tasks
+    ufbaDays.forEach(day => {
+      day.tasks.forEach(task => {
+        if (ufbaTaskIds[task.id] && task.subject && task.lesson) {
+          keys.add(`${task.subject.trim().toLowerCase()}|${task.lesson.trim().toLowerCase()}`);
+        }
+      });
+    });
+
+    setCrossPlanCompletedKeys(keys);
+  }, [studyData?.subjects, studyData?.lessons, sefazDays, ufbaDays, sefazTaskIds, ufbaTaskIds]);
+
+  // Save SEFAZ tasks to localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(currentStorageKey);
-      setCompletedTaskIds(saved ? JSON.parse(saved) : {});
-    } catch {
-      setCompletedTaskIds({});
-    }
-  }, [currentStorageKey]);
+      localStorage.setItem(SEFAZ_STORAGE_KEY, JSON.stringify(sefazTaskIds));
+    } catch (e) {}
+  }, [sefazTaskIds]);
 
+  // Save UFBA tasks to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(UFBA_STORAGE_KEY, JSON.stringify(ufbaTaskIds));
+    } catch (e) {}
+  }, [ufbaTaskIds]);
+
+  // Check if a task is completed (looks at plan ID, cross-plan lesson, or Supabase DB)
+  const isTaskCompleted = useCallback((task: PlanTask): boolean => {
+    // A) Direct task ID match
+    if (activePlanType === 'ufba' && ufbaTaskIds[task.id]) return true;
+    if (activePlanType === 'sefaz' && sefazTaskIds[task.id]) return true;
+
+    // B) Lesson match across plans
+    if (task.subject && task.lesson) {
+      const key = `${task.subject.trim().toLowerCase()}|${task.lesson.trim().toLowerCase()}`;
+      if (crossPlanCompletedKeys.has(key)) return true;
+    }
+
+    return false;
+  }, [activePlanType, ufbaTaskIds, sefazTaskIds, crossPlanCompletedKeys]);
+
+  // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPhase, setSelectedPhase] = useState<'all' | 'phase1' | 'phase2' | 'phase3' | 'phase4'>('all');
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'pending' | 'completed'>('all');
 
-  // Save to localstorage on change for the active plan only
-  useEffect(() => {
-    try {
-      localStorage.setItem(currentStorageKey, JSON.stringify(completedTaskIds));
-    } catch (e) {
-      console.error('Failed to save study plan progress', e);
-    }
-  }, [completedTaskIds, currentStorageKey]);
-
-  // Aggregate Statistics
+  // Statistics
   const totalTasksCount = useMemo(() => {
     return allDays.reduce((acc, d) => acc + d.tasks.length, 0);
   }, [allDays]);
 
   const completedTasksCount = useMemo(() => {
-    return Object.values(completedTaskIds).filter(Boolean).length;
-  }, [completedTaskIds]);
+    return allDays.reduce((acc, d) => {
+      return acc + d.tasks.filter(t => isTaskCompleted(t)).length;
+    }, 0);
+  }, [allDays, isTaskCompleted]);
 
   const overallPercent = totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
 
-  // Toggle single task
+  // Toggle single task with two-way cross-sync
   const toggleTask = (task: PlanTask) => {
-    const isCompleted = !completedTaskIds[task.id];
-    setCompletedTaskIds(prev => ({
-      ...prev,
-      [task.id]: isCompleted
-    }));
+    const wasCompleted = isTaskCompleted(task);
+    const newState = !wasCompleted;
 
-    if (isCompleted) {
-      toast.success(`Tarefa marcada: ${task.title}`);
+    // 1. Update the active plan's task IDs
+    if (activePlanType === 'ufba') {
+      setUfbaTaskIds(prev => ({ ...prev, [task.id]: newState }));
+    } else {
+      setSefazTaskIds(prev => ({ ...prev, [task.id]: newState }));
     }
 
-    // Optional sync: If task is a specific lesson, auto mark theoryCompleted in studyData
-    if (isCompleted && task.subject && task.lesson) {
+    // 2. If it is a lesson, cross-sync to the other plan and to Supabase
+    if (task.subject && task.lesson) {
+      const subjKey = task.subject.trim().toLowerCase();
+      const lessonKey = task.lesson.trim().toLowerCase();
+      const compoundKey = `${subjKey}|${lessonKey}`;
+
+      setCrossPlanCompletedKeys(prev => {
+        const next = new Set(prev);
+        if (newState) next.add(compoundKey);
+        else next.delete(compoundKey);
+        return next;
+      });
+
+      // Cross-sync matching task IDs in the OTHER plan
+      if (activePlanType === 'ufba') {
+        // Find matching task in SEFAZ
+        const matchingSefazTasks = sefazDays.flatMap(d => d.tasks).filter(
+          t => t.subject?.trim().toLowerCase() === subjKey && t.lesson?.trim().toLowerCase() === lessonKey
+        );
+        if (matchingSefazTasks.length > 0) {
+          setSefazTaskIds(prev => {
+            const next = { ...prev };
+            matchingSefazTasks.forEach(st => { next[st.id] = newState; });
+            return next;
+          });
+        }
+      } else {
+        // Find matching task in UFBA
+        const matchingUfbaTasks = ufbaDays.flatMap(d => d.tasks).filter(
+          t => t.subject?.trim().toLowerCase() === subjKey && t.lesson?.trim().toLowerCase() === lessonKey
+        );
+        if (matchingUfbaTasks.length > 0) {
+          setUfbaTaskIds(prev => {
+            const next = { ...prev };
+            matchingUfbaTasks.forEach(ut => { next[ut.id] = newState; });
+            return next;
+          });
+        }
+      }
+
+      // Sync to Supabase
       try {
         const sub = studyData.subjects.find(
-          s => s.name.trim().toLowerCase() === task.subject?.trim().toLowerCase()
+          s => s.name.trim().toLowerCase() === subjKey
         );
         if (sub) {
           const matchLessonNum = task.lesson.match(/\d+/);
           if (matchLessonNum) {
             const lessonNumber = parseInt(matchLessonNum[0]);
-            updateLesson(sub.id, { theoryCompleted: true }, sub.id, lessonNumber);
+            updateLesson(sub.id, { theoryCompleted: newState }, sub.id, lessonNumber);
           }
         }
-      } catch (e) {
-        // Silent catch
-      }
+      } catch (e) {}
+    }
+
+    if (newState) {
+      toast.success(`Concluído: ${task.title}`);
     }
   };
 
   // Toggle whole day
   const toggleDay = (day: DayPlan) => {
-    const allCompleted = day.tasks.every(t => completedTaskIds[t.id]);
+    const allCompleted = day.tasks.every(t => isTaskCompleted(t));
     const newState = !allCompleted;
 
-    setCompletedTaskIds(prev => {
-      const next = { ...prev };
-      day.tasks.forEach(t => {
-        next[t.id] = newState;
-      });
-      return next;
+    day.tasks.forEach(t => {
+      if (isTaskCompleted(t) !== newState) {
+        toggleTask(t);
+      }
     });
 
     if (newState) {
       toast.success(`Todas as tarefas do Dia ${day.dayNumber} concluídas! 🚀`);
-      
-      // Auto-sync all lessons in this day to global studyData
-      day.tasks.forEach(task => {
-        if (task.subject && task.lesson) {
-          try {
-            const sub = studyData.subjects.find(
-              s => s.name.trim().toLowerCase() === task.subject?.trim().toLowerCase()
-            );
-            if (sub) {
-              const matchLessonNum = task.lesson.match(/\d+/);
-              if (matchLessonNum) {
-                const lessonNumber = parseInt(matchLessonNum[0]);
-                updateLesson(sub.id, { theoryCompleted: true }, sub.id, lessonNumber);
-              }
-            }
-          } catch (e) {}
-        }
-      });
     }
   };
 
-  // Filter logic
+  // Filtered days list
   const filteredDays = useMemo(() => {
     return allDays.filter(day => {
       // Phase filter
@@ -167,7 +259,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
       if (selectedPhase === 'phase4' && !day.phase.includes('Fase 4') && !day.phase.includes('UFBA')) return false;
 
       // Status filter
-      const dayTasksCompleted = day.tasks.filter(t => completedTaskIds[t.id]).length;
+      const dayTasksCompleted = day.tasks.filter(t => isTaskCompleted(t)).length;
       if (selectedStatus === 'completed' && dayTasksCompleted < day.tasks.length) return false;
       if (selectedStatus === 'pending' && dayTasksCompleted === day.tasks.length) return false;
 
@@ -185,7 +277,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
       return true;
     });
-  }, [allDays, selectedPhase, selectedStatus, searchQuery, completedTaskIds]);
+  }, [allDays, selectedPhase, selectedStatus, searchQuery, isTaskCompleted]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -236,7 +328,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
             <div className="text-[11px] text-muted-foreground font-medium flex items-center gap-1.5">
               <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Dados e histórico preservados no Habitus
+              Sincronização mútua ativada (Zero perda de dados)
             </div>
           </div>
 
@@ -409,8 +501,8 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
           ) : (
             <div className="space-y-6">
               {filteredDays.map(day => {
-                const dayCompletedTasks = day.tasks.filter(t => completedTaskIds[t.id]).length;
-                const isDayFullyCompleted = dayCompletedTasks === day.tasks.length;
+                const dayCompletedTasks = day.tasks.filter(t => isTaskCompleted(t)).length;
+                const isDayFullyCompleted = dayCompletedTasks === day.tasks.length && day.tasks.length > 0;
                 const isSpecialDay = day.phase.includes('CGU') || day.phase.includes('UFBA') || day.tasks.some(t => t.isVaccine);
 
                 return (
@@ -501,7 +593,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                     {/* Day Tasks List */}
                     <CardContent className="p-4 space-y-3">
                       {day.tasks.map(task => {
-                        const isTaskDone = Boolean(completedTaskIds[task.id]);
+                        const isTaskDone = isTaskCompleted(task);
 
                         return (
                           <div
