@@ -234,11 +234,11 @@ export function useStudyData() {
     if (!userId || loadingContests || loadingSubjects || loadingLessons || seeding) return;
 
     const hasInvalidSubjects = rawSubjects.some(s => !sefazNames.has(s.name.trim().toLowerCase()));
-    const missingSubjects = SEFAZ_BA_SUBJECTS.some(def =>
+    const hasMissingSubjects = SEFAZ_BA_SUBJECTS.some(def =>
       !rawSubjects.some(s => s.name.trim().toLowerCase() === def.name.trim().toLowerCase())
     );
 
-    if (!hasInvalidSubjects && !missingSubjects && hasSeededRef.current) return;
+    if (!hasInvalidSubjects && !hasMissingSubjects && hasSeededRef.current) return;
     hasSeededRef.current = true;
 
     const seedAndSync = async () => {
@@ -283,12 +283,12 @@ export function useStudyData() {
               .filter(s => sefazNames.has(s.name.trim().toLowerCase()))
               .map(s => s.name.trim().toLowerCase())
           );
-          const missingSubjects = SEFAZ_BA_SUBJECTS.filter(
+          const subjectsToInsert = SEFAZ_BA_SUBJECTS.filter(
             s => !existingSubjectNames.has(s.name.trim().toLowerCase())
           );
 
-          if (missingSubjects.length > 0) {
-            const subjectRows = missingSubjects.map((s, i) => ({
+          if (subjectsToInsert.length > 0) {
+            const subjectRows = subjectsToInsert.map((s, i) => ({
               user_id: userId,
               contest_id: activeContestId,
               name: s.name,
