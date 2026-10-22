@@ -114,14 +114,14 @@ export function buildUfbaSprintPlan(): DayPlan[] {
 
   // Tarefas da Vacina CGU para os fins de semana
   const CGU_VACCINE_TASKS = [
-    { title: '💉 Vacina CGU: Auditoria - Aula 00 (NBC TA 200)', desc: 'Conceito, Objetivos e Conduta Ética na Auditoria Independente' },
-    { title: '💉 Vacina CGU: Lei Anticorrupção (Lei 12.846/13)', desc: 'Leitura seca dos dispositivos essenciais de responsabilização de pessoas jurídicas' },
-    { title: '💉 Vacina CGU: Auditoria - Aula 01 (NBC TI 01)', desc: 'Auditoria Interna: Normas e Práticas de Controle no Setor Público' },
-    { title: '💉 Vacina CGU: Lei de Acesso à Informação (Lei 12.527/11)', desc: 'Regras de transparência ativa, passiva e sigilo documental' },
-    { title: '💉 Vacina CGU: Auditoria - Aula 02 (NBC TA 300)', desc: 'Planejamento de Auditoria e Estratégia Global' },
-    { title: '💉 Vacina CGU: Auditoria - Aula 07 (Controle Interno e COSO)', desc: 'Avaliação de Riscos e Componentes do COSO I e II' },
-    { title: '💉 Vacina CGU: Simulado Rápido de Controle & Auditoria', desc: 'Resolução de 30 questões comentadas Cebraspe' },
-    { title: '💉 Vacina CGU: Peça Técnica / Estudo de Caso Cebraspe', desc: 'Leitura de modelos de notas técnicas e estudos de caso de auditoria governamental' },
+    { subject: 'Auditoria', lesson: 'Aula 00', title: '💉 Vacina CGU: Auditoria - Aula 00 (NBC TA 200)', desc: 'Conceito, Objetivos e Conduta Ética na Auditoria Independente' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 10', title: '💉 Vacina CGU: Lei Anticorrupção (Lei 12.846/13)', desc: 'Leitura seca dos dispositivos essenciais de responsabilização de pessoas jurídicas' },
+    { subject: 'Auditoria', lesson: 'Aula 01', title: '💉 Vacina CGU: Auditoria - Aula 01 (NBC TI 01)', desc: 'Auditoria Interna: Normas e Práticas de Controle no Setor Público' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 09', title: '💉 Vacina CGU: Lei de Acesso à Informação (Lei 12.527/11)', desc: 'Regras de transparência ativa, passiva e sigilo documental' },
+    { subject: 'Auditoria', lesson: 'Aula 02', title: '💉 Vacina CGU: Auditoria - Aula 02 (NBC TA 300)', desc: 'Planejamento de Auditoria e Estratégia Global' },
+    { subject: 'Auditoria', lesson: 'Aula 07', title: '💉 Vacina CGU: Auditoria - Aula 07 (Controle Interno e COSO)', desc: 'Avaliação de Riscos e Componentes do COSO I e II' },
+    { subject: 'Auditoria', lesson: 'Simulado Cebraspe', title: '💉 Vacina CGU: Simulado Rápido de Controle & Auditoria', desc: 'Resolução de 30 questões comentadas Cebraspe' },
+    { subject: 'Auditoria', lesson: 'Peça Técnica Cebraspe', title: '💉 Vacina CGU: Peça Técnica / Estudo de Caso Cebraspe', desc: 'Leitura de modelos de notas técnicas e estudos de caso de auditoria governamental' },
   ];
 
   let weekdayIdx = 0;
@@ -242,6 +242,8 @@ export function buildUfbaSprintPlan(): DayPlan[] {
         weekNumber: weekNum,
         phase: 'Fase 2: Vacina CGU & Revisão',
         shift: 'Turno 1 (Manhã)',
+        subject: vTask.subject,
+        lesson: vTask.lesson,
         title: vTask.title,
         description: vTask.desc,
         isVaccine: true

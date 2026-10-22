@@ -78,6 +78,51 @@ function rowToPomodoroSession(r: any): PomodoroSession {
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
+
+export const SEFAZ_21_COMPLETED_LESSONS: { subjectName: string; dbLessonNumber: number }[] = [
+  // Day 1
+  { subjectName: 'Contabilidade Geral', dbLessonNumber: 1 }, // Aula 00
+  { subjectName: 'Direito Tributário', dbLessonNumber: 1 },  // Aula 00
+  // Day 2
+  { subjectName: 'Direito Administrativo', dbLessonNumber: 1 }, // Aula 00
+  { subjectName: 'Língua Portuguesa', dbLessonNumber: 1 },      // Aula 00
+  // Day 3
+  { subjectName: 'Direito Constitucional', dbLessonNumber: 1 }, // Aula 00
+  { subjectName: 'Contabilidade Geral', dbLessonNumber: 2 },    // Aula 01
+  // Day 4
+  { subjectName: 'Auditoria', dbLessonNumber: 1 },              // Aula 00
+  { subjectName: 'Contabilidade Aplicada ao Setor Público (CASP)', dbLessonNumber: 1 }, // Aula 00
+  // Day 5
+  { subjectName: 'Direito Tributário', dbLessonNumber: 2 },      // Aula 01
+  { subjectName: 'Estatística', dbLessonNumber: 1 },            // Aula 00
+  // Day 6
+  { subjectName: 'Economia', dbLessonNumber: 1 },               // Aula 00
+  { subjectName: 'Direito Administrativo', dbLessonNumber: 2 },  // Aula 01
+  // Day 7
+  { subjectName: 'Matemática Financeira', dbLessonNumber: 1 },   // Aula 00
+  // Day 8
+  { subjectName: 'Administração, Economia e Finanças Públicas', dbLessonNumber: 1 }, // Aula 00
+  { subjectName: 'Direito Constitucional', dbLessonNumber: 2 },  // Aula 01
+  // Day 9
+  { subjectName: 'Informática Básica', dbLessonNumber: 1 },      // Aula 00
+  { subjectName: 'Noções de Igualdade Racial', dbLessonNumber: 1 }, // Aula 00
+  // Day 10
+  { subjectName: 'Contabilidade Geral', dbLessonNumber: 3 },    // Aula 02
+  { subjectName: 'Direito Tributário', dbLessonNumber: 3 },     // Aula 02
+  // Day 11
+  { subjectName: 'Direito Administrativo', dbLessonNumber: 3 }, // Aula 02
+  { subjectName: 'Língua Portuguesa', dbLessonNumber: 2 },      // Aula 01
+];
+
+export function isBaselineCompletedLesson(subjectName?: string, lessonNum?: number): boolean {
+  if (!subjectName || !lessonNum) return false;
+  const sNorm = subjectName.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return SEFAZ_21_COMPLETED_LESSONS.some(b => {
+    const bNorm = b.subjectName.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return (sNorm === bNorm || sNorm.includes(bNorm) || bNorm.includes(sNorm)) && b.dbLessonNumber === lessonNum;
+  });
+}
+
 export function useStudyData() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -169,8 +214,9 @@ export function useStudyData() {
       rawLessons.forEach(l => {
         const sName = subjectNameMap.get(l.subjectId) || l.subjectId.trim().toLowerCase();
         const key = `${sName}-${l.number}`;
+        const baselineDone = isBaselineCompletedLesson(sName, l.number);
         if (!map.has(key)) {
-          map.set(key, { ...l });
+          map.set(key, { ...l, theoryCompleted: l.theoryCompleted || baselineDone });
         } else {
           const existing = map.get(key)!;
           map.set(key, {
@@ -346,6 +392,21 @@ export function useStudyData() {
               await supabase.from('lessons').insert(batch);
             }
           }
+
+          // Persist 21 baseline completed lessons into Supabase
+          try {
+            for (const b of SEFAZ_21_COMPLETED_LESSONS) {
+              const sObj = currentSubjects.find(s => s.name.trim().toLowerCase() === b.subjectName.trim().toLowerCase());
+              if (sObj) {
+                await supabase
+                  .from('lessons')
+                  .update({ theory_completed: true })
+                  .eq('user_id', userId)
+                  .eq('subject_id', sObj.id)
+                  .eq('number', b.dbLessonNumber);
+              }
+            }
+          } catch (e) {}
         }
 
         // C) Fill missing lesson names for existing lessons
@@ -1176,7 +1237,11 @@ export function useStudyData() {
         const sName = subject?.name.trim().toLowerCase();
         const lsTheory = localStorage.getItem(`lesson_flag_${userId}_${sName}_${num}_theory`) ?? localStorage.getItem(`lesson_flag_${activeUserId}_${sName}_${num}_theory`) ?? localStorage.getItem(`lesson_flag_default-user_${sName}_${num}_theory`);
         const lsReview = localStorage.getItem(`lesson_flag_${userId}_${sName}_${num}_review`) ?? localStorage.getItem(`lesson_flag_${activeUserId}_${sName}_${num}_review`) ?? localStorage.getItem(`lesson_flag_default-user_${sName}_${num}_review`);
-        if (lsTheory !== null) l.theoryCompleted = l.theoryCompleted || lsTheory === 'true';
+        if (isBaselineCompletedLesson(subject?.name, num)) {
+          l.theoryCompleted = true;
+        } else if (lsTheory !== null) {
+          l.theoryCompleted = l.theoryCompleted || lsTheory === 'true';
+        }
         if (lsReview !== null) l.reviewCompleted = l.reviewCompleted || lsReview === 'true';
       });
 
@@ -1195,7 +1260,7 @@ export function useStudyData() {
               subjectId: subject.id,
               number: i,
               name: getLessonName(subject.name, i),
-              theoryCompleted: lsTheory === 'true',
+              theoryCompleted: isBaselineCompletedLesson(subject.name, i) || lsTheory === 'true',
               reviewCompleted: lsReview === 'true',
               questionsCount: 0,
               correctAnswers: 0,
