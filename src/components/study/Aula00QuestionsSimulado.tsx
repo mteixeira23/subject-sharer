@@ -132,7 +132,7 @@ export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber 
       await addQuestionSession({
         id: `session-${Date.now()}`,
         subjectId: currentSubj.id,
-        lessonNumber: Number(selectedLessonNumber),
+        lessonNumber: Number(selectedLessonNumber) + 1,
         date: new Date().toISOString().split('T')[0],
         questionsCount: answeredCount,
         correctAnswers: correctCount,

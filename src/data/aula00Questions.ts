@@ -717,6 +717,9 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
 
 import { getLessonName } from '@/data/sefazBA';
 import { REAL_CONCURSO_QUESTIONS } from './realConcursoQuestions';
+import { TRIBUTARIO_QUESTIONS_BY_LESSON } from './questions/tributarioQuestions';
+import { AUDITORIA_QUESTIONS_BY_LESSON } from './questions/auditoriaQuestions';
+import { CONTABILIDADE_QUESTIONS_BY_LESSON } from './questions/contabilidadeQuestions';
 
 export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number): QuestionData[] {
   const lessonTitle = getLessonName(subjectName, lessonNum);
@@ -728,19 +731,25 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
   }
 
   let bank: QuestionData[] | undefined;
+  let lessonSpecific: QuestionData[] | undefined;
 
   if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
     bank = REAL_CONCURSO_QUESTIONS.tributario;
+    lessonSpecific = TRIBUTARIO_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('matemática') || lowerSubj.includes('financeira')) {
     bank = REAL_CONCURSO_QUESTIONS.matematica_financeira;
   } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
     bank = REAL_CONCURSO_QUESTIONS.estatistica;
-  } else if (lowerSubj.includes('contabil') || lowerSubj.includes('casp')) {
+  } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público')) {
+    bank = REAL_CONCURSO_QUESTIONS.casp;
+  } else if (lowerSubj.includes('contabil')) {
     bank = REAL_CONCURSO_QUESTIONS.contabilidade;
+    lessonSpecific = CONTABILIDADE_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('direito') || lowerSubj.includes('constituc') || lowerSubj.includes('administ')) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
   } else if (lowerSubj.includes('auditoria')) {
     bank = REAL_CONCURSO_QUESTIONS.auditoria;
+    lessonSpecific = AUDITORIA_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('portug')) {
     bank = REAL_CONCURSO_QUESTIONS.portugues;
   } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças')) {
@@ -751,22 +760,32 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     bank = REAL_CONCURSO_QUESTIONS.igualdade_racial;
   }
 
-  return buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank);
+  return buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank, lessonSpecific);
 }
 
 function buildDomainSpecificQuestions(
   subjectName: string,
   lessonNum: number,
   lessonTitle: string,
-  bank?: QuestionData[]
+  bank?: QuestionData[],
+  lessonSpecific?: QuestionData[]
 ): QuestionData[] {
   const lowerSubj = subjectName.trim().toLowerCase();
 
   return Array.from({ length: 50 }, (_, idx) => {
     const qNum = idx + 1;
-    const isTF = idx % 3 === 1;
 
-    // Use authentic bank item if available, rotated dynamically by lessonNum
+    // 1. Prioritize authentic lesson-specific questions if available
+    if (lessonSpecific && idx < lessonSpecific.length) {
+      const specificQ = lessonSpecific[idx];
+      return {
+        ...specificQ,
+        id: qNum,
+        topic: specificQ.topic || lessonTitle,
+      };
+    }
+
+    // 2. Use authentic bank item if available, rotated dynamically by lessonNum
     if (bank && bank.length > 0 && idx % 5 === 0) {
       const bankIdx = (lessonNum * 7 + Math.floor(idx / 5)) % bank.length;
       const baseQ = bank[bankIdx];
