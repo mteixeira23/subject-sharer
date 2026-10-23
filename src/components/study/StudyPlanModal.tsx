@@ -19,7 +19,8 @@ import {
   ShieldCheck,
   Target,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
 import { buildSefazBAPlan, DayPlan, PlanTask } from '@/data/sefazBAPlanningData';
@@ -445,7 +446,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-[100dvh] sm:h-[92vh] max-w-none sm:max-w-4xl flex flex-col p-0 gap-0 bg-background text-foreground overflow-hidden border-border inset-0 sm:inset-auto z-50">
+      <DialogContent className="fixed inset-0 top-0 left-0 translate-x-0 translate-y-0 w-full h-[100dvh] max-w-none rounded-none sm:top-[50%] sm:left-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:h-[92vh] sm:max-w-4xl sm:rounded-xl flex flex-col p-0 gap-0 bg-background text-foreground overflow-hidden border-border z-50">
         
         {/* Modal Header */}
         <DialogHeader className="p-2.5 sm:p-6 pb-2 sm:pb-4 border-b border-border bg-card/80 shrink-0">
@@ -913,20 +914,30 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
           )}
         </ScrollArea>
 
-        {/* Simulado Modal directly inside StudyPlan */}
-        <Dialog open={!!simuladoModalInfo} onOpenChange={(open) => !open && setSimuladoModalInfo(null)}>
-          <DialogContent className="w-full h-[100dvh] max-w-none max-h-none sm:max-w-4xl sm:max-h-[92vh] sm:h-auto sm:rounded-xl p-0 flex flex-col bg-background border-border overflow-hidden inset-0 sm:inset-auto z-50">
-            <DialogHeader className="p-3 sm:p-4 border-b border-border/80 bg-card/80 shrink-0">
-              <div className="flex items-center justify-between gap-2 pr-6 sm:pr-0">
-                <DialogTitle className="text-sm sm:text-base font-bold flex items-center gap-2 text-foreground truncate">
+        {/* Simulado Overlay directly inside StudyPlan */}
+        {simuladoModalInfo && (
+          <div className="fixed inset-0 z-[100] flex flex-col bg-background h-[100dvh] w-full overflow-hidden animate-in fade-in duration-200 sm:p-4 sm:bg-black/75 sm:backdrop-blur-sm sm:flex sm:items-center sm:justify-center">
+            <div className="w-full h-full sm:max-w-4xl sm:h-auto sm:max-h-[92vh] flex flex-col bg-background sm:rounded-xl sm:border sm:border-border sm:shadow-2xl overflow-hidden relative">
+              <div className="p-3 sm:p-4 border-b border-border/80 bg-card/90 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-2 truncate pr-2">
                   <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
-                  <span className="truncate">Bateria de Questões: {simuladoModalInfo?.taskTitle}</span>
-                </DialogTitle>
+                  <span className="text-sm sm:text-base font-bold text-foreground truncate">
+                    Bateria de Questões: {simuladoModalInfo.taskTitle}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSimuladoModalInfo(null)}
+                  className="h-8 w-8 rounded-full shrink-0 hover:bg-muted text-muted-foreground hover:text-foreground"
+                  title="Fechar questões"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Fechar</span>
+                </Button>
               </div>
-            </DialogHeader>
 
-            <div className="flex-1 overflow-y-auto p-2 sm:p-6 overscroll-contain">
-              {simuladoModalInfo && (
+              <div className="flex-1 overflow-y-auto p-2 sm:p-6 overscroll-contain">
                 <Aula00QuestionsSimulado
                   initialSubjectId={simuladoModalInfo.subjectId}
                   initialLessonNumber={simuladoModalInfo.lessonNumber}
@@ -944,10 +955,10 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                     toast.success('Questões salvas e tarefa marcada como concluída! 🎯');
                   }}
                 />
-              )}
+              </div>
             </div>
-          </DialogContent>
-        </Dialog>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

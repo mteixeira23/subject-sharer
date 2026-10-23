@@ -537,7 +537,7 @@ export function Aula00QuestionsSimulado({
       </div>
     
       {/* Mobile Sticky Bottom Action Bar */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border p-2.5 flex items-center justify-between gap-2 shadow-2xl">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-[120] bg-background/95 backdrop-blur-md border-t border-border p-2.5 flex items-center justify-between gap-2 shadow-2xl">
         <Button variant="outline" size="sm" onClick={handleResetAll} className="h-9 text-xs gap-1 px-3 shrink-0">
           <RotateCcw className="h-3.5 w-3.5" /> Limpar
         </Button>
