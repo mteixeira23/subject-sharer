@@ -35,6 +35,7 @@ interface StudyPlanModalProps {
 
 const SEFAZ_STORAGE_KEY = 'sefaz_ba_daily_plan_completed_tasks_v2';
 const UFBA_STORAGE_KEY = 'ufba_cgu_sprint_plan_completed_tasks_v2';
+const QUESTIONS_DONE_STORAGE_KEY = 'study_completed_questions_keys_v1';
 
 function normalizeSubject(str: string): string {
   return (str || '')
@@ -111,6 +112,24 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
   // Cross-plan completed lesson keys: "canonical_subject|aula-X"
   const [crossPlanCompletedKeys, setCrossPlanCompletedKeys] = useState<Set<string>>(() => new Set());
 
+  // Track completed exercise/question sessions per lesson: "canonical_subject|aula-X"
+  const [questionsDoneKeys, setQuestionsDoneKeys] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem(QUESTIONS_DONE_STORAGE_KEY);
+      const parsed = saved ? JSON.parse(saved) : {};
+      // Contabilidade Geral Aula 00 marked as completed as requested by user
+      return { 'contabilidade geral|aula-0': true, ...parsed };
+    } catch {
+      return { 'contabilidade geral|aula-0': true };
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(QUESTIONS_DONE_STORAGE_KEY, JSON.stringify(questionsDoneKeys));
+    } catch (e) {}
+  }, [questionsDoneKeys]);
+
   // Build the cross-plan map only from what the user explicitly marks
   useEffect(() => {
     const keys = new Set<string>();
@@ -174,11 +193,13 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
       setSefazTaskIds({});
       setUfbaTaskIds({});
       setCrossPlanCompletedKeys(new Set());
+      setQuestionsDoneKeys({});
       try {
         localStorage.removeItem(SEFAZ_STORAGE_KEY);
         localStorage.removeItem(UFBA_STORAGE_KEY);
         localStorage.removeItem('sefaz_ba_daily_plan_completed_tasks_v1');
         localStorage.removeItem('ufba_cgu_sprint_plan_completed_tasks_v1');
+        localStorage.removeItem(QUESTIONS_DONE_STORAGE_KEY);
         Object.keys(localStorage).forEach(k => {
           if (k.startsWith('lesson_flag_')) {
             localStorage.removeItem(k);
@@ -258,6 +279,39 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
       lessonNumber: lessonNum,
     };
   }, [studyData?.subjects]);
+
+  const isQuestionsDoneForTask = useCallback((task: PlanTask, exInfo: { subjectName: string; lessonNumber: string }) => {
+    const lKey = getLessonKey(exInfo.subjectName, 'Aula ' + exInfo.lessonNumber);
+    if (lKey && questionsDoneKeys[lKey]) return true;
+
+    if (studyData?.questionSessions && studyData?.subjects) {
+      const cSub = getCanonicalSubject(exInfo.subjectName);
+      const sub = studyData.subjects.find(s => getCanonicalSubject(s.name) === cSub);
+      if (sub) {
+        const targetLessonNum = parseInt(exInfo.lessonNumber, 10);
+        const hasSession = studyData.questionSessions.some(qs => {
+          if (qs.subjectId !== sub.id) return false;
+          return qs.lessonNumber === targetLessonNum || qs.lessonNumber === targetLessonNum + 1;
+        });
+        if (hasSession) return true;
+      }
+    }
+
+    if (studyData?.lessons && studyData?.subjects) {
+      const cSub = getCanonicalSubject(exInfo.subjectName);
+      const sub = studyData.subjects.find(s => getCanonicalSubject(s.name) === cSub);
+      if (sub) {
+        const targetLessonNum = parseInt(exInfo.lessonNumber, 10);
+        const lesson = studyData.lessons.find(l => {
+          if (l.subjectId !== sub.id) return false;
+          return l.number === targetLessonNum || l.number === targetLessonNum + 1;
+        });
+        if (lesson && lesson.questionsCount > 0) return true;
+      }
+    }
+
+    return false;
+  }, [questionsDoneKeys, studyData?.questionSessions, studyData?.lessons, studyData?.subjects]);
 
   // Statistics
   const totalTasksCount = useMemo(() => {
@@ -758,6 +812,19 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                                     </Badge>
                                   )}
 
+                                  {(() => {
+                                    const ex = getTaskExerciseInfo(task);
+                                    if (!ex.hasExercises) return null;
+                                    const done = isQuestionsDoneForTask(task, ex);
+                                    if (!done) return null;
+                                    return (
+                                      <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-semibold gap-1">
+                                        <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                                        Questões Feitas
+                                      </Badge>
+                                    );
+                                  })()}
+
                                   <h4 className={cn(
                                     "font-medium text-xs sm:text-sm transition-all",
                                     isTaskDone ? "line-through text-muted-foreground" : "text-foreground group-hover:text-emerald-300"
@@ -777,38 +844,59 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                               {(() => {
                                 const ex = getTaskExerciseInfo(task);
                                 if (!ex.hasExercises) return null;
+                                const isQuestionsDone = isQuestionsDoneForTask(task, ex);
                                 return (
                                   <div className="pt-2 flex items-center justify-between flex-wrap gap-2 border-t border-border/40 mt-1">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSimuladoModalInfo({
-                                          subjectId: ex.subjectId,
-                                          subjectName: ex.subjectName,
-                                          lessonNumber: ex.lessonNumber,
-                                          taskTitle: task.title,
-                                          taskId: task.id,
-                                        });
-                                      }}
-                                      className={cn(
-                                        "h-7 text-xs font-semibold gap-1.5 transition-all shadow-sm",
-                                        ex.isExplicitBattery
-                                          ? "bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border-amber-500/50 hover:border-amber-400 font-bold"
-                                          : "bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border-emerald-500/30 hover:border-emerald-400"
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSimuladoModalInfo({
+                                            subjectId: ex.subjectId,
+                                            subjectName: ex.subjectName,
+                                            lessonNumber: ex.lessonNumber,
+                                            taskTitle: task.title,
+                                            taskId: task.id,
+                                          });
+                                        }}
+                                        className={cn(
+                                          "h-7 text-xs font-semibold gap-1.5 transition-all shadow-sm",
+                                          isQuestionsDone
+                                            ? "bg-emerald-950/40 text-emerald-300 border-emerald-500/50 hover:bg-emerald-950/60"
+                                            : ex.isExplicitBattery
+                                            ? "bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border-amber-500/50 hover:border-amber-400 font-bold"
+                                            : "bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border-emerald-500/30 hover:border-emerald-400"
+                                        )}
+                                      >
+                                        {isQuestionsDone ? (
+                                          <>
+                                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                                            <span>✅ Questões Concluídas (Refazer?)</span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                                            <span>
+                                              {ex.isExplicitBattery
+                                                ? `⚡ Resolver Bateria: ${ex.subjectName}`
+                                                : `🎯 Fazer Questões: ${ex.subjectName} (${task.lesson || 'Aula ' + ex.lessonNumber})`}
+                                            </span>
+                                          </>
+                                        )}
+                                      </Button>
+
+                                      {isQuestionsDone && (
+                                        <Badge variant="outline" className="text-[10px] py-0 px-2 bg-emerald-500/15 text-emerald-400 border-emerald-500/40 font-semibold gap-1">
+                                          <CheckCircle2 className="h-3 w-3" />
+                                          Exercícios Salvos
+                                        </Badge>
                                       )}
-                                    >
-                                      <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                                      <span>
-                                        {ex.isExplicitBattery
-                                          ? `⚡ Resolver Bateria: ${ex.subjectName}`
-                                          : `🎯 Fazer Questões: ${ex.subjectName} (${task.lesson || 'Aula ' + ex.lessonNumber})`}
-                                      </span>
-                                    </Button>
+                                    </div>
 
                                     <span className="text-[11px] text-muted-foreground/70 hidden sm:inline">
-                                      50 Questões comentadas (FGV / Cebraspe / FCC)
+                                      {isQuestionsDone ? '✓ Bateria registrada no seu histórico' : '50 Questões comentadas (FGV / Cebraspe / FCC)'}
                                     </span>
                                   </div>
                                 );
@@ -847,8 +935,12 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                   if (targetTask && !isTaskCompleted(targetTask)) {
                     toggleTask(targetTask);
                   }
+                  const lKey = getLessonKey(simuladoModalInfo.subjectName, 'Aula ' + simuladoModalInfo.lessonNumber);
+                  if (lKey) {
+                    setQuestionsDoneKeys(prev => ({ ...prev, [lKey]: true }));
+                  }
                   setSimuladoModalInfo(null);
-                  toast.success('Tarefa marcada como concluída e sessão salva com sucesso! 🚀');
+                  toast.success('Questões salvas e tarefa marcada como concluída! 🎯');
                 }}
               />
             )}
