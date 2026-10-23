@@ -17,7 +17,8 @@ import {
   Zap,
   CheckSquare,
   ShieldCheck,
-  Target
+  Target,
+  RotateCcw
 } from 'lucide-react';
 import { buildSefazBAPlan, DayPlan, PlanTask } from '@/data/sefazBAPlanningData';
 import { buildUfbaSprintPlan } from '@/data/ufbaPlanningData';
@@ -30,57 +31,8 @@ interface StudyPlanModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const SEFAZ_STORAGE_KEY = 'sefaz_ba_daily_plan_completed_tasks_v1';
-const UFBA_STORAGE_KEY = 'ufba_cgu_sprint_plan_completed_tasks_v1';
-
-// Baseline 21 tasks from Days 1 to 11 in SEFAZ-BA completed by the user
-export const BASELINE_SEFAZ_21_TASKS: Record<string, boolean> = {
-  'day-1-t1': true,
-  'day-1-t2': true,
-  'day-2-t1': true,
-  'day-2-t2': true,
-  'day-3-t1': true,
-  'day-3-t2': true,
-  'day-4-t1': true,
-  'day-4-t2': true,
-  'day-5-t1': true,
-  'day-5-t2': true,
-  'day-6-t1': true,
-  'day-6-t2': true,
-  'day-7-t1': true,
-  'day-8-t1': true,
-  'day-8-t2': true,
-  'day-9-t1': true,
-  'day-9-t2': true,
-  'day-10-t1': true,
-  'day-10-t2': true,
-  'day-11-t1': true,
-  'day-11-t2': true,
-};
-
-export const BASELINE_COMPLETED_LESSONS = [
-  { subject: 'Contabilidade Geral', num: 0, dbNum: 1 },
-  { subject: 'Direito Tributário', num: 0, dbNum: 1 },
-  { subject: 'Direito Administrativo', num: 0, dbNum: 1 },
-  { subject: 'Língua Portuguesa', num: 0, dbNum: 1 },
-  { subject: 'Direito Constitucional', num: 0, dbNum: 1 },
-  { subject: 'Contabilidade Geral', num: 1, dbNum: 2 },
-  { subject: 'Auditoria', num: 0, dbNum: 1 },
-  { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', num: 0, dbNum: 1 },
-  { subject: 'Direito Tributário', num: 1, dbNum: 2 },
-  { subject: 'Estatística', num: 0, dbNum: 1 },
-  { subject: 'Economia', num: 0, dbNum: 1 },
-  { subject: 'Direito Administrativo', num: 1, dbNum: 2 },
-  { subject: 'Matemática Financeira', num: 0, dbNum: 1 },
-  { subject: 'Administração, Economia e Finanças Públicas', num: 0, dbNum: 1 },
-  { subject: 'Direito Constitucional', num: 1, dbNum: 2 },
-  { subject: 'Informática Básica', num: 0, dbNum: 1 },
-  { subject: 'Noções de Igualdade Racial', num: 0, dbNum: 1 },
-  { subject: 'Contabilidade Geral', num: 2, dbNum: 3 },
-  { subject: 'Direito Tributário', num: 2, dbNum: 3 },
-  { subject: 'Direito Administrativo', num: 2, dbNum: 3 },
-  { subject: 'Língua Portuguesa', num: 1, dbNum: 2 },
-];
+const SEFAZ_STORAGE_KEY = 'sefaz_ba_daily_plan_completed_tasks_v2';
+const UFBA_STORAGE_KEY = 'ufba_cgu_sprint_plan_completed_tasks_v2';
 
 function normalizeSubject(str: string): string {
   return (str || '')
@@ -135,14 +87,13 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
   const allDays = activePlanType === 'ufba' ? ufbaDays : sefazDays;
 
-  // Stored task IDs for both plans - SEFAZ starts with baseline 21 tasks guaranteed
+  // Stored task IDs for both plans (Clean start, user has 100% control)
   const [sefazTaskIds, setSefazTaskIds] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem(SEFAZ_STORAGE_KEY);
-      const parsed = saved ? JSON.parse(saved) : {};
-      return { ...BASELINE_SEFAZ_21_TASKS, ...parsed };
+      return saved ? JSON.parse(saved) : {};
     } catch {
-      return { ...BASELINE_SEFAZ_21_TASKS };
+      return {};
     }
   });
 
@@ -156,57 +107,13 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
   });
 
   // Cross-plan completed lesson keys: "canonical_subject|aula-X"
-  const [crossPlanCompletedKeys, setCrossPlanCompletedKeys] = useState<Set<string>>(() => {
-    const keys = new Set<string>();
-    BASELINE_COMPLETED_LESSONS.forEach(item => {
-      const k = getLessonKey(item.subject, `Aula ${item.num}`);
-      if (k) keys.add(k);
-    });
-    return keys;
-  });
+  const [crossPlanCompletedKeys, setCrossPlanCompletedKeys] = useState<Set<string>>(() => new Set());
 
-  // Seed baseline flags to localStorage for the main study table
-  useEffect(() => {
-    BASELINE_COMPLETED_LESSONS.forEach(item => {
-      const sName = item.subject.trim().toLowerCase();
-      const flagKey = `lesson_flag_default-user_${sName}_${item.dbNum}_theory`;
-      if (localStorage.getItem(flagKey) !== 'true') {
-        localStorage.setItem(flagKey, 'true');
-      }
-    });
-  }, []);
-
-  // Build the master map of completed lessons
+  // Build the cross-plan map only from what the user explicitly marks
   useEffect(() => {
     const keys = new Set<string>();
 
-    // 0. Baseline 21 lessons
-    BASELINE_COMPLETED_LESSONS.forEach(item => {
-      const k = getLessonKey(item.subject, `Aula ${item.num}`);
-      if (k) keys.add(k);
-    });
-
-    // 1. From Supabase studyData
-    if (studyData?.subjects && studyData?.lessons) {
-      const subjMap = new Map<string, string>();
-      studyData.subjects.forEach(s => {
-        subjMap.set(s.id, s.name);
-      });
-
-      studyData.lessons.forEach(l => {
-        if (l.theoryCompleted) {
-          const sName = subjMap.get(l.subjectId);
-          if (sName) {
-            const k0 = getLessonKey(sName, `Aula ${l.number - 1}`);
-            const k1 = getLessonKey(sName, `Aula ${l.number}`);
-            if (k0) keys.add(k0);
-            if (k1) keys.add(k1);
-          }
-        }
-      });
-    }
-
-    // 2. From SEFAZ localStorage tasks
+    // 1. From SEFAZ tasks
     sefazDays.forEach(day => {
       day.tasks.forEach(task => {
         if (sefazTaskIds[task.id] && task.subject && task.lesson) {
@@ -216,7 +123,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
       });
     });
 
-    // 3. From UFBA localStorage tasks
+    // 2. From UFBA tasks
     ufbaDays.forEach(day => {
       day.tasks.forEach(task => {
         if (ufbaTaskIds[task.id] && task.subject && task.lesson) {
@@ -227,7 +134,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
     });
 
     setCrossPlanCompletedKeys(keys);
-  }, [studyData?.subjects, studyData?.lessons, sefazDays, ufbaDays, sefazTaskIds, ufbaTaskIds]);
+  }, [sefazDays, ufbaDays, sefazTaskIds, ufbaTaskIds]);
 
   // Save SEFAZ tasks to localStorage
   useEffect(() => {
@@ -243,21 +150,42 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
     } catch (e) {}
   }, [ufbaTaskIds]);
 
-  // Check if a task is completed (looks at plan ID, cross-plan lesson, or Supabase DB)
+  // Check if a task is completed (looks at plan ID or cross-plan equivalent lesson)
   const isTaskCompleted = useCallback((task: PlanTask): boolean => {
-    // A) Direct task ID match
+    // 1. Direct task ID match
     if (activePlanType === 'ufba') {
       if (ufbaTaskIds[task.id]) return true;
     } else {
-      if (sefazTaskIds[task.id] || BASELINE_SEFAZ_21_TASKS[task.id]) return true;
+      if (sefazTaskIds[task.id]) return true;
     }
 
-    // B) Lesson match across plans
+    // 2. Lesson match across plans
     const lessonKey = getLessonKey(task.subject, task.lesson);
     if (lessonKey && crossPlanCompletedKeys.has(lessonKey)) return true;
 
     return false;
   }, [activePlanType, ufbaTaskIds, sefazTaskIds, crossPlanCompletedKeys]);
+
+  // Reset function to clear all marks and start completely fresh
+  const handleResetAllTasks = () => {
+    if (window.confirm('Deseja realmente zerar todas as marcações do plano de estudos para começar suas marcações do zero?')) {
+      setSefazTaskIds({});
+      setUfbaTaskIds({});
+      setCrossPlanCompletedKeys(new Set());
+      try {
+        localStorage.removeItem(SEFAZ_STORAGE_KEY);
+        localStorage.removeItem(UFBA_STORAGE_KEY);
+        localStorage.removeItem('sefaz_ba_daily_plan_completed_tasks_v1');
+        localStorage.removeItem('ufba_cgu_sprint_plan_completed_tasks_v1');
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith('lesson_flag_')) {
+            localStorage.removeItem(k);
+          }
+        });
+      } catch (e) {}
+      toast.success('Todas as marcações foram zeradas! Você pode marcar seu progresso do zero.');
+    }
+  };
 
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -441,9 +369,22 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
               </Button>
             </div>
 
-            <div className="text-[11px] text-muted-foreground font-medium flex items-center gap-1.5">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Sincronização mútua ativada (Zero perda de dados)
+            <div className="flex items-center gap-2.5">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleResetAllTasks}
+                className="h-8 text-xs font-semibold gap-1.5 text-muted-foreground hover:text-destructive hover:border-destructive/40 transition-colors"
+                title="Zerar todas as marcações para começar as marcações do zero"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span>Zerar Marcações</span>
+              </Button>
+
+              <div className="text-[11px] text-muted-foreground font-medium hidden sm:flex items-center gap-1.5">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Sincronização mútua ativada
+              </div>
             </div>
           </div>
 
