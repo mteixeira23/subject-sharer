@@ -22,15 +22,38 @@ export class ErrorBoundary extends React.Component<Props, State> {
     console.error("[ErrorBoundary caught]", error);
   }
 
-  private handleReload = () => {
+  private handleReload = async () => {
+    try {
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const reg of regs) {
+          await reg.update();
+        }
+      }
+    } catch {}
     window.location.reload();
   };
 
-  private handleClearAndReload = () => {
+  private handleClearAndReload = async () => {
     try {
-      localStorage.removeItem("study-management-data");
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const reg of regs) {
+          await reg.unregister();
+        }
+      }
+      if ("caches" in window) {
+        const names = await caches.keys();
+        for (const name of names) {
+          await caches.delete(name);
+        }
+      }
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (e) {
+      console.error("[ErrorBoundary] Erro ao limpar cache:", e);
     } finally {
-      window.location.reload();
+      window.location.href = window.location.origin + window.location.pathname + "?t=" + Date.now();
     }
   };
 

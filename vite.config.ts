@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         navigateFallbackDenylist: [/^\/~oauth/],
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,ico,png,svg,woff2}"],
         runtimeCaching: [
           {
             urlPattern: /\.(?:js|css)$/,

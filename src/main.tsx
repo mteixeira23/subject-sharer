@@ -3,12 +3,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.tsx";
 import "./index.css";
 
-// Force reload when a new Service Worker activates
+// Force reload when a new Service Worker activates or chunks change
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     window.location.reload();
   });
 }
+window.addEventListener("vite:preloadError", () => {
+  window.location.reload();
+});
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { StudyProvider } from "@/contexts/StudyContext";
