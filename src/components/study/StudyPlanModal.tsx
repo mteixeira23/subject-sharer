@@ -915,35 +915,37 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
         {/* Simulado Modal directly inside StudyPlan */}
         <Dialog open={!!simuladoModalInfo} onOpenChange={(open) => !open && setSimuladoModalInfo(null)}>
-          <DialogContent className="w-[96vw] sm:w-full max-w-4xl max-h-[92vh] overflow-y-auto p-3 sm:p-6 rounded-xl bg-background border-border">
-            <DialogHeader className="pb-3 border-b border-border/80">
-              <DialogTitle className="text-lg sm:text-xl font-bold flex items-center gap-2 text-foreground">
-                <Sparkles className="h-5 w-5 text-amber-400 shrink-0" />
-                <span>Bateria de Questões Comentadas: {simuladoModalInfo?.taskTitle}</span>
-              </DialogTitle>
-              <DialogDescription className="text-xs text-muted-foreground">
-                Questões reais dos PDFs e das bancas do seu concurso (FGV, Cebraspe, FCC). Ao salvar, sua sessão é salva no sistema e a tarefa é marcada como concluída!
-              </DialogDescription>
+          <DialogContent className="w-full h-[100dvh] max-w-none max-h-none sm:max-w-4xl sm:max-h-[92vh] sm:h-auto sm:rounded-xl p-0 flex flex-col bg-background border-border overflow-hidden inset-0 sm:inset-auto z-50">
+            <DialogHeader className="p-3 sm:p-4 border-b border-border/80 bg-card/80 shrink-0">
+              <div className="flex items-center justify-between gap-2 pr-6 sm:pr-0">
+                <DialogTitle className="text-sm sm:text-base font-bold flex items-center gap-2 text-foreground truncate">
+                  <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
+                  <span className="truncate">Bateria de Questões: {simuladoModalInfo?.taskTitle}</span>
+                </DialogTitle>
+              </div>
             </DialogHeader>
 
-            {simuladoModalInfo && (
-              <Aula00QuestionsSimulado
-                initialSubjectId={simuladoModalInfo.subjectId}
-                initialLessonNumber={simuladoModalInfo.lessonNumber}
-                onSaveSession={() => {
-                  const targetTask = allDays.flatMap(d => d.tasks).find(t => t.id === simuladoModalInfo.taskId);
-                  if (targetTask && !isTaskCompleted(targetTask)) {
-                    toggleTask(targetTask);
-                  }
-                  const lKey = getLessonKey(simuladoModalInfo.subjectName, 'Aula ' + simuladoModalInfo.lessonNumber);
-                  if (lKey) {
-                    setQuestionsDoneKeys(prev => ({ ...prev, [lKey]: true }));
-                  }
-                  setSimuladoModalInfo(null);
-                  toast.success('Questões salvas e tarefa marcada como concluída! 🎯');
-                }}
-              />
-            )}
+            <div className="flex-1 overflow-y-auto p-2 sm:p-6 overscroll-contain">
+              {simuladoModalInfo && (
+                <Aula00QuestionsSimulado
+                  initialSubjectId={simuladoModalInfo.subjectId}
+                  initialLessonNumber={simuladoModalInfo.lessonNumber}
+                  isModalView={true}
+                  onSaveSession={() => {
+                    const targetTask = allDays.flatMap(d => d.tasks).find(t => t.id === simuladoModalInfo.taskId);
+                    if (targetTask && !isTaskCompleted(targetTask)) {
+                      toggleTask(targetTask);
+                    }
+                    const lKey = getLessonKey(simuladoModalInfo.subjectName, 'Aula ' + simuladoModalInfo.lessonNumber);
+                    if (lKey) {
+                      setQuestionsDoneKeys(prev => ({ ...prev, [lKey]: true }));
+                    }
+                    setSimuladoModalInfo(null);
+                    toast.success('Questões salvas e tarefa marcada como concluída! 🎯');
+                  }}
+                />
+              )}
+            </div>
           </DialogContent>
         </Dialog>
       </DialogContent>

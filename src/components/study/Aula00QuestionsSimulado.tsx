@@ -16,9 +16,16 @@ interface Aula00QuestionsSimuladoProps {
   onSaveSession?: () => void;
   initialSubjectId?: string;
   initialLessonNumber?: string;
+  isModalView?: boolean;
 }
 
-export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber, onSaveSession }: Aula00QuestionsSimuladoProps = {}) {
+export function Aula00QuestionsSimulado({
+  initialSubjectId,
+  initialLessonNumber,
+  onSaveSession,
+  isModalView = false,
+}: Aula00QuestionsSimuladoProps = {}) {
+  const [showSelectors, setShowSelectors] = useState<boolean>(!initialSubjectId && !isModalView);
   const { data: studyData, addQuestionSession } = useStudy();
 
   // Filter studyData.subjects to ONLY SEFAZ-BA 13 subjects
@@ -162,102 +169,169 @@ export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber,
 
   return (
     <div className="space-y-4 sm:space-y-6 my-1 sm:my-2">
-      {/* Subject & Lesson Selection Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 bg-muted/40 p-2.5 sm:p-3.5 rounded-lg border">
-        <div className="space-y-1">
-          <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
-            <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" /> Selecione a Matéria SEFAZ-BA:
-          </Label>
-          <Select value={selectedSubjectId} onValueChange={handleSubjectChange}>
-            <SelectTrigger className="w-full h-9 text-xs bg-background font-medium truncate">
-              <SelectValue placeholder="Selecione a Matéria" className="truncate" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableSubjects.map(s => (
-                <SelectItem key={s.id} value={s.id} className="text-xs">
-                  {s.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Subject & Lesson Selection */}
+      {showSelectors ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-4 bg-muted/40 p-2.5 sm:p-3.5 rounded-lg border">
+          <div className="space-y-1">
+            <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
+              <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" /> Selecione a Matéria:
+            </Label>
+            <Select value={selectedSubjectId} onValueChange={handleSubjectChange}>
+              <SelectTrigger className="w-full h-8 sm:h-9 text-xs bg-background font-medium truncate">
+                <SelectValue placeholder="Selecione a Matéria" className="truncate" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableSubjects.map(s => (
+                  <SelectItem key={s.id} value={s.id} className="text-xs">
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="space-y-1">
-          <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" /> Selecione a Aula de {activeSubjectName}:
-          </Label>
-          <Select value={selectedLessonNumber} onValueChange={handleLessonChange}>
-            <SelectTrigger className="w-full h-9 text-xs bg-background font-medium truncate">
-              <SelectValue placeholder="Selecione a Aula" className="truncate" />
-            </SelectTrigger>
-            <SelectContent>
-              {dynamicLessonOptions.map(lOpt => (
-                <SelectItem key={lOpt.number} value={lOpt.number} className="text-xs">
-                  {lOpt.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <Label className="text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 text-muted-foreground">
+                <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" /> Aula:
+              </Label>
+              {isModalView && (
+                <Button variant="ghost" size="sm" onClick={() => setShowSelectors(false)} className="h-5 text-[10px] text-muted-foreground hover:text-foreground p-0">
+                  Fechar seleção
+                </Button>
+              )}
+            </div>
+            <Select value={selectedLessonNumber} onValueChange={handleLessonChange}>
+              <SelectTrigger className="w-full h-8 sm:h-9 text-xs bg-background font-medium truncate">
+                <SelectValue placeholder="Selecione a Aula" className="truncate" />
+              </SelectTrigger>
+              <SelectContent>
+                {dynamicLessonOptions.map(lOpt => (
+                  <SelectItem key={lOpt.number} value={lOpt.number} className="text-xs">
+                    {lOpt.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between bg-card/60 px-3 py-1.5 rounded-lg border text-xs gap-2">
+          <div className="flex items-center gap-1.5 truncate">
+            <Badge variant="outline" className="text-[11px] font-bold text-primary border-primary/30 shrink-0">
+              {activeSubjectName}
+            </Badge>
+            <span className="truncate text-muted-foreground font-medium text-[11px] sm:text-xs">
+              {activeLessonTitle}
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSelectors(true)}
+            className="h-6 text-[11px] text-muted-foreground hover:text-foreground gap-1 px-1.5 shrink-0"
+          >
+            <RotateCcw className="h-3 w-3" /> Trocar
+          </Button>
+        </div>
+      )}
+
+      {/* Mobile Compact Stats Bar */}
+      <div className="sm:hidden space-y-2 bg-card/90 p-2.5 rounded-lg border border-primary/20 shadow-sm">
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground text-[11px]">Progresso:</span>
+            <span className="font-bold text-foreground text-xs">{answeredCount}/{totalQuestions}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-emerald-400 font-bold text-xs">✓ {correctCount}</span>
+            <span className="text-primary font-bold text-xs">({accuracyPercent}%)</span>
+          </div>
+        </div>
+        <Progress value={progressPercent} className="h-1.5" />
+
+        {/* Block Filters */}
+        <div className="flex items-center gap-1 overflow-x-auto pb-0.5 no-scrollbar pt-1">
+          <span className="text-[10px] text-muted-foreground font-semibold shrink-0">Filtrar:</span>
+          <Button
+            size="sm"
+            variant={filterBlock === 'all' ? 'default' : 'outline'}
+            onClick={() => setFilterBlock('all')}
+            className="text-[10px] h-6 px-2 shrink-0"
+          >
+            Todas (50)
+          </Button>
+          {[1, 2, 3, 4, 5].map(num => (
+            <Button
+              key={num}
+              size="sm"
+              variant={filterBlock === num ? 'default' : 'outline'}
+              onClick={() => setFilterBlock(num)}
+              className="text-[10px] h-6 px-2 shrink-0"
+            >
+              B{num} ({num * 10 - 9}-{num * 10})
+            </Button>
+          ))}
         </div>
       </div>
 
-      {/* Top Banner & Stats */}
-      <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-background to-primary/5 shadow-md">
-        <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Desktop Rich Stats Banner */}
+      <Card className="hidden sm:block border-primary/40 bg-gradient-to-r from-primary/10 via-background to-primary/5 shadow-md">
+        <CardHeader className="p-4 pb-3">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <CardTitle className="text-sm sm:text-xl font-bold flex items-center gap-1.5 sm:gap-2 leading-tight">
-                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-pulse shrink-0" />
+              <CardTitle className="text-lg font-bold flex items-center gap-2 leading-tight">
+                <Sparkles className="h-5 w-5 text-primary animate-pulse shrink-0" />
                 Simulado: {activeSubjectName} – {activeLessonTitle} ({totalQuestions} Questões)
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm mt-1">
+              <CardDescription className="text-xs mt-1">
                 Responda cada questão diretamente abaixo. O gabarito e a explicação detalhada aparecem imediatamente!
               </CardDescription>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-              <Button variant="outline" size="sm" onClick={handleResetAll} className="gap-1 text-xs h-8 sm:h-9 justify-center">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleResetAll} className="gap-1 text-xs h-8">
                 <RotateCcw className="h-3.5 w-3.5" /> Limpar Respostas
               </Button>
-              <Button size="sm" onClick={handleSaveToSystem} className="gap-1.5 text-xs font-semibold bg-primary text-primary-foreground h-8 sm:h-9 justify-center">
-                <Save className="h-4 w-4" /> Salvar Desempenho no Sistema
+              <Button size="sm" onClick={handleSaveToSystem} className="gap-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white h-8">
+                <Save className="h-4 w-4" /> Salvar no Sistema
               </Button>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-3 sm:p-6 space-y-3 pt-0 sm:pt-0">
+        <CardContent className="p-4 pt-0 space-y-3">
           {/* Progress Bar & Indicators */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 bg-card/60 p-2.5 sm:p-3 rounded-lg border text-center sm:text-left">
+          <div className="grid grid-cols-4 gap-3 bg-card/60 p-3 rounded-lg border text-left">
             <div>
-              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">Respondidas</p>
-              <p className="text-sm sm:text-lg font-bold">{answeredCount} / {totalQuestions}</p>
+              <p className="text-xs text-muted-foreground font-medium">Respondidas</p>
+              <p className="text-base font-bold">{answeredCount} / {totalQuestions}</p>
             </div>
             <div>
-              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">Acertos</p>
-              <p className="text-sm sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">{correctCount}</p>
+              <p className="text-xs text-muted-foreground font-medium">Acertos</p>
+              <p className="text-base font-bold text-emerald-500">{correctCount}</p>
             </div>
             <div>
-              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">Taxa de Acerto</p>
-              <p className="text-sm sm:text-lg font-bold text-primary">{accuracyPercent}%</p>
+              <p className="text-xs text-muted-foreground font-medium">Taxa de Acerto</p>
+              <p className="text-base font-bold text-primary">{accuracyPercent}%</p>
             </div>
             <div>
-              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">Progresso</p>
-              <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 justify-center sm:justify-start">
-                <Progress value={progressPercent} className="h-1.5 sm:h-2 flex-1" />
-                <span className="text-[11px] sm:text-xs font-bold">{progressPercent}%</span>
+              <p className="text-xs text-muted-foreground font-medium">Progresso</p>
+              <div className="flex items-center gap-1.5 mt-1">
+                <Progress value={progressPercent} className="h-2 flex-1" />
+                <span className="text-xs font-bold">{progressPercent}%</span>
               </div>
             </div>
           </div>
 
           {/* Block Filters */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar sm:flex-wrap pt-1">
-            <span className="text-[11px] sm:text-xs text-muted-foreground font-semibold mr-1 shrink-0">Blocos:</span>
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar flex-wrap pt-1">
+            <span className="text-xs text-muted-foreground font-semibold mr-1 shrink-0">Blocos:</span>
             <Button
               size="sm"
               variant={filterBlock === 'all' ? 'default' : 'outline'}
               onClick={() => setFilterBlock('all')}
-              className="text-[11px] sm:text-xs h-7 px-2.5 shrink-0"
+              className="text-xs h-7 px-2.5 shrink-0"
             >
               Todas (50)
             </Button>
@@ -267,7 +341,7 @@ export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber,
                 size="sm"
                 variant={filterBlock === num ? 'default' : 'outline'}
                 onClick={() => setFilterBlock(num)}
-                className="text-[11px] sm:text-xs h-7 px-2.5 shrink-0"
+                className="text-xs h-7 px-2.5 shrink-0"
               >
                 Bloco {num} (Q{(num - 1) * 10 + 1}-{num * 10})
               </Button>
@@ -277,7 +351,7 @@ export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber,
       </Card>
 
       {/* Questions List */}
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-3 sm:space-y-6 pb-24 sm:pb-6">
         {filteredQuestions.map((q) => {
           const isAnswered = answers[q.id] !== undefined;
           const isRevealed = revealed[q.id];
@@ -460,6 +534,16 @@ export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber,
             </Card>
           );
         })}
+      </div>
+    
+      {/* Mobile Sticky Bottom Action Bar */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border p-2.5 flex items-center justify-between gap-2 shadow-2xl">
+        <Button variant="outline" size="sm" onClick={handleResetAll} className="h-9 text-xs gap-1 px-3 shrink-0">
+          <RotateCcw className="h-3.5 w-3.5" /> Limpar
+        </Button>
+        <Button size="sm" onClick={handleSaveToSystem} className="h-9 text-xs font-bold gap-1.5 flex-1 bg-emerald-600 hover:bg-emerald-700 text-white shadow">
+          <Save className="h-4 w-4" /> Salvar Sessão ({correctCount}/{answeredCount})
+        </Button>
       </div>
     </div>
   );
