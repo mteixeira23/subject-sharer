@@ -13,11 +13,12 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 interface Aula00QuestionsSimuladoProps {
+  onSaveSession?: () => void;
   initialSubjectId?: string;
   initialLessonNumber?: string;
 }
 
-export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber }: Aula00QuestionsSimuladoProps = {}) {
+export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber, onSaveSession }: Aula00QuestionsSimuladoProps = {}) {
   const { data: studyData, addQuestionSession } = useStudy();
 
   // Filter studyData.subjects to ONLY SEFAZ-BA 13 subjects
@@ -45,6 +46,11 @@ export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber 
   const [selectedLessonNumber, setSelectedLessonNumber] = useState<string>(
     initialLessonNumber !== undefined ? initialLessonNumber : '0'
   );
+
+  React.useEffect(() => {
+    if (initialSubjectId) setSelectedSubjectId(initialSubjectId);
+    if (initialLessonNumber !== undefined) setSelectedLessonNumber(initialLessonNumber);
+  }, [initialSubjectId, initialLessonNumber]);
 
   const activeSubjectObj = availableSubjects.find(s => s.id === selectedSubjectId) || availableSubjects[0];
   const activeSubjectName = activeSubjectObj ? activeSubjectObj.name : 'Contabilidade Geral';
@@ -139,6 +145,7 @@ export function Aula00QuestionsSimulado({ initialSubjectId, initialLessonNumber 
       });
 
       toast.success(`🎉 Sessão salva no sistema! ${correctCount}/${answeredCount} acertos (${accuracyPercent}%).`);
+      if (onSaveSession) onSaveSession();
     } catch (err) {
       toast.error('Erro ao registrar sessão no sistema.');
     }

@@ -18,8 +18,10 @@ import {
   CheckSquare,
   ShieldCheck,
   Target,
-  RotateCcw
+  RotateCcw,
+  Sparkles
 } from 'lucide-react';
+import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
 import { buildSefazBAPlan, DayPlan, PlanTask } from '@/data/sefazBAPlanningData';
 import { buildUfbaSprintPlan } from '@/data/ufbaPlanningData';
 import { useStudy } from '@/contexts/StudyContext';
@@ -191,6 +193,71 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPhase, setSelectedPhase] = useState<'all' | 'phase1' | 'phase2' | 'phase3' | 'phase4'>('all');
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'pending' | 'completed'>('all');
+
+  // Active Simulado / Bateria Modal State
+  const [simuladoModalInfo, setSimuladoModalInfo] = useState<{
+    subjectId: string;
+    subjectName: string;
+    lessonNumber: string;
+    taskTitle: string;
+    taskId: string;
+  } | null>(null);
+
+  // Helper to detect exercise / questions info for any task
+  const getTaskExerciseInfo = useCallback((task: PlanTask) => {
+    const fullText = `${task.title || ''} ${task.description || ''}`.toLowerCase();
+    
+    const isExplicitBattery = (
+      fullText.includes('bateria') ||
+      fullText.includes('questões') ||
+      fullText.includes('questoes') ||
+      fullText.includes('exercícios') ||
+      fullText.includes('exercicios') ||
+      fullText.includes('simulado') ||
+      fullText.includes('revisão ativa')
+    );
+
+    let subjectName = task.subject || '';
+    let lessonNum = '0';
+
+    if (!subjectName) {
+      if (fullText.includes('contabilid') && !fullText.includes('casp')) subjectName = 'Contabilidade Geral';
+      else if (fullText.includes('casp') || fullText.includes('setor público')) subjectName = 'Contabilidade Aplicada ao Setor Público (CASP)';
+      else if (fullText.includes('afo') || fullText.includes('finanças') || fullText.includes('orçamento')) subjectName = 'Administração, Economia e Finanças Públicas';
+      else if (fullText.includes('auditoria') || fullText.includes('cgu') || fullText.includes('controle')) subjectName = 'Auditoria';
+      else if (fullText.includes('tribut')) subjectName = 'Direito Tributário';
+      else if (fullText.includes('constituc')) subjectName = 'Direito Constitucional';
+      else if (fullText.includes('administrat') || fullText.includes('anticorrupção') || fullText.includes('informação')) subjectName = 'Direito Administrativo';
+      else if (fullText.includes('portug')) subjectName = 'Língua Portuguesa';
+      else if (fullText.includes('estat')) subjectName = 'Estatística';
+      else if (fullText.includes('matem')) subjectName = 'Matemática Financeira';
+      else if (fullText.includes('econom')) subjectName = 'Economia';
+      else if (fullText.includes('informát')) subjectName = 'Informática Básica';
+      else if (fullText.includes('racial') || fullText.includes('igualdade')) subjectName = 'Noções de Igualdade Racial';
+      else if (task.isVaccine) subjectName = 'Auditoria';
+      else subjectName = 'Contabilidade Geral';
+    }
+
+    if (task.lesson) {
+      const m = task.lesson.match(/\d+/);
+      if (m) lessonNum = m[0];
+    } else {
+      const m = fullText.match(/aula\s*(\d+)/i);
+      if (m) lessonNum = m[1];
+    }
+
+    const cSub = getCanonicalSubject(subjectName);
+    const subObj = studyData?.subjects?.find(s => getCanonicalSubject(s.name) === cSub);
+    const subjectId = subObj ? subObj.id : '';
+
+    return {
+      hasExercises: Boolean(subjectName || isExplicitBattery),
+      isExplicitBattery,
+      subjectId,
+      subjectName: subObj ? subObj.name : subjectName,
+      lessonNumber: lessonNum,
+    };
+  }, [studyData?.subjects]);
 
   // Statistics
   const totalTasksCount = useMemo(() => {
@@ -706,6 +773,46 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                               )}>
                                 {task.description}
                               </p>
+
+                              {(() => {
+                                const ex = getTaskExerciseInfo(task);
+                                if (!ex.hasExercises) return null;
+                                return (
+                                  <div className="pt-2 flex items-center justify-between flex-wrap gap-2 border-t border-border/40 mt-1">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSimuladoModalInfo({
+                                          subjectId: ex.subjectId,
+                                          subjectName: ex.subjectName,
+                                          lessonNumber: ex.lessonNumber,
+                                          taskTitle: task.title,
+                                          taskId: task.id,
+                                        });
+                                      }}
+                                      className={cn(
+                                        "h-7 text-xs font-semibold gap-1.5 transition-all shadow-sm",
+                                        ex.isExplicitBattery
+                                          ? "bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border-amber-500/50 hover:border-amber-400 font-bold"
+                                          : "bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border-emerald-500/30 hover:border-emerald-400"
+                                      )}
+                                    >
+                                      <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                                      <span>
+                                        {ex.isExplicitBattery
+                                          ? `⚡ Resolver Bateria: ${ex.subjectName}`
+                                          : `🎯 Fazer Questões: ${ex.subjectName} (${task.lesson || 'Aula ' + ex.lessonNumber})`}
+                                      </span>
+                                    </Button>
+
+                                    <span className="text-[11px] text-muted-foreground/70 hidden sm:inline">
+                                      50 Questões comentadas (FGV / Cebraspe / FCC)
+                                    </span>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           </div>
                         );
@@ -717,6 +824,36 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
             </div>
           )}
         </ScrollArea>
+
+        {/* Simulado Modal directly inside StudyPlan */}
+        <Dialog open={!!simuladoModalInfo} onOpenChange={(open) => !open && setSimuladoModalInfo(null)}>
+          <DialogContent className="w-[96vw] sm:w-full max-w-4xl max-h-[92vh] overflow-y-auto p-3 sm:p-6 rounded-xl bg-background border-border">
+            <DialogHeader className="pb-3 border-b border-border/80">
+              <DialogTitle className="text-lg sm:text-xl font-bold flex items-center gap-2 text-foreground">
+                <Sparkles className="h-5 w-5 text-amber-400 shrink-0" />
+                <span>Bateria de Questões Comentadas: {simuladoModalInfo?.taskTitle}</span>
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                Questões reais dos PDFs e das bancas do seu concurso (FGV, Cebraspe, FCC). Ao salvar, sua sessão é salva no sistema e a tarefa é marcada como concluída!
+              </DialogDescription>
+            </DialogHeader>
+
+            {simuladoModalInfo && (
+              <Aula00QuestionsSimulado
+                initialSubjectId={simuladoModalInfo.subjectId}
+                initialLessonNumber={simuladoModalInfo.lessonNumber}
+                onSaveSession={() => {
+                  const targetTask = allDays.flatMap(d => d.tasks).find(t => t.id === simuladoModalInfo.taskId);
+                  if (targetTask && !isTaskCompleted(targetTask)) {
+                    toggleTask(targetTask);
+                  }
+                  setSimuladoModalInfo(null);
+                  toast.success('Tarefa marcada como concluída e sessão salva com sucesso! 🚀');
+                }}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
