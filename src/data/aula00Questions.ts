@@ -720,6 +720,9 @@ import { REAL_CONCURSO_QUESTIONS } from './realConcursoQuestions';
 import { TRIBUTARIO_QUESTIONS_BY_LESSON } from './questions/tributarioQuestions';
 import { AUDITORIA_QUESTIONS_BY_LESSON } from './questions/auditoriaQuestions';
 import { CONTABILIDADE_QUESTIONS_BY_LESSON } from './questions/contabilidadeQuestions';
+import { CASP_QUESTIONS_BY_LESSON } from './questions/caspQuestions';
+import { ADMINISTRATIVO_QUESTIONS_BY_LESSON } from './questions/administrativoQuestions';
+import { CONSTITUCIONAL_QUESTIONS_BY_LESSON } from './questions/constitucionalQuestions';
 
 export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number): QuestionData[] {
   const lessonTitle = getLessonName(subjectName, lessonNum);
@@ -740,13 +743,21 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     bank = REAL_CONCURSO_QUESTIONS.matematica_financeira;
   } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
     bank = REAL_CONCURSO_QUESTIONS.estatistica;
-  } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público')) {
+  } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
     bank = REAL_CONCURSO_QUESTIONS.casp;
+    lessonSpecific = CASP_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('contabil')) {
     bank = REAL_CONCURSO_QUESTIONS.contabilidade;
     lessonSpecific = CONTABILIDADE_QUESTIONS_BY_LESSON[lessonNum];
-  } else if (lowerSubj.includes('direito') || lowerSubj.includes('constituc') || lowerSubj.includes('administ')) {
+  } else if (lowerSubj.includes('administra') && (lowerSubj.includes('direito') || lowerSubj.includes('adm'))) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
+    lessonSpecific = ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum];
+  } else if (lowerSubj.includes('constituc')) {
+    bank = REAL_CONCURSO_QUESTIONS.direito;
+    lessonSpecific = CONSTITUCIONAL_QUESTIONS_BY_LESSON[lessonNum];
+  } else if (lowerSubj.includes('direito')) {
+    bank = REAL_CONCURSO_QUESTIONS.direito;
+    lessonSpecific = ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('auditoria')) {
     bank = REAL_CONCURSO_QUESTIONS.auditoria;
     lessonSpecific = AUDITORIA_QUESTIONS_BY_LESSON[lessonNum];
@@ -770,34 +781,54 @@ function buildDomainSpecificQuestions(
   bank?: QuestionData[],
   lessonSpecific?: QuestionData[]
 ): QuestionData[] {
+  // 1. If we have a comprehensive authentic lesson battery (e.g. CASP Aula 00, Adm Aula 00), return it directly!
+  if (lessonSpecific && lessonSpecific.length >= 25) {
+    return lessonSpecific.map((q, idx) => ({
+      ...q,
+      id: idx + 1,
+      topic: q.topic || lessonTitle,
+    }));
+  }
+
+  // 2. Otherwise, dynamically build up to 50 unique questions, NEVER repeating statements
+  const results: QuestionData[] = [];
+  const seenStatements = new Set<string>();
+
+  const addIfUnique = (q: QuestionData) => {
+    const norm = q.statement.replace(/\[Questão \d+\]/gi, '').trim().slice(0, 80);
+    if (!seenStatements.has(norm)) {
+      seenStatements.add(norm);
+      results.push({
+        ...q,
+        id: results.length + 1,
+        topic: q.topic || lessonTitle,
+      });
+      return true;
+    }
+    return false;
+  };
+
+  // Add all authentic lesson-specific questions first
+  if (lessonSpecific) {
+    for (const q of lessonSpecific) {
+      addIfUnique(q);
+      if (results.length >= 50) return results;
+    }
+  }
+
+  // Add authentic general bank items
+  if (bank) {
+    for (const q of bank) {
+      addIfUnique(q);
+      if (results.length >= 50) return results;
+    }
+  }
+
+  // Fill remainder with domain generators, strictly deduplicating
   const lowerSubj = subjectName.trim().toLowerCase();
-
-  return Array.from({ length: 50 }, (_, idx) => {
-    const qNum = idx + 1;
+  for (let idx = 0; results.length < 50 && idx < 300; idx++) {
+    const qNum = results.length + 1;
     const isTF = (idx + lessonNum) % 3 === 0;
-
-    // 1. Prioritize authentic lesson-specific questions if available
-    if (lessonSpecific && idx < lessonSpecific.length) {
-      const specificQ = lessonSpecific[idx];
-      return {
-        ...specificQ,
-        id: qNum,
-        topic: specificQ.topic || lessonTitle,
-      };
-    }
-
-    // 2. Use authentic bank item if available, rotated dynamically by lessonNum
-    if (bank && bank.length > 0 && idx % 5 === 0) {
-      const bankIdx = (lessonNum * 7 + Math.floor(idx / 5)) % bank.length;
-      const baseQ = bank[bankIdx];
-      return {
-        ...baseQ,
-        id: qNum,
-        topic: lessonTitle,
-        statement: baseQ.statement.replace(/\[Questão \d+\]/, `[Questão ${qNum}]`),
-      };
-    }
-
     let qData: Partial<QuestionData>;
 
     if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
@@ -806,7 +837,7 @@ function buildDomainSpecificQuestions(
       qData = getMathFinanceQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
       qData = getStatisticsQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público')) {
+    } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
       qData = getCASPQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('contabilidade')) {
       qData = getAccountingQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
@@ -828,17 +859,21 @@ function buildDomainSpecificQuestions(
       qData = getGeneralFiscalQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     }
 
-    return {
-      id: qNum,
-      source: qData.source || 'FGV – Auditor Fiscal / SEFAZ-BA',
-      topic: lessonTitle,
-      type: isTF ? 'tf' : 'multiple',
-      statement: qData.statement!,
-      options: qData.options!,
-      correctAnswer: qData.correctAnswer!,
-      explanation: qData.explanation!,
-    };
-  });
+    if (qData && qData.statement) {
+      addIfUnique({
+        id: qNum,
+        source: qData.source || 'FGV – Auditor Fiscal / SEFAZ-BA',
+        topic: lessonTitle,
+        type: isTF ? 'tf' : 'multiple',
+        statement: qData.statement,
+        options: qData.options || ['Certo', 'Errado'],
+        correctAnswer: qData.correctAnswer ?? 0,
+        explanation: qData.explanation || '',
+      });
+    }
+  }
+
+  return results;
 }
 
 // ── DOMAIN GENERATORS WITH DISTINCT QUESTIONS PER LESSON ──────────────────────
