@@ -445,13 +445,13 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[92vh] flex flex-col p-0 gap-0 bg-background text-foreground overflow-hidden border-border">
+      <DialogContent className="w-full h-[100dvh] sm:h-[92vh] max-w-none sm:max-w-4xl flex flex-col p-0 gap-0 bg-background text-foreground overflow-hidden border-border inset-0 sm:inset-auto z-50">
         
         {/* Modal Header */}
-        <DialogHeader className="p-6 pb-4 border-b border-border bg-card/60">
+        <DialogHeader className="p-2.5 sm:p-6 pb-2 sm:pb-4 border-b border-border bg-card/80 shrink-0">
           
           {/* Top Plan Mode Switcher */}
-          <div className="flex items-center justify-between flex-wrap gap-2 mb-3 pb-3 border-b border-border/60">
+          <div className="flex items-center justify-between flex-wrap gap-1.5 mb-1.5 sm:mb-3 pb-1.5 sm:pb-3 border-b border-border/60">
             <div className="flex items-center gap-1.5 p-1 bg-muted/80 rounded-xl border border-border">
               <Button
                 size="sm"
@@ -540,7 +540,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                     </>
                   )}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                <DialogDescription className="text-xs text-muted-foreground mt-0.5 hidden sm:block">
                   {activePlanType === 'ufba'
                     ? 'Preparação máxima de 60 dias para o cargo de Contador da UFBA (Salvador) com vacina de Auditoria para a CGU.'
                     : 'Planejamento estratégico dia a dia: 235 Aulas + Treinamento Cesgranrio + Reta Final'}
@@ -567,7 +567,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
           {/* Overall Progress & Phase Indicators */}
           {activePlanType === 'ufba' ? (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5 mt-3.5">
+            <div className="hidden sm:grid grid-cols-1 md:grid-cols-4 gap-2.5 mt-3.5">
               <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-card border border-border">
                 <BookOpen className="h-4 w-4 text-emerald-400 shrink-0" />
                 <div>
@@ -601,7 +601,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+            <div className="hidden sm:grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border">
                 <BookOpen className="h-5 w-5 text-emerald-400 shrink-0" />
                 <div>
@@ -629,7 +629,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
           )}
 
           {/* Search & Filters */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-3 mt-3.5 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 mt-1.5 sm:mt-3.5 pt-1">
             <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -668,7 +668,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
         </DialogHeader>
 
         {/* Modal Body - Days List */}
-        <ScrollArea className="flex-1 p-6">
+        <ScrollArea className="flex-1 p-2 sm:p-6 overscroll-contain touch-pan-y">
           {filteredDays.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <CalendarCheck className="h-12 w-12 mx-auto mb-3 opacity-30 text-emerald-400" />
