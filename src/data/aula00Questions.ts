@@ -774,6 +774,7 @@ function buildDomainSpecificQuestions(
 
   return Array.from({ length: 50 }, (_, idx) => {
     const qNum = idx + 1;
+    const isTF = (idx + lessonNum) % 3 === 0;
 
     // 1. Prioritize authentic lesson-specific questions if available
     if (lessonSpecific && idx < lessonSpecific.length) {
@@ -1309,33 +1310,112 @@ function getStatisticsQuestion(qNum: number, subjectName: string, lessonTitle: s
 }
 
 function getCASPQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
+  const tfItems = [
+    {
+      stmt: 'No âmbito do MCASP e da NBC TSP, as receitas e despesas orçamentárias devem ser reconhecidas, sob a ótica patrimonial, em estrita observância ao regime de competência, independentemente do ingresso ou desembolso de disponibilidades.',
+      correct: 0,
+      exp: 'CERTO. Sob o enfoque patrimonial, o regime de competência é integralmente aplicável tanto às variações ativas (receitas) quanto às variações passivas (despesas).'
+    },
+    {
+      stmt: 'No Balanço Orçamentário elaborado segundo as normas do MCASP, a economia de despesa reflete o montante de dotação autorizada que não foi executado no exercício financeiro.',
+      correct: 0,
+      exp: 'CERTO. No Balanço Orçamentário a economia de despesa é a diferença positiva entre a despesa fixada/atualizada e a despesa executada/empenhada.'
+    },
+    {
+      stmt: 'No Plano de Contas Aplicado ao Setor Público (PCASP), os lançamentos que envolvem o subsistema orçamentário (Classes 5 e 6) exigem contrapartida obrigatória nas contas do subsistema patrimonial (Classes 1 a 4).',
+      correct: 1,
+      exp: 'ERRADO. O PCASP adota o princípio das partidas dobradas dentro de subsistemas segregados: lançamentos nas contas de orçamento (5 e 6) fecham entre si (5 com 6), sem exigir contrapartida patrimonial direta.'
+    },
+    {
+      stmt: 'Os Restos a Pagar Não Processados referem-se a despesas legalmente empenhadas, porém ainda não liquidadas até o término do exercício financeiro em 31 de dezembro.',
+      correct: 0,
+      exp: 'CERTO. RPNP são despesas empenhadas que não passaram pelo estágio da liquidação no exercício de emissão do empenho.'
+    },
+    {
+      stmt: 'O cancelamento da inscrição de Restos a Pagar de exercícios anteriores configura, no exercício do cancelamento, uma Variação Patrimonial Aumentativa (VPA).',
+      correct: 0,
+      exp: 'CERTO. O cancelamento de passivo financeiro de restos a pagar desonera o patrimônio líquido da entidade, constituindo VPA (superveniência ativa).'
+    },
+    {
+      stmt: 'A aquisição de material permanente mediante pagamento à vista é um fato que altera de imediato o Resultado Patrimonial apurado na DVP no momento da liquidação da despesa orçamentária.',
+      correct: 1,
+      exp: 'ERRADO. Trata-se de um fato permutativo (Débito em Imobilizado e Crédito em Caixa/Bancos), não alterando o Patrimônio Líquido nem figurando como VPD no resultado patrimonial.'
+    }
+  ];
+
   const seed = lessonNum * 47 + idx;
 
   if (isTF) {
-    const isCorrect = seed % 2 === 0;
+    const item = tfItems[seed % tfItems.length];
     return {
       source: 'CEBRASPE – Contador / SEFAZ-AL (CASP)',
-      statement: `[Questão ${qNum}] Em Contabilidade Aplicada ao Setor Público (CASP) sobre o tema "${lessonTitle}", julgue a afirmativa:\n\n"No Balanço Orçamentário elaborado segundo as normas do MCASP, a economia de despesa reflete o montante de dotação autorizada que não foi executado no exercício."`,
+      statement: `[Questão ${qNum}] Em Contabilidade Aplicada ao Setor Público (CASP) sobre o tema "${lessonTitle}", julgue a afirmativa:
+
+"${item.stmt}"`,
       options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. No Balanço Orçamentário a economia de despesa é a diferença positiva entre a despesa fixada e a executada.`
-        : `Gabarito: ERRADO. A economia de despesa representa o saldo de dotação não utilizado.`,
+      correctAnswer: item.correct,
+      explanation: item.exp,
     };
   }
 
+  const mcScenarios = [
+    {
+      stmt: `No Plano de Contas Aplicado ao Setor Público (PCASP), referente a "${lessonTitle}", as contas de natureza de controle de atos potenciais (contratos, convênios e garantias concedidas) pertencem às Classes:`,
+      opts: [
+        '7 (Controles Devedores) e 8 (Controles Credores).',
+        '1 (Ativo) e 2 (Passivo).',
+        '5 (Orçamento Aprovado) e 6 (Execução Orçamentária).',
+        '3 (Variações Patrimoniais Diminutivas) e 4 (Variações Patrimoniais Aumentativas).',
+        '9 e 10 de Encerramento Contábil.'
+      ],
+      correct: 0,
+      exp: 'Gabarito: A. As Classes 7 e 8 do PCASP destinam-se exclusivamente ao registro dos atos potenciais e controles contratuais.'
+    },
+    {
+      stmt: `Em conformidade com a Lei nº 4.320/1964 e o MCASP, o Balanço Financeiro demonstrará:`,
+      opts: [
+        'A receita e a despesa orçamentárias bem como os recebimentos e os pagamentos de natureza extraorçamentária, conjugados com os saldos em espécie.',
+        'A segregação do patrimônio público em ativo circulante e não circulante com base na liquidez esperada.',
+        'As variações patrimoniais quantitativas aumentativas e diminutivas para apuração do superávit do exercício.',
+        'O confronto entre os créditos adicionais abertos e os recursos disponíveis para sua cobertura.',
+        'A conciliação dos fluxos de caixa estritamente das atividades operacionais.'
+      ],
+      correct: 0,
+      exp: 'Gabarito: A. O Balanço Financeiro evidencia as receitas/despesas orçamentárias e os ingressos/dispêndios extraorçamentários somados aos saldos de caixa.'
+    },
+    {
+      stmt: `Na Demonstração das Variações Patrimoniais (DVP), um exemplo típico de Variação Patrimonial Diminutiva (VPD) decorrente da desvalorização física ou tecnológica de bens móveis é:`,
+      opts: [
+        'A quota periódica de depreciação, amortização ou exaustão acumulada do exercício.',
+        'A liquidação da despesa orçamentária com a aquisição de novos veículos.',
+        'O empenho de despesa de capital para construção de edifício público.',
+        'O recolhimento de tributos retidos na fonte a título de consignações.',
+        'A amortização do principal da dívida fundada interna.'
+      ],
+      correct: 0,
+      exp: 'Gabarito: A. Depreciação é VPD que reduz o valor contábil do ativo sem envolver fluxo orçamentário financeiro direto no exercício.'
+    },
+    {
+      stmt: `Com relação à classificação orçamentária da despesa pública no contexto de "${lessonTitle}", a despesa incorrida que cria ou incorpora novos bens de capital ao patrimônio público classifica-se como:`,
+      opts: [
+        'Despesa de Capital (Investimentos ou Inversões Financeiras).',
+        'Despesa Corrente de Custeio e Manutenção.',
+        'Transferência Corrente Vinculada.',
+        'Receita de Alienação de Bens.',
+        'Reserva de Contingência Fiscal.'
+      ],
+      correct: 0,
+      exp: 'Gabarito: A. Conforme Art. 12 da Lei nº 4.320/64, despesas com obras, instalações e equipamentos são despesas de capital da categoria Investimentos.'
+    }
+  ];
+
+  const scenario = mcScenarios[seed % mcScenarios.length];
   return {
     source: 'FGV – Auditor do Estado / CGE-SC',
-    statement: `[Questão ${qNum}] No Plano de Contas Aplicado ao Setor Público (PCASP), referente a "${lessonTitle}", as contas de natureza de controle de atos potenciais (contratos e garantias) pertencem às Classes:`,
-    options: [
-      '7 (Controles Devedores) e 8 (Controles Credores).',
-      '1 (Ativo) e 2 (Passivo).',
-      '5 (Orçamento Aprovado) e 6 (Execução Orçamentária).',
-      '3 (Variações Patrimoniais Diminutivas) e 4 (Variações Patrimoniais Aumentativas).',
-      '9 e 10 de Encerramento.'
-    ],
-    correctAnswer: 0,
-    explanation: 'Gabarito: A. As Classes 7 e 8 do PCASP destinam-se ao registro dos atos potenciais e controles contratuais.',
+    statement: `[Questão ${qNum}] ${scenario.stmt}`,
+    options: scenario.opts,
+    correctAnswer: scenario.correct,
+    explanation: scenario.exp,
   };
 }
 
