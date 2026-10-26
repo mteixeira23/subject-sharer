@@ -5,7 +5,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   0: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM (2022)',
       topic: 'Sentidos da Constituição (Lassalle, Schmitt e Kelsen)',
       type: 'multiple',
       statement: 'Na teoria geral do Direito Constitucional, diversos autores formularam concepções sobre o conceito e a essência da Constituição. Ferdinand Lassalle, em sua obra clássica "A Essência da Constituição", sustentou que a Constituição real e efetiva de um país corresponde:',
@@ -21,7 +21,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Classificação das Constituições (Rigidez Constitucional)',
       type: 'tf',
       statement: 'A Constituição Federal de 1988 é classificada pela doutrina majoritária como rígida, pois suas normas somente podem ser modificadas por intermédio de processo legislativo mais solene e dificultoso do que aquele exigido para a edição de leis infraconstitucionais comuns.',
@@ -31,7 +31,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Classificação da CF/88',
       type: 'multiple',
       statement: 'A respeito das classificações ontológicas, sistemáticas e formais da Constituição da República Federativa do Brasil de 1988, assinale a opção que apresenta a classificação integralmente correta:',
@@ -51,7 +51,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   1: [
     {
       id: 1,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Eficácia das Normas Constitucionais (José Afonso da Silva)',
       type: 'multiple',
       statement: 'O Artigo 5º, XIII, da CF/88 estabelece: "é livre o exercício de qualquer trabalho, ofício ou profissão, atendidas as qualificações profissionais que a lei estabelecer". De acordo com a clássica classificação das normas constitucionais quanto à aplicabilidade e eficácia formulada por José Afonso da Silva, o preceito citado é classificado como norma de eficácia:',
@@ -67,7 +67,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-DF',
+      source: 'CEBRASPE – Auditor Fiscal da Receita do DF / SEFAZ-DF (2020)',
       topic: 'Normas de Eficácia Limitada',
       type: 'tf',
       statement: 'As normas constitucionais de eficácia limitada produzem, desde a sua promulgação, eficácia jurídica negativa (revogando normas anteriores incompatíveis e impedindo leis infraconstitucionais contrárias), muito embora dependam de atuação legislativa posterior para que produzam a totalidade de seus efeitos positivos.',
@@ -97,7 +97,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Sigilo Bancário e Administração Tributária (LC 105/2001)',
       type: 'tf',
       statement: 'O Supremo Tribunal Federal firmou tese de repercussão geral (Tema 225) no sentido de que o fornecimento de informações bancárias pelas instituições financeiras diretamente ao Fisco, sem prévia autorização judicial, previsto no Art. 6º da Lei Complementar nº 105/2001, é plenamente constitucional, configurando mera transferência de sigilo entre entes legalmente vinculados ao dever de preservação do segredo.',
@@ -107,7 +107,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal de Tributos Estaduais / SEFAZ-AP',
+      source: 'FCC – Auditor Fiscal de Tributos Estaduais / SEFAZ-AP (2022)',
       topic: 'Direito de Reunião e Liberdade de Associação',
       type: 'multiple',
       statement: 'Em tema de direitos fundamentais previstos no Artigo 5º da CF/88, assinale a opção que está em consonância com a disciplina constitucional e o entendimento do STF:',
@@ -127,7 +127,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   6: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-MG',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG (2023)',
       topic: 'Mandado de Segurança Coletivo e Individual',
       type: 'multiple',
       statement: 'O Mandado de Segurança é garantia constitucional voltada a proteger direito líquido e certo não amparado por habeas corpus ou habeas data, quando o responsável pela ilegalidade ou abuso de poder for autoridade pública ou agente de pessoa jurídica no exercício de atribuições do Poder Público (Art. 5º, LXIX da CF/88). Sobre o mandado de segurança coletivo, assinale a afirmativa correta:',
@@ -143,7 +143,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Habeas Data (Súmula 2 do STJ)',
       type: 'tf',
       statement: 'Para a impetração de Habeas Data com a finalidade de assegurar o conhecimento de registros e dados relativos à pessoa do impetrante, é indispensável a comprovação prévia da recusa administrativa ou da demora injustificada da autoridade detentora dos registros públicos em fornecer as referidas informações.',
@@ -153,7 +153,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Ação Popular e Mandado de Injunção',
       type: 'multiple',
       statement: 'A respeito das ações e garantias constitucionais reguladas no Artigo 5º da Carta da República, assinale a afirmativa correta:',
@@ -189,7 +189,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Competência Concorrente Suplementar dos Estados',
       type: 'tf',
       statement: 'No âmbito da legislação concorrente tributária e financeira, inexistindo lei federal sobre normas gerais, os Estados e o Distrito Federal exercerão a competência legislativa plena, para atender a suas peculiaridades; contudo, a superveniência de lei federal sobre normas gerais suspende a eficácia da lei estadual, no que lhe for contrário.',
@@ -199,7 +199,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Bens dos Estados e Municípios',
       type: 'multiple',
       statement: 'De acordo com o Artigo 26 da Constituição Federal de 1988, incluem-se expressamente entre os bens dos Estados-membros:',
@@ -219,7 +219,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   10: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Acumulação de Cargos Públicos e Teto Remuneratório',
       type: 'multiple',
       statement: 'O Artigo 37, XVI, da Constituição Federal estabelece como regra geral a proibição da acumulação remunerada de cargos públicos. No entanto, é ressalvada a acumulação, desde que haja compatibilidade de horários, de:',
@@ -235,7 +235,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Estabilidade do Servidor Público (Art. 41 da CF/88)',
       type: 'tf',
       statement: 'São estáveis após três anos de efetivo exercício os servidores nomeados para cargo de provimento efetivo em virtude de concurso público, sendo condição obrigatória para a aquisição da estabilidade a prévia avaliação especial de desempenho por comissão instituída para essa finalidade.',
@@ -249,7 +249,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   16: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-MG',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG (2023)',
       topic: 'Legitimação Ativa na ADI e ADC (Art. 103 da CF/88)',
       type: 'multiple',
       statement: 'O Artigo 103 da Constituição Federal estabelece o rol taxativo de legitimados a propor a Ação Direta de Inconstitucionalidade (ADI) e a Ação Declaratória de Constitucionalidade (ADC) perante o Supremo Tribunal Federal. A jurisprudência consolidada do STF divide esses legitimados entre "universais" e "especiais" (estes últimos sujeitos à exigência de pertinência temática). É classificado como legitimado ESPECIAL:',
@@ -265,7 +265,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-DF',
+      source: 'CEBRASPE – Auditor Fiscal da Receita do DF / SEFAZ-DF (2020)',
       topic: 'Modulação de Efeitos na ADI (Art. 27 da Lei 9.868/99)',
       type: 'tf',
       statement: 'Ao declarar a inconstitucionalidade de lei ou ato normativo em sede de controle concentrado abstrato, o STF poderá, por maioria de dois terços de seus membros, restringir os efeitos daquela declaração ou decidir que ela só tenha eficácia a partir de seu trânsito em julgado ou de outro momento que venha a ser fixado (modulação temporal).',
@@ -295,7 +295,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor do Estado / CAGE-RS',
+      source: 'CEBRASPE – Auditor do Estado / CAGE-RS (2019)',
       topic: 'Princípio da Exclusividade Orçamentária (Art. 165, § 8º da CF/88)',
       type: 'tf',
       statement: 'Pelo princípio orçamentário constitucional da exclusividade, a lei orçamentária anual não conterá dispositivo estranho à previsão da receita e à fixação da despesa, não se incluindo na proibição a autorização para abertura de créditos suplementares e contratação de operações de crédito, ainda que por antecipação de receita.',
@@ -305,7 +305,7 @@ export const CONSTITUCIONAL_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE (2022)',
       topic: 'Instrumentos de Planejamento Orçamentário (PPA, LDO e LOA)',
       type: 'multiple',
       statement: 'No sistema orçamentário constitucional brasileiro (Art. 165 da CF/88), a Lei de Diretrizes Orçamentárias (LDO) compreende as diretrizes, objetivos e metas da administração pública para as despesas de capital e outras delas decorrentes. Além disso, a LDO possui papel crucial na integração do planejamento. De acordo com o texto constitucional, a LDO:',

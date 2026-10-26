@@ -5,7 +5,7 @@ export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   0: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-BA',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-BA (2022)',
       topic: 'Funções Clássicas do Estado de Musgrave',
       type: 'multiple',
       statement: 'Segundo a teoria das finanças públicas formulada por Richard Musgrave, a intervenção do Estado na economia justifica-se pelo cumprimento de três funções econômicas básicas. A função que visa ajustar a distribuição de renda e riqueza na sociedade, por meio de transferências e tributação progressiva, é a função:',
@@ -21,7 +21,7 @@ export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Função Alocativa do Orçamento',
       type: 'tf',
       statement: 'A função alocativa do orçamento público manifesta-se quando o governo fornece bens públicos e semipúblicos que o mercado privado não fornece em quantidade socialmente eficiente.',
@@ -31,7 +31,7 @@ export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Função Estabilizadora',
       type: 'multiple',
       statement: 'O papel do Estado voltado à manutenção de altos níveis de emprego, estabilidade do nível geral de preços e equilíbrio na balança de pagamentos expressa a realização da função orçamentária:',
@@ -47,7 +47,7 @@ export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 4,
-      source: 'FGV – Auditor de Controle Externo / TCE-TO',
+      source: 'FGV – Auditor de Controle Externo / TCE-TO (2022)',
       topic: 'Evolução do Orçamento - Orçamento Tradicional vs Programa',
       type: 'multiple',
       statement: 'Na evolução histórica dos modelos orçamentários, o Orçamento-Programa distingue-se fundamentalmente do Orçamento Tradicional (Clássico) porque:',
@@ -63,7 +63,7 @@ export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 5,
-      source: 'CEBRASPE – Analista de Finanças e Controle / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Natureza Jurídica do Orçamento no Brasil',
       type: 'tf',
       statement: 'No ordenamento constitucional brasileiro, a lei orçamentária anual possui, como regra geral, natureza jurídica de lei em sentido puramente formal, de caráter eminentemente autorizativo, não gerando direito subjetivo à realização das dotações nela previstas.',
@@ -77,7 +77,7 @@ export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   1: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-BA',
+      source: 'FGV – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2022)',
       topic: 'Princípio da Exclusividade',
       type: 'multiple',
       statement: 'O Artigo 165, § 8º da Constituição Federal de 1988 estabelece que a lei orçamentária anual não conterá dispositivo estranho à previsão da receita e à fixação da despesa. Esse mandamento constitucional traduz o princípio orçamentário da:',
@@ -93,7 +93,7 @@ export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Princípio da Universalidade',
       type: 'tf',
       statement: 'Conforme o princípio da universalidade, a lei orçamentária anual deve conter todas as receitas e todas as despesas de todos os poderes, órgãos, entidades, fundos e fundações instituídas e mantidas pelo poder público.',

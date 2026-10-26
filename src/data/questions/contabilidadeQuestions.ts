@@ -5,7 +5,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
   1: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Conceito de Patrimônio e Equação Patrimonial',
       type: 'multiple',
       statement: 'Em relação aos conceitos fundamentais de patrimônio na Contabilidade Geral, assinale a afirmativa correta:',
@@ -21,7 +21,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Situações Líquidas Patrimoniais',
       type: 'tf',
       statement: 'Diz-se que a entidade apresenta "Passivo a Descoberto" quando a soma do Ativo e do Patrimônio Líquido supera o total das obrigações com terceiros.',
@@ -31,7 +31,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Equação Fundamental do Patrimônio',
       type: 'multiple',
       statement: 'Uma sociedade empresária possuía um Ativo total de R$ 500.000,00 e um Passivo Exigível de R$ 320.000,00. Após apurar as contas de encerramento, seu Patrimônio Líquido é de:',
@@ -47,7 +47,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 4,
-      source: 'FGV – Contador / DPE-RJ',
+      source: 'FGV – Contador / DPE-RJ (2023)',
       topic: 'Ativo - Definição Conceitual',
       type: 'multiple',
       statement: 'Segundo a teoria contábil e a definição societária, para que um item seja reconhecido no Ativo, é essencial que:',
@@ -63,7 +63,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 5,
-      source: 'CEBRASPE – Analista Contábil / MPU',
+      source: 'CEBRASPE – Analista Contábil / MPU (2018)',
       topic: 'Aspectos Qualitativo e Quantitativo do Patrimônio',
       type: 'tf',
       statement: 'O aspecto qualitativo do patrimônio consiste na discriminação detalhada da natureza e espécie de cada bem, direito e obrigação, enquanto o aspecto quantitativo atribui-lhes os respectivos valores monetários.',
@@ -77,7 +77,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
   2: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-BA',
+      source: 'FGV – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2022)',
       topic: 'Classificação dos Fatos Contábeis',
       type: 'multiple',
       statement: 'O pagamento de uma duplicata com desconto financeiro obtido constitui exemplo de fato contábil:',
@@ -93,7 +93,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 2,
-      source: 'CEBRASPE – Contador / Polícia Federal',
+      source: 'CEBRASPE – Contador / Polícia Federal (2018)',
       topic: 'Atos Administrativos vs Fatos Contábeis',
       type: 'tf',
       statement: 'A assinatura de um contrato de seguro contra incêndio com vigência para o ano subsequente, sem qualquer desembolso financeiro imediato, constitui fato contábil modificativo que exige lançamento imediato de despesa.',
@@ -103,7 +103,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Fórmulas de Lançamento',
       type: 'multiple',
       statement: 'A aquisição de mercadorias para revenda por R$ 100.000,00, sendo 40% pagos à vista em dinheiro e o saldo restante financiado a prazo mediante aceite de duplicatas, classifica-se tecnicamente como um lançamento de:',
@@ -119,7 +119,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 4,
-      source: 'FGV – Técnico de Controle Externo / TCE-SE',
+      source: 'FGV – Técnico de Controle Externo / TCE-SE (2021)',
       topic: 'Fatos Permutativos',
       type: 'multiple',
       statement: 'Assinale a operação que NÃO altera o valor total do Patrimônio Líquido, configurando um fato permutativo:',
@@ -135,7 +135,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 5,
-      source: 'CEBRASPE – Auditor Federal / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Fato Modificativo Diminutivo',
       type: 'tf',
       statement: 'O pagamento de despesas de aluguel do mês corrente, mediante débito em conta corrente bancária, é exemplo clássico de fato contábil modificativo diminutivo.',
@@ -149,7 +149,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
   3: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-ES',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-ES (2021)',
       topic: 'Natureza dos Saldos das Contas',
       type: 'multiple',
       statement: 'Em conformidade com a teoria contábil das contas, assinale a opção que indica contas que possuem, respectivamente, natureza DEVEDORA e natureza CREDORA:',
@@ -165,7 +165,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 2,
-      source: 'CEBRASPE – Analista / STJ',
+      source: 'CEBRASPE – Analista Judiciário / STJ (2018)',
       topic: 'Contas Retificadoras',
       type: 'tf',
       statement: 'As contas retificadoras do Ativo (como Depreciação Acumulada e Perdas Estimadas com Créditos de Liquidação Duvidosa) possuem saldo de natureza credora e figuram no Balanço Patrimonial diminuindo o grupo do Ativo.',
@@ -175,7 +175,7 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Função e Estrutura do Plano de Contas',
       type: 'multiple',
       statement: 'O documento contábil que contém a estrutura das contas e estabelece as diretrizes e normas para a realização dos lançamentos, com a descrição detalhada do funcionamento de cada conta, denomina-se:',

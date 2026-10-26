@@ -30,7 +30,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Suspensão do Crédito Tributário',
       type: 'multiple',
       statement: 'Assinale a opção que indica uma hipótese de SUSPENSÃO da exigibilidade do crédito tributário prevista no Artigo 151 do CTN:',
@@ -48,7 +48,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   matematica_financeira: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal de Tributos Estaduais / SEFAZ-AM (2022)',
       topic: 'Juros Compostos e Taxas Equivalentes',
       type: 'multiple',
       statement: 'Um capital de R$ 10.000,00 foi aplicado à taxa de juros compostos de 10% ao ano, com capitalização anual, durante 2 anos. O montante final ao término do período é de:',
@@ -74,7 +74,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Desconto Racional Simples (Por Dentro)',
       type: 'multiple',
       statement: 'Um título de valor nominal R$ 11.000,00 é resgatado 2 meses antes do seu vencimento à taxa de desconto racional simples de 5% ao mês. O valor presente (atual) recebido é:',
@@ -90,7 +90,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 4,
-      source: 'FGV – Auditor Fiscal / SEFAZ-MG',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG (2023)',
       topic: 'Taxa Nominal vs Taxa Efetiva',
       type: 'tf',
       statement: 'A taxa nominal de 12% ao ano com capitalização mensal corresponde a uma taxa efetiva anual superior a 12% ao ano.',
@@ -102,7 +102,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   estatistica: [
     {
       id: 1,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Medidas de Tendência Central',
       type: 'multiple',
       statement: 'Em estatística descritiva, a medida de tendência central definida como o valor que ocupa a posição central de um conjunto de dados ordenados, dividindo-o em duas partes iguais de 50%, é a:',
@@ -118,7 +118,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Sensibilidade a Outliers',
       type: 'tf',
       statement: 'A mediana é uma medida de tendência central insensível à presença de valores discrepantes (outliers) no conjunto de dados, ao contrário da média aritmética.',
@@ -128,7 +128,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FGV – Auditor Fiscal / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal de Tributos Estaduais / SEFAZ-AM (2022)',
       topic: 'Coeficiente de Variação',
       type: 'multiple',
       statement: 'Uma distribuição estatística apresenta média igual a 50 e desvio padrão igual a 5. O Coeficiente de Variação (CV) dessa distribuição é:',
@@ -146,7 +146,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   contabilidade_geral: [
     {
       id: 1,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Conceito de Ativo (CPC 00 R2)',
       type: 'tf',
       statement: 'De acordo com a Estrutura Conceitual para Relatório Financeiro (CPC 00 R2), ativo é um recurso econômico presente controlado pela entidade como resultado de eventos passados.',
@@ -156,7 +156,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Fatos Contábeis Permutativos',
       type: 'multiple',
       statement: 'Assinale a alternativa que apresenta um fato contábil estritamente PERMUTATIVO:',
@@ -174,7 +174,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   casp: [
     {
       id: 1,
-      source: 'CEBRASPE – Contador / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor de Finanças e Controle / SEFAZ-AL (2020)',
       topic: 'Demonstrações Contábeis Aplicadas ao Setor Público',
       type: 'tf',
       statement: 'No Balanço Orçamentário elaborado segundo as normas do MCASP, a economia de despesa é dada pela diferença positiva entre a despesa fixada e a despesa executada.',
@@ -184,7 +184,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Classes do PCASP',
       type: 'multiple',
       statement: 'No Plano de Contas Aplicado ao Setor Público (PCASP), as contas que registram os atos potenciais do setor público (garantias e contratos) pertencem ao subsistema de natureza:',
@@ -212,7 +212,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'FGV – Auditor Fiscal / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Nova Lei de Licitações (Lei 14.133/2021)',
       type: 'multiple',
       statement: 'Conforme a Lei nº 14.133/2021, a contratação de profissional do setor artístico consagrado pela crítica especializada é hipótese de:',
@@ -230,7 +230,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   constitucional: [
     {
       id: 1,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Inviolabilidade do Domicílio',
       type: 'tf',
       statement: 'A casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito ou desastre, ou para prestar socorro, ou, durante o dia, por determinação judicial.',
@@ -242,7 +242,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   auditoria: [
     {
       id: 1,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Circularização (NBC TA 505)',
       type: 'tf',
       statement: 'A confirmação externa (circularização) consiste na obtenção pelo auditor de resposta direta escrita por terceiro (parte confirmante) em formato impresso ou eletrônico.',
@@ -272,7 +272,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   economia: [
     {
       id: 1,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Regra de Ouro (CF/88)',
       type: 'tf',
       statement: 'A Regra de Ouro (Art. 167, III da CF/88) veda a realização de operações de crédito que excedam o montante das despesas de capital, ressalvadas as autorizadas mediante créditos suplementares por maioria absoluta do Poder Legislativo.',
@@ -284,7 +284,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   administracao_financas: [
     {
       id: 1,
-      source: 'CEBRASPE – Analista de Planejamento / SEFAZ-AL',
+      source: 'CEBRASPE – Analista de Planejamento e Orçamento / SEFAZ-AL (2020)',
       topic: 'Estágios da Despesa Pública',
       type: 'tf',
       statement: 'A liquidação da despesa pública consiste na verificação do direito adquirido pelo credor, tendo por base os títulos e documentos comprovantes do crédito e do serviço prestado ou bem entregue.',
@@ -296,7 +296,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   informatica: [
     {
       id: 1,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Criptografia Assimétrica',
       type: 'tf',
       statement: 'A criptografia assimétrica utiliza duas chaves distintas (uma pública e uma privada) matematicamente correlacionadas.',
@@ -308,7 +308,7 @@ export const REAL_CONCURSO_QUESTIONS: Record<string, QuestionData[]> = {
   igualdade_racial: [
     {
       id: 1,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Ações Afirmativas',
       type: 'tf',
       statement: 'Consideram-se ações afirmativas as políticas públicas e programas especiais adotados pelo Estado para a reparação das desigualdades raciais (Lei 12.288/2010).',

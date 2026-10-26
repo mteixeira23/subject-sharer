@@ -6,7 +6,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     // ── Bloco 1: Conceito, Objeto, Campo de Aplicação e Usuários (1-10) ────────
     {
       id: 1,
-      source: 'CEBRASPE – Contador / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor de Finanças e Controle / SEFAZ-AL (2020)',
       topic: 'Objeto da Contabilidade Aplicada ao Setor Público',
       type: 'tf',
       statement: 'O objeto da Contabilidade Aplicada ao Setor Público (CASP) é o patrimônio público, o qual compreende o conjunto de bens, direitos e obrigações de titularidade das entidades do setor público.',
@@ -16,7 +16,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-BA',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-BA (2022)',
       topic: 'Campo de Aplicação Obrigatório da CASP',
       type: 'multiple',
       statement: 'De acordo com as Normas Brasileiras de Contabilidade Aplicadas ao Setor Público (NBC TSP) e o Manual de Contabilidade Aplicada ao Setor Público (MCASP), o campo de aplicação da CASP abrange de forma OBRIGATÓRIA:',
@@ -32,7 +32,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ',
+      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ (2021)',
       topic: 'Empresas Estatais Independentes e o MCASP',
       type: 'tf',
       statement: 'As empresas públicas e as sociedades de economia mista não dependentes (estatais independentes) estão sujeitas obrigatoriamente à aplicação integral das NBC TSP e à estrutura orçamentária do PCASP da STN.',
@@ -42,7 +42,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 4,
-      source: 'FGV – Auditor Federal de Controle Externo / TCU',
+      source: 'FGV – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Usuários Primários da Informação Contábil Pública',
       type: 'multiple',
       statement: 'Segundo a NBC TSP Estrutura Conceitual, os usuários primários dos Relatórios Contábeis de Propósito Geral das Entidades do Setor Público (RCPGs) são:',
@@ -58,7 +58,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 5,
-      source: 'CEBRASPE – Contador / DPE-RO',
+      source: 'CEBRASPE – Contador / DPE-RO (2021)',
       topic: 'Objetivo dos Relatórios Contábeis Públicos (RCPGs)',
       type: 'tf',
       statement: 'O objetivo principal da elaboração e divulgação da informação contábil no setor público é permitir que os gestores alcancem a maximização de receitas financeiras e o lucro líquido ao final de cada exercício.',
@@ -68,7 +68,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 6,
-      source: 'FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE (2022)',
       topic: 'Princípio da Entidade no Setor Público',
       type: 'multiple',
       statement: 'Sob a ótica da Contabilidade Pública, o Princípio da Entidade reconhece o patrimônio como objeto da contabilidade e afirma a autonomia patrimonial. No setor público, a autonomia patrimonial aplica-se:',
@@ -84,7 +84,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 7,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Dualidade dos Enfoques: Orçamentário vs Patrimonial',
       type: 'tf',
       statement: 'A evolução contemporânea da CASP estabelece que o enfoque orçamentário disciplinado pela Lei nº 4.320/1964 foi integralmente revogado pela convergência às normas internacionais (NBC TSP / IPSAS), de modo que os balanços orçamentários foram extintos.',
@@ -94,7 +94,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 8,
-      source: 'FGV – Contador / SEFAZ-AM',
+      source: 'FGV – Contador / SEFAZ-AM (2022)',
       topic: 'Características Qualitativas da Informação Contábil',
       type: 'multiple',
       statement: 'De acordo com a NBC TSP Estrutura Conceitual, para que a informação contábil pública alcance seus objetivos, ela deve apresentar certas características qualitativas. São características qualitativas fundamentais da informação contábil pública:',
@@ -110,7 +110,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 9,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Restrição de Custo-Benefício na Informação Contábil',
       type: 'tf',
       statement: 'O princípio ou restrição do custo-benefício estabelece que os benefícios decorrentes da obtenção e divulgação de determinada informação contábil pública devem justificar os custos incorridos para sua mensuração e evidenciação.',
@@ -120,7 +120,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 10,
-      source: 'FCC – Analista de Controle Externo / TCE-AP',
+      source: 'FCC – Analista de Controle Externo / TCE-AP (2022)',
       topic: 'Representação Fidedigna na CASP',
       type: 'multiple',
       statement: 'Para ser representação fidedigna segundo a NBC TSP Estrutura Conceitual, a informação contábil pública deve ser:',
@@ -138,7 +138,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     // ── Bloco 2: Regimes Contábeis: Orçamentário vs Patrimonial (11-20) ────────
     {
       id: 11,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Regime Orçamentário da Lei nº 4.320/1964',
       type: 'multiple',
       statement: 'O Artigo 35 da Lei nº 4.320/1964 preceitua que pertencem ao exercício financeiro as receitas nele arrecadadas e as despesas nele legalmente empenhadas. Esse comando legal consagra para a execução orçamentária o regime:',
@@ -154,7 +154,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 12,
-      source: 'CEBRASPE – Contador / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor de Finanças e Controle / SEFAZ-AL (2020)',
       topic: 'Regime Contábil sob o Enfoque Patrimonial',
       type: 'tf',
       statement: 'Sob a perspectiva eminentemente patrimonial disciplinada pelo MCASP e pelas NBC TSP, tanto as Variações Patrimoniais Aumentativas (receitas) quanto as Variações Patrimoniais Diminutivas (despesas) devem ser reconhecidas em estrita observância ao regime de competência.',
@@ -164,7 +164,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 13,
-      source: 'FGV – Auditor Fiscal / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Fato Gerador da Receita sob Enfoque Patrimonial',
       type: 'multiple',
       statement: 'No que concerne ao reconhecimento da receita tributária (ex: IPTU ou IPVA lançado de ofício pela Fazenda Pública), assinale a correlação temporal correta entre os enfoques orçamentário e patrimonial:',
@@ -180,7 +180,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 14,
-      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Momento do Fato Gerador da Despesa Patrimonial (VPD)',
       type: 'tf',
       statement: 'O empenho da despesa orçamentária é suficiente para ensejar de imediato o registro de uma Variação Patrimonial Diminutiva (VPD) no resultado do exercício, mesmo que o material ainda não tenha sido entregue pelo fornecedor.',
@@ -190,7 +190,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 15,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Primazia da Essência sobre a Forma na Despesa sem Empenho',
       type: 'multiple',
       statement: 'Suponha que um hospital público estadual recebeu no dia 28 de dezembro insumos hospitalares indispensáveis que foram devidamente atestados e incorporados ao uso. Por falha de dotação, a competente Nota de Empenho orçamentária não foi emitida no exercício. Diante desse cenário e do princípio da competência patrimonial, a contabilidade deve:',
@@ -206,7 +206,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 16,
-      source: 'CEBRASPE – Auditor de Controle Interno / CGE-AL',
+      source: 'CEBRASPE – Auditor de Controle Interno / CGE-AL (2022)',
       topic: 'Apropriação Mensal do 13º Salário e Férias por Competência',
       type: 'tf',
       statement: 'A despesa com o 13º salário dos servidores públicos deve ser reconhecida contabilmente na DVP como VPD a cada mês (à razão de 1/12 avos) em obediência ao princípio da competência, ainda que o desembolso financeiro ocorra apenas no mês de dezembro.',
@@ -216,7 +216,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 17,
-      source: 'FGV – Contador / DPE-RJ',
+      source: 'FGV – Contador / DPE-RJ (2023)',
       topic: 'Suprimento de Fundos sob Enfoque Patrimonial',
       type: 'multiple',
       statement: 'O suprimento de fundos (regime de adiantamento regulado pelo Art. 68 da Lei 4.320/64) consiste na entrega de numerário a servidor para despesas que não possam subordinar-se ao processo normal de aplicação. Sob o aspecto patrimonial, no momento da concessão do suprimento de fundos ocorre:',
@@ -232,7 +232,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 18,
-      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-RS',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-RS (2019)',
       topic: 'Provisões no Setor Público (NBC TSP 03)',
       type: 'tf',
       statement: 'No setor público, uma provisão é um passivo de prazo ou de valor incerto que deve ser reconhecido contabilmente quando a entidade tem uma obrigação presente decorrente de evento passado, cuja saída de recursos seja provável e mensurável com confiabilidade.',
@@ -258,7 +258,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 20,
-      source: 'CEBRASPE – Auditor Federal / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Restos a Pagar e Regime Contábil',
       type: 'tf',
       statement: 'A inscrição de despesas em Restos a Pagar Processados (RPP) ao final do exercício decorre de despesas que foram devidamente empenhadas e liquidadas, configurando uma dívida flutuante do ente público.',
@@ -270,7 +270,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     // ── Bloco 3: Subsistemas Contábeis e Estrutura do PCASP (21-30) ───────────
     {
       id: 21,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Estrutura das Classes do PCASP',
       type: 'multiple',
       statement: 'O Plano de Contas Aplicado ao Setor Público (PCASP) estruturado pela STN é composto por 8 classes de contas. Assinale a alternativa que relaciona corretamente a classe e a sua respectiva natureza de informação:',
@@ -286,7 +286,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 22,
-      source: 'CEBRASPE – Contador / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor de Finanças e Controle / SEFAZ-AL (2020)',
       topic: 'Segregação dos Subsistemas no PCASP',
       type: 'tf',
       statement: 'No PCASP, os lançamentos contábeis nas contas de controle orçamentário (Classes 5 e 6) são independentes e realizam-se mediante partidas dobradas fechadas entre essas mesmas classes, sem exigir crédito ou débito concomitante no subsistema patrimonial.',
@@ -296,7 +296,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 23,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Atos Potenciais e as Classes 7 e 8 do PCASP',
       type: 'multiple',
       statement: 'Os atos praticados pela Administração que não afetam imediatamente o patrimônio público, mas que poderão vir a produzir modificações futuras (como a assinatura de um contrato de prestação de serviços continuados ou a concessão de aval do Tesouro), são denominados e registrados:',
@@ -312,7 +312,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 24,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Contas com Saldo Devedor e Credor no PCASP',
       type: 'tf',
       statement: 'No PCASP, as contas de Ativo (Classe 1), Variação Patrimonial Diminutiva (Classe 3), Orçamento Aprovado (Classe 5) e Devedores de Controle (Classe 7) têm natureza predominantemente credora.',
@@ -322,7 +322,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 25,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Padronização do PCASP e Federação Brasileira',
       type: 'multiple',
       statement: 'A edição do Plano de Contas Aplicado ao Setor Público (PCASP) padronizado nacionalmente pela Secretaria do Tesouro Nacional (STN) tem por finalidade essencial:',
@@ -338,7 +338,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 26,
-      source: 'CEBRASPE – Analista de Controle Externo / TCE-RJ',
+      source: 'CEBRASPE – Analista de Controle Externo / TCE-RJ (2021)',
       topic: 'Variação Patrimonial Aumentativa (VPA) e Classe 4',
       type: 'tf',
       statement: 'O cancelamento da inscrição de Restos a Pagar de exercícios anteriores configura, no exercício do cancelamento, uma Variação Patrimonial Aumentativa (VPA) registrada na Classe 4 do PCASP.',
@@ -348,7 +348,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 27,
-      source: 'FCC – Auditor Fiscal / SEFAZ-AP',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-AP (2022)',
       topic: 'Recebimento de Bens em Doação sem Encargos',
       type: 'multiple',
       statement: 'O recebimento de um imóvel doado ao Estado por um particular, sem quaisquer encargos ou restrições, representa:',
@@ -364,7 +364,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 28,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Contas de Controle de Disponibilidades por Destinação de Recursos (DDR)',
       type: 'tf',
       statement: 'No PCASP, o controle da destinação e vinculação dos recursos públicos (fontes de recursos) é realizado no subsistema de controle, permitindo rastrear se recursos com destinação legal específica foram aplicados nas respectivas finalidades vinculadas.',
@@ -374,7 +374,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 29,
-      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM (2022)',
       topic: 'Classificação Institucional e Funcional vs PCASP',
       type: 'multiple',
       statement: 'Enquanto o PCASP classifica os eventos sob as naturezas patrimonial, orçamentária e de controle, a classificação da despesa orçamentária em Funções e Subfunções (Portaria MOG nº 42/1999) responde precipuamente à indagação:',
@@ -390,7 +390,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 30,
-      source: 'CEBRASPE – Contador / DPE-RO',
+      source: 'CEBRASPE – Contador / DPE-RO (2021)',
       topic: 'Superveniências e Insubsistências no Setor Público',
       type: 'tf',
       statement: 'A perda de um veículo oficial da frota governamental em razão de sinistro com perda total, sem cobertura de seguro, constitui uma Insubsistência Passiva registrada como VPA no resultado do exercício.',
@@ -418,7 +418,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 32,
-      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ',
+      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ (2021)',
       topic: 'Potencial de Prestação de Serviços de Ativos Públicos',
       type: 'tf',
       statement: 'Diferentemente do setor privado, no setor público muitos ativos geram valor primordialmente por seu "potencial de prestação de serviços" à sociedade (como escolas públicas e hospitais), e não pela geração direta de fluxos de caixa positivos.',
@@ -428,7 +428,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 33,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Bens de Uso Comum do Povo no Ativo Imobilizado',
       type: 'multiple',
       statement: 'De acordo com as diretrizes do MCASP e das normas de convergência internacional (NBC TSP 07 – Ativo Imobilizado), os bens de uso comum do povo (como pontes, viadutos, rodovias e praças públicas):',
@@ -444,7 +444,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 34,
-      source: 'CEBRASPE – Contador / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor de Finanças e Controle / SEFAZ-AL (2020)',
       topic: 'Bens do Patrimônio Cultural e Histórico (Heritage Assets)',
       type: 'tf',
       statement: 'Bens do patrimônio cultural, histórico ou artístico (como monumentos históricos e obras raras de museu) cuja mensuração financeira confiável seja inviável não devem ser reconhecidos no Balanço Patrimonial, exigindo-se sua evidenciação detalhada em Notas Explicativas.',
@@ -454,7 +454,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 35,
-      source: 'FGV – Auditor Federal / CGU',
+      source: 'FGV – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Conceito de Passivo no Setor Público (NBC TSP EC)',
       type: 'multiple',
       statement: 'Segundo a NBC TSP Estrutura Conceitual, um passivo no setor público compreende:',
@@ -470,7 +470,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 36,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Situação Patrimonial Líquida e Balanço Patrimonial',
       type: 'tf',
       statement: 'A Situação Patrimonial Líquida de uma entidade pública é a diferença residual entre os ativos e os passivos após a dedução de todas as obrigações reconhecidas no Balanço Patrimonial.',
@@ -480,7 +480,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 37,
-      source: 'FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE (2022)',
       topic: 'Depreciação de Bens Imóveis Públicos',
       type: 'multiple',
       statement: 'Em relação ao processo de mensuração e depreciação do ativo imobilizado no setor público segundo o MCASP, assinale a afirmativa correta:',
@@ -496,7 +496,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 38,
-      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Redução ao Valor Recuperável (Impairment) no Setor Público',
       type: 'tf',
       statement: 'A aplicação do teste de redução ao valor recuperável (impairment test) no setor público restringe-se exclusivamente aos ativos geradores de caixa, sendo inaplicável aos bens mantidos para prestação de serviços à população.',
@@ -506,7 +506,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 39,
-      source: 'FGV – Contador / SEFAZ-AM',
+      source: 'FGV – Contador / SEFAZ-AM (2022)',
       topic: 'Despesa com Material Permanente vs Material de Consumo',
       type: 'multiple',
       statement: 'Na classificação contábil da aquisição de materiais no setor público, a regra geral para caracterização de um item como material permanente (incorporável ao Ativo Imobilizado) e não de consumo requer o atendimento concomitante de critérios como:',
@@ -522,7 +522,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 40,
-      source: 'CEBRASPE – Auditor de Controle Interno / CGE-AL',
+      source: 'CEBRASPE – Auditor de Controle Interno / CGE-AL (2022)',
       topic: 'Adiantamento de Décimo Terceiro Salário no Ativo',
       type: 'tf',
       statement: 'O pagamento da primeira parcela do 13º salário aos servidores estaduais no mês de junho deve ser registrado no subsistema patrimonial como um direito realizável (Adiantamento a Pessoal / Créditos a Curto Prazo), e não como VPD.',
@@ -534,7 +534,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     // ── Bloco 5: Prática de Concursos, Jurisprudência e Casos de Prova (41-50) ───
     {
       id: 41,
-      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-BA',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-BA (2022)',
       topic: 'Fato Contábil Permutativo vs Modificativo no Setor Público',
       type: 'multiple',
       statement: 'Em Contabilidade Aplicada ao Setor Público, a liquidação da despesa orçamentária decorrente da aquisição de veículos operacionais para a frota da fiscalização tributária classifica-se contabilmente como um:',
@@ -550,7 +550,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 42,
-      source: 'CEBRASPE – Contador / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor de Finanças e Controle / SEFAZ-AL (2020)',
       topic: 'Receita Orçamentária Corrente vs Receita de Capital',
       type: 'tf',
       statement: 'A alienação de bens móveis inservíveis pertencentes ao patrimônio do Estado gera receita orçamentária classificada na categoria econômica de Receita Corrente.',
@@ -560,7 +560,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 43,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Superávit Financeiro vs Superávit Orçamentário',
       type: 'multiple',
       statement: 'O Artigo 43, § 1º, inciso I da Lei nº 4.320/1964 prevê que o superávit financeiro apurado em balanço patrimonial do exercício anterior pode servir de fonte de recursos para abertura de créditos suplementares e especiais. O Superávit Financeiro é apurado pela diferença:',
@@ -576,7 +576,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 44,
-      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Consolidação Nacional e Prazos da LRF',
       type: 'tf',
       statement: 'De acordo com o Artigo 51 da Lei de Responsabilidade Fiscal (LRF), os Estados e Municípios devem encaminhar suas contas anuais ao Poder Executivo da União até 30 de abril do exercício seguinte para fins de consolidação das contas públicas nacionais pela STN.',
@@ -586,7 +586,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 45,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Demonstrações Contábeis Obrigatórias da Lei nº 4.320/1964 e MCASP',
       type: 'multiple',
       statement: 'Segundo a Lei nº 4.320/1964 e as normas do MCASP, o conjunto completo de demonstrações contábeis aplicadas ao setor público inclui:',
@@ -612,7 +612,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 47,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Estágios da Despesa Orçamentária e Reflexos Contábeis',
       type: 'multiple',
       statement: 'A ordem cronológica rigorosa dos estágios clássicos da despesa pública estabelecida pela Lei nº 4.320/1964 na fase de execução orçamentária é:',
@@ -628,7 +628,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 48,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Inscrição em Dívida Ativa e Enfoque Contábil',
       type: 'tf',
       statement: 'A inscrição de um crédito de IPTU em Dívida Ativa tributária gera o reconhecimento de uma Variação Patrimonial Aumentativa (VPA) no exercício em que o crédito é inscrito na Dívida Ativa.',
@@ -638,7 +638,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 49,
-      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM (2022)',
       topic: 'Conceito de Dívida Flutuante vs Dívida Fundada',
       type: 'multiple',
       statement: 'De acordo com o Artigo 92 da Lei nº 4.320/1964, a dívida flutuante do setor público compreende:',
@@ -654,7 +654,7 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 50,
-      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ',
+      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ (2021)',
       topic: 'Competência Regulatória: CFC e STN',
       type: 'tf',
       statement: 'No Brasil, o Conselho Federal de Contabilidade (CFC) é a autoridade legal responsável pela edição das Normas Brasileiras de Contabilidade Técnicas (NBC TSP), enquanto a Secretaria do Tesouro Nacional (STN) atua como órgão central de contabilidade federal responsável pelo MCASP e pelo PCASP nacional.',

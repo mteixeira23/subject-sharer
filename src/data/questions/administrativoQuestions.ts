@@ -21,7 +21,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Princípio da Impessoalidade e Súmula Vinculante nº 13 (Nepotismo)',
       type: 'tf',
       statement: 'A nomeação de cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade, até o terceiro grau, da autoridade nomeante para o exercício de cargo em comissão ou de confiança viola a Constituição Federal, segundo a Súmula Vinculante nº 13 do STF, com esteio no princípio da impessoalidade e da moralidade.',
@@ -31,7 +31,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Supremacia e Indisponibilidade do Interesse Público',
       type: 'multiple',
       statement: 'No regime jurídico-administrativo, os dois princípios fundamentais basilares (pedras de toque da doutrina de Celso Antônio Bandeira de Mello) que conformam toda a atuação do Estado são:',
@@ -47,7 +47,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 4,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Princípio da Legalidade no Direito Público vs Direito Privado',
       type: 'tf',
       statement: 'Enquanto no âmbito das relações privadas vige o princípio da autonomia da vontade (em que ao particular é lícito fazer tudo o que a lei não proíba), no Direito Administrativo vige o princípio da legalidade estrita, segundo o qual a Administração Pública só pode agir quando e como a lei expressamente autorizar ou determinar.',
@@ -57,7 +57,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 5,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Vedação à Promoção Pessoal na Publicidade Governamental',
       type: 'multiple',
       statement: 'O Artigo 37, § 1º da Constituição Federal estabelece que a publicidade dos atos, programas, obras, serviços e campanhas dos órgãos públicos deverá ter caráter educativo, informativo ou de orientação social. À luz do princípio da impessoalidade, é expressamente vedado:',
@@ -73,7 +73,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 6,
-      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ',
+      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ (2021)',
       topic: 'Súmula Vinculante 13 e Cargos de Natureza Política',
       type: 'tf',
       statement: 'Segundo a jurisprudência pacífica do STF, a vedação ao nepotismo expressa na Súmula Vinculante nº 13 aplica-se indistintamente e sem qualquer exceção aos cargos de natureza eminentemente política, tais como Secretários de Estado e Ministros de Estado, tornando nula de pleno direito qualquer nomeação de parente.',
@@ -83,7 +83,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 7,
-      source: 'FCC – Analista de Controle Externo / TCE-AP',
+      source: 'FCC – Analista de Controle Externo / TCE-AP (2022)',
       topic: 'Prazo Decadencial para Anulação de Atos Favoráveis (Art. 54 da Lei 9.784/99)',
       type: 'multiple',
       statement: 'Nos termos da Lei nº 9.784/1999 (Processo Administrativo Federal) e da jurisprudência consolidada do STJ, o direito da Administração de anular os atos administrativos de que decorram efeitos favoráveis para os destinatários decai em:',
@@ -99,7 +99,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 8,
-      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Segurança Jurídica e Vedação à Aplicação Retroativa de Nova Interpretação',
       type: 'tf',
       statement: 'O princípio da segurança jurídica veda a aplicação retroativa de nova interpretação jurídica adotada pela Administração Pública a situações pretéritas já consolidadas sob a égide da interpretação anterior.',
@@ -109,7 +109,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 9,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Princípio da Moralidade Administrativa e Distinção da Legalidade',
       type: 'multiple',
       statement: 'A respeito do princípio da moralidade administrativa, doutrina e jurisprudência afirmam que:',
@@ -125,7 +125,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 10,
-      source: 'CEBRASPE – Contador / DPE-RO',
+      source: 'CEBRASPE – Contador / DPE-RO (2021)',
       topic: 'Princípio da Continuidade do Serviço Público e Interrupção por Inadimplemento',
       type: 'tf',
       statement: 'Pelo princípio da continuidade do serviço público, é absolutamente vedado à concessionária de energia elétrica suspender o fornecimento de energia a consumidor pessoa física inadimplente, mesmo após prévio aviso formal.',
@@ -135,7 +135,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 11,
-      source: 'FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE (2022)',
       topic: 'Princípio da Proporcionalidade: Elementos Intrínsecos',
       type: 'multiple',
       statement: 'O princípio da proporcionalidade, amplamente aplicado no controle dos atos administrativos restritivos de direitos (como sanções e intervenções no poder de polícia), decompõe-se tradicionalmente em três subprincípios cumulativos:',
@@ -151,7 +151,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 12,
-      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-RS',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-RS (2019)',
       topic: 'Teoria dos Motivos Determinantes',
       type: 'tf',
       statement: 'Pela Teoria dos Motivos Determinantes, a validade do ato administrativo vincula-se aos motivos de fato e de direito indicados pela autoridade que o praticou, de modo que, se tais motivos forem inexistentes ou falsos, o ato será nulo, mesmo que se trate de ato discricionário para o qual a lei não exigia motivação prévia obrigatória.',
@@ -177,7 +177,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 14,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Diferença entre Descentralização e Desconcentração',
       type: 'tf',
       statement: 'A desconcentração administrativa ocorre quando o Estado distribui competências internas dentro de uma mesma pessoa jurídica (criando órgãos despersonalizados), ao passo que a descentralização envolve a transferência de competências para outra pessoa jurídica distinta (como autarquias e empresas públicas).',
@@ -187,7 +187,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 15,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Teoria do Órgão e Imputação Volitiva',
       type: 'multiple',
       statement: 'A teoria adotada pelo ordenamento jurídico brasileiro para explicar a relação jurídica entre o Estado e os agentes públicos atuantes em seus órgãos é a:',
@@ -203,7 +203,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 16,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Capacidade Processual Especial de Certos Órgãos Independentes',
       type: 'tf',
       statement: 'Embora os órgãos públicos sejam despersonalizados e, em regra geral, não tenham capacidade processual judiciária ativa, o STF e o STJ admitem que determinados órgãos independentes ou autônomos (como Câmaras Municipais e Tribunais de Contas) impetrem Mandado de Segurança na defesa de suas prerrogativas e competências institucionais.',
@@ -213,7 +213,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 17,
-      source: 'FGV – Auditor Federal / TCU',
+      source: 'FGV – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Presunção de Legitimidade e Veracidade dos Atos Administrativos',
       type: 'multiple',
       statement: 'A presunção de legitimidade e veracidade dos atos administrativos é um atributo que produz o seguinte efeito prático no processo judicial ou administrativo:',
@@ -229,7 +229,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 18,
-      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ',
+      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ (2021)',
       topic: 'Autoexecutoriedade dos Atos Administrativos',
       type: 'tf',
       statement: 'A autoexecutoriedade é um atributo presente em absolutamente todos os atos administrativos, autorizando a Administração a executar diretamente qualquer obrigação pecuniária por seus próprios meios, inclusive promovendo a penhora sumária de contas bancárias do contribuinte sem intervenção judicial.',
@@ -239,7 +239,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 19,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'LINDB e Consequências Práticas das Decisões (Art. 20)',
       type: 'multiple',
       statement: 'O Artigo 20 da Lei de Introdução às Normas do Direito Brasileiro (LINDB), incluído pela Lei nº 13.655/2018, dispõe expressamente que nas esferas administrativa, controladora e judicial:',
@@ -255,7 +255,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 20,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'LINDB e Responsabilidade Pessoal do Agente Público (Art. 28)',
       type: 'tf',
       statement: 'Segundo o Artigo 28 da LINDB, o agente público responderá pessoalmente por suas decisões ou opiniões técnicas perante os órgãos de controle exclusivamente em caso de dolo ou erro grosseiro.',
@@ -281,7 +281,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 22,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Súmula 592 do STJ e Excesso de Prazo no PAD',
       type: 'tf',
       statement: 'O excesso de prazo para a conclusão do processo administrativo disciplinar causa nulidade automática e peremptória do processo, extinguindo imediatamente a pretensão punitiva disciplinar da Administração, mesmo que não haja qualquer prejuízo à defesa.',
@@ -291,7 +291,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 23,
-      source: 'FCC – Auditor Fiscal / SEFAZ-AP',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-AP (2022)',
       topic: 'Desvio de Finalidade e Vício no Ato Administrativo',
       type: 'multiple',
       statement: 'Quando um gestor público remove compulsoriamente um servidor para localidade remota da comarca como forma disfarçada de punição disciplinar pessoal, o ato de remoção padece de vício de:',
@@ -307,7 +307,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 24,
-      source: 'CEBRASPE – Contador / DPE-RO',
+      source: 'CEBRASPE – Contador / DPE-RO (2021)',
       topic: 'Mérito Administrativo e Limites do Controle Jurisdicional',
       type: 'tf',
       statement: 'É vedado ao Poder Judiciário imiscuir-se no mérito administrativo para substituir a valoração de conveniência e oportunidade legitimamente feita pelo Administrador no âmbito de sua competência discricionária.',
@@ -317,7 +317,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 25,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Classificação dos Sentidos da Administração Pública',
       type: 'multiple',
       statement: 'A expressão "Administração Pública" grafada em sentido SUBJETIVO, FORMAL ou ORGÂNICO compreende:',
@@ -333,7 +333,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 26,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Centralização Administrativa',
       type: 'tf',
       statement: 'A prestação de serviços de segurança pública pela Polícia Militar do Estado diretamente à população constitui um exemplo típico de administração pública centralizada desconcentrada.',
@@ -343,7 +343,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 27,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Regime Jurídico dos Bens Públicos',
       type: 'multiple',
       statement: 'Os bens públicos de uso especial e de uso comum do povo possuem como prerrogativas de seu regime jurídico:',
@@ -359,7 +359,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 28,
-      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Responsabilidade Civil do Estado: Teoria do Risco Administrativo',
       type: 'tf',
       statement: 'A responsabilidade civil das pessoas jurídicas de direito público e das de direito privado prestadoras de serviços públicos por danos causados por seus agentes nessa qualidade é objetiva, prescindindo de comprovação de dolo ou culpa, com base na teoria do risco administrativo.',
@@ -369,7 +369,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 29,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Direito de Regresso contra Servidor Causador de Dano',
       type: 'multiple',
       statement: 'Na ação regressiva proposta pela Fazenda Pública em face do servidor público que causou dano a terceiro indenizado pelo Estado (Art. 37, § 6º in fine da CF/88):',
@@ -385,7 +385,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 30,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Tema 940 do STF e Ajuizamento Direto contra Servidor',
       type: 'tf',
       statement: 'O Supremo Tribunal Federal, ao julgar o Tema 940 da Repercussão Geral, fixou a tese de que a ação de reparação de danos decorrentes de ato funcional deve ser ajuizada obrigatoriamente em face do Estado ou da pessoa jurídica prestadora do serviço público, sendo o servidor parte ilegítima para figurar no polo passivo da ação proposta pela vítima.',
@@ -395,7 +395,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 31,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Poder de Polícia: Atributos Clássicos',
       type: 'multiple',
       statement: 'São atributos ou características peculiares que qualificam a manifestação do Poder de Polícia da Administração Pública:',
@@ -411,7 +411,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 32,
-      source: 'CEBRASPE – Auditor de Controle Interno / CGE-AL',
+      source: 'CEBRASPE – Auditor de Controle Interno / CGE-AL (2022)',
       topic: 'Delegação do Poder de Polícia a Pessoas Jurídicas Privadas (Tema 532 STF)',
       type: 'tf',
       statement: 'O STF, no julgamento do Tema 532 da Repercussão Geral, fixou a tese de que é constitucional a delegação do poder de polícia sancionatório a empresas estatais prestadoras de serviços públicos em regime não concorrencial e de capital social majoritariamente público.',
@@ -421,7 +421,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 33,
-      source: 'FGV – Contador / SEFAZ-AM',
+      source: 'FGV – Contador / SEFAZ-AM (2022)',
       topic: 'Poder Regulamentar e seus Limites',
       type: 'multiple',
       statement: 'O Poder Regulamentar (ou Poder Normativo) do Chefe do Poder Executivo (Art. 84, IV da CF/88) possui como limite intransponível:',
@@ -437,7 +437,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 34,
-      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ',
+      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ (2021)',
       topic: 'Decreto Autônomo (Art. 84, VI da CF/88)',
       type: 'tf',
       statement: 'O Chefe do Poder Executivo pode expedir decretos autônomos para dispor sobre a organização e funcionamento da administração federal quando não implicar aumento de despesa nem criação ou extinção de órgãos públicos, bem como para a extinção de funções ou cargos públicos quando vagos.',
@@ -447,7 +447,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 35,
-      source: 'FCC – Analista de Controle Externo / TCE-AP',
+      source: 'FCC – Analista de Controle Externo / TCE-AP (2022)',
       topic: 'Poder Disciplinar e Poder Hierárquico: Distinção',
       type: 'multiple',
       statement: 'A punição disciplinar aplicada pela autoridade competente a um servidor público estável com esteio no Estatuto dos Servidores decorre primariamente do exercício conjugado dos poderes:',
@@ -463,7 +463,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 36,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Poder Disciplinar vs Poder de Polícia na Aplicação de Sanções',
       type: 'tf',
       statement: 'A multa aplicada pela vigilância sanitária a uma padaria privada decorre do poder disciplinar da Administração, pois houve infração a norma regulamentar de higiene.',
@@ -473,7 +473,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 37,
-      source: 'FGV – Auditor Federal / CGU',
+      source: 'FGV – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Requisitos/Elementos do Ato Administrativo (COMFIFOR)',
       type: 'multiple',
       statement: 'A doutrina de Hely Lopes Meirelles consagra cinco elementos estruturais essenciais e indispensáveis à validade de qualquer ato administrativo:',
@@ -489,7 +489,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 38,
-      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU',
+      source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Elementos Vinculados e Discricionários do Ato Administrativo',
       type: 'tf',
       statement: 'Em um ato administrativo discricionário, todos os cinco elementos estruturais do ato (competência, finalidade, forma, motivo e objeto) são discricionários e flexíveis à escolha pessoal do administrador.',
@@ -499,7 +499,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 39,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Convalidação de Atos Administrativos (Art. 55 da Lei 9.784/99)',
       type: 'multiple',
       statement: 'A convalidação (ou sanatória) de um ato administrativo viciado é admitida pelo ordenamento jurídico quando:',
@@ -515,7 +515,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 40,
-      source: 'CEBRASPE – Contador / DPE-RO',
+      source: 'CEBRASPE – Contador / DPE-RO (2021)',
       topic: 'Efeitos da Revogação e Anulação do Ato Administrativo',
       type: 'tf',
       statement: 'A anulação do ato administrativo por ilegalidade produz efeitos retroativos ex tunc (atingindo o ato desde a sua origem), ao passo que a revogação do ato válido por motivo de conveniência produz efeitos prospectivos ex nunc (a partir da data da decisão revocatória).',
@@ -541,7 +541,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 42,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Atos Complexos vs Atos Compostos',
       type: 'tf',
       statement: 'O ato complexo é aquele que se aperfeiçoa com a manifestação de vontades de dois ou mais órgãos ou entidades distintas que se fundem em um ato único (como a concessão de aposentadoria sujeita a registro pelo Tribunal de Contas), enquanto o ato composto resulta da manifestação de um órgão principal subordinada à aprovação ou homologação de outro.',
@@ -551,7 +551,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 43,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Prazo para o Tribunal de Contas Apreciar Aposentadoria (Tema 445 STF)',
       type: 'multiple',
       statement: 'Em julgamento histórico do Tema 445 da Repercussão Geral, o Supremo Tribunal Federal assentou que os Tribunais de Contas estão sujeitos ao prazo decaiu de:',
@@ -567,7 +567,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 44,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'Abuso de Poder: Excesso de Poder vs Desvio de Poder',
       type: 'tf',
       statement: 'O abuso de poder é gênero que compreende duas espécies autônomas: o excesso de poder (em que o agente público atua além dos limites de sua competência legal) e o desvio de poder ou finalidade (em que o agente atua dentro de sua competência, mas com finalidade alheia ao interesse público).',
@@ -577,7 +577,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 45,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Fontes do Direito Administrativo',
       type: 'multiple',
       statement: 'No estudo das fontes do Direito Administrativo brasileiro, a única fonte primária e direta que inova originariamente no ordenamento jurídico impondo deveres gerais coercitivos é a:',
@@ -593,7 +593,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 46,
-      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ',
+      source: 'CEBRASPE – Auditor de Controle Externo / TCE-RJ (2021)',
       topic: 'Costume Administrativo e a Praxe',
       type: 'tf',
       statement: 'O costume administrativo (praxe administrativa) contra legem tem força jurídica para revogar mandamento expresso de lei formal federal caso seja praticado de forma contínua e reiterada há mais de dez anos.',
@@ -603,7 +603,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 47,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Princípio da Especialidade na Administração Indireta',
       type: 'multiple',
       statement: 'O Princípio da Especialidade impõe que as entidades da Administração Pública Indireta (ex: autarquias federais e estaduais):',
@@ -619,7 +619,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 48,
-      source: 'CEBRASPE – Auditor Federal / CGU',
+      source: 'CEBRASPE – Auditor Federal de Finanças e Controle / CGU (2022)',
       topic: 'VEDAÇÃO À CUMULAÇÃO REMUNERADA DE CARGOS PÚBLICOS',
       type: 'tf',
       statement: 'A regra constitucional estabelece a vedação à acumulação remunerada de cargos públicos, admitindo-se, quando houver compatibilidade de horários, apenas: a) dois cargos de professor; b) um cargo de professor com outro técnico ou científico; c) dois cargos ou empregos privativos de profissionais de saúde com profissões regulamentadas.',
@@ -629,7 +629,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 49,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Regime da Invalidação de Atos Administrativos no STF',
       type: 'multiple',
       statement: 'Segundo a jurisprudência fixada pelo STF, a anulação de ato administrativo de cuja revogação decorram efeitos favoráveis a servidor ou particular:',
@@ -645,7 +645,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 50,
-      source: 'CEBRASPE – Contador / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor de Finanças e Controle / SEFAZ-AL (2020)',
       topic: 'Princípio da Subsidiariedade no Direito Administrativo',
       type: 'tf',
       statement: 'Pelo princípio da subsidiariedade, a intervenção do Estado na exploração direta da atividade econômica é excepcional e subsidiária, cabendo apenas quando necessária aos imperativos da segurança nacional ou a relevante interesse coletivo definidos em lei (Art. 173 da CF/88).',
@@ -659,7 +659,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   2: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Poder de Polícia Administrativa e seus Atributos',
       type: 'multiple',
       statement: 'O Poder de Polícia é a faculdade de que dispõe a administração pública para condicionar e restringir o uso e gozo de bens, atividades e direitos individuais, em benefício da coletividade ou do próprio Estado (Art. 78 do CTN). São atributos clássicos do poder de polícia:',
@@ -675,7 +675,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Poder Disciplinar vs Poder Hierárquico',
       type: 'tf',
       statement: 'A sanção administrativa de suspensão aplicada por autoridade fazendária competente a auditor fiscal estadual em decorrência de infração funcional apurada em regular processo administrativo disciplinar fundamenta-se precipuamente no poder disciplinar da Administração, o qual opera no âmbito interno das relações de sujeição especial.',
@@ -685,7 +685,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Abuso de Poder: Excesso de Poder e Desvio de Finalidade',
       type: 'multiple',
       statement: 'O abuso de poder é gênero que abrange duas espécies autônomas de ilegalidade administrativa: o excesso de poder e o desvio de finalidade (desvio de poder). Configura hipótese típica de DESVIO DE FINALIDADE:',
@@ -705,7 +705,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   3: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-MG',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG (2023)',
       topic: 'Elementos/Requisitos do Ato Administrativo (COMFIFOR)',
       type: 'multiple',
       statement: 'A doutrina de Hely Lopes Meirelles sistematiza os cinco elementos (requisitos de validade) essenciais à existência e eficácia do ato administrativo: competência, finalidade, forma, motivo e objeto. A respeito desses elementos e da possibilidade de convalidação, assinale a afirmativa correta:',
@@ -721,7 +721,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor do Estado / CGE-SC',
+      source: 'CEBRASPE – Auditor do Estado / CGE-SC (2023)',
       topic: 'Teoria dos Motivos Determinantes',
       type: 'tf',
       statement: 'A convalidação dos atos administrativos consiste no suprimento da invalidade de um ato com efeitos retroativos (ex tunc). De acordo com a doutrina e a Lei nº 9.784/1999, são passíveis de convalidação pela própria Administração os atos com defeitos sanáveis relativos à competência (não exclusiva) e à forma (não essencial).',
@@ -751,7 +751,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-DF',
+      source: 'CEBRASPE – Auditor Fiscal da Receita do DF / SEFAZ-DF (2020)',
       topic: 'Inexigibilidade de Licitação (Art. 74 da Lei nº 14.133/2021)',
       type: 'tf',
       statement: 'A contratação de serviços técnicos especializados de natureza predominantemente intelectual com profissionais ou empresas de notória especialização, vedada a inexigibilidade para serviços de publicidade e divulgação, constitui hipótese legal de INEXIGIBILIDADE de licitação, tendo em vista a inviabilidade de competição.',
@@ -761,7 +761,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Dispensa vs Inexigibilidade de Licitação',
       type: 'multiple',
       statement: 'No sistema de contratações públicas da Lei nº 14.133/2021, a contratação direta sem licitação pode ocorrer por Inexigibilidade (Art. 74) ou por Dispensa de Licitação (Art. 75). É hipótese típica e expressa de DISPENSA DE LICITAÇÃO:',
@@ -781,7 +781,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   11: [
     {
       id: 1,
-      source: 'FGV – Auditor do Estado / CGE-SC',
+      source: 'FGV – Auditor do Estado / CGE-SC (2023)',
       topic: 'Cláusulas Exorbitantes nos Contratos Administrativos',
       type: 'multiple',
       statement: 'Os contratos regidos pela Lei nº 14.133/2021 conferem prerrogativas extraordinárias à Administração Pública decorrentes da supremacia do interesse público (cláusulas exorbitantes, Art. 104). Dentre essas prerrogativas expressas, NÃO se inclui:',
@@ -797,7 +797,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Extinção do Contrato e Exceção do Contrato Não Cumprido',
       type: 'tf',
       statement: 'Na Nova Lei de Licitações (Lei nº 14.133/2021), é direito do contratado suspender o cumprimento de suas obrigações ou pleitear a extinção do contrato administrativo na hipótese de atraso superior a 2 (dois) meses dos pagamentos devidos pela Administração decorrentes de parcelas já executadas e faturadas, salvo em caso de calamidade pública, grave perturbação da ordem interna ou guerra.',
@@ -827,7 +827,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Responsabilidade por Omissão Estatal',
       type: 'tf',
       statement: 'Tratando-se de ato omissivo genérico da Administração Pública, a jurisprudência majoritária do STF e do STJ perfilha o entendimento de que a responsabilidade civil do Estado é, em regra, subjetiva, exigindo a comprovação do descumprimento do dever legal de agir decorrente da falta do serviço público (faute du service).',
@@ -841,7 +841,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
   16: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM (2022)',
       topic: 'Elemento Subjetivo e Alterações da Lei nº 14.230/2021',
       type: 'multiple',
       statement: 'A Lei nº 14.230/2021 introduziu alterações estruturais na Lei nº 8.429/1992 (Lei de Improbidade Administrativa). Quanto ao elemento subjetivo indispensável para a configuração dos atos de improbidade administrativa, assinale a afirmativa correta:',
@@ -857,7 +857,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-DF',
+      source: 'CEBRASPE – Auditor Fiscal da Receita do DF / SEFAZ-DF (2020)',
       topic: 'Prescrição na Ação de Improbidade Administrativa',
       type: 'tf',
       statement: 'Com o advento da Lei nº 14.230/2021, a ação de improbidade administrativa prescreve em 8 (oito) anos, contados a partir da data da ocorrência do fato ou, no caso de infrações permanentes, do dia em que tiver cessado a permanência.',

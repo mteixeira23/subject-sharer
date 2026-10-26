@@ -5,7 +5,7 @@ export const PORTUGUES_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   0: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-BA',
+      source: 'FGV – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2022)',
       topic: 'Regras de Acentuação Gráfica',
       type: 'multiple',
       statement: 'Assinale a alternativa em que todos os vocábulos são acentuados graficamente pela mesma regra que justifica o acento na palavra "RELATÓRIO":',
@@ -21,7 +21,7 @@ export const PORTUGUES_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Novo Acordo Ortográfico - Ditongos Abertos',
       type: 'multiple',
       statement: 'Com base nas regras vigentes do Acordo Ortográfico da Língua Portuguesa, assinale o vocábulo grafado de forma CORRETA:',
@@ -37,7 +37,7 @@ export const PORTUGUES_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FGV – Analista de Controle Externo / TCE-TO',
+      source: 'FGV – Analista de Controle Externo / TCE-TO (2022)',
       topic: 'Acentuação de Hiatos (I e U)',
       type: 'multiple',
       statement: 'Assinale a opção em que a palavra destacada NÃO recebe acento gráfico de acordo com as regras gramaticais:',
@@ -53,7 +53,7 @@ export const PORTUGUES_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 4,
-      source: 'FGV – Contador / Prefeitura de Salvador-BA',
+      source: 'FGV – Contador / Prefeitura de Salvador-BA (2020)',
       topic: 'Ortografia Oficial - Emprego de Letras (S, Z, X, CH)',
       type: 'multiple',
       statement: 'Assinale a alternativa em que todas as palavras estão grafadas corretamente em conformidade com a norma-padrão da língua portuguesa:',
@@ -69,7 +69,7 @@ export const PORTUGUES_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 5,
-      source: 'FGV – Técnico / Câmara de Salvador-BA',
+      source: 'FGV – Técnico / Câmara de Salvador-BA (2018)',
       topic: 'Acentuação Diferencial',
       type: 'multiple',
       statement: 'Com o Novo Acordo Ortográfico, a acentuação diferencial foi mantida em casos específicos. Assinale a frase em que o acento diferencial foi empregado CORRETAMENTE:',
@@ -89,7 +89,7 @@ export const PORTUGUES_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   1: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-BA',
+      source: 'FGV – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2022)',
       topic: 'Coesão Referencial e Anáfora',
       type: 'multiple',
       statement: 'A coesão textual pode ser obtida por meio de mecanismos gramaticais e lexicais. Quando um termo recupera o sentido de outro elemento previamente expresso no texto, ocorre o processo de:',
@@ -105,7 +105,7 @@ export const PORTUGUES_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'FGV – Auditor Fiscal / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal de Tributos Estaduais / SEFAZ-AM (2022)',
       topic: 'Conectores e Relações Lógicas',
       type: 'multiple',
       statement: 'No fragmento "Embora houvesse escassez de recursos, o órgão manteve o cronograma de fiscalização", o conector "Embora" introduz uma oração que expressa ideia de:',

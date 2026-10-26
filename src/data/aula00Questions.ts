@@ -228,7 +228,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 16,
-    source: "FGV – Auditor Fiscal da Receita Estadual / SEFAZ-RJ",
+    source: "FGV – Auditor Fiscal da Receita Estadual / SEFAZ-RJ (2024)",
     topic: "Teoria Personalista das Contas",
     type: "multiple",
     statement: "Na evolução doutrinária da contabilidade, a Escola Personalista (criada por Francesco Marchi e desenvolvida por Giuseppe Cerboni) dividia os elementos patrimoniais relacionando as contas a pessoas fictícias ou reais. De acordo com essa teoria, as contas classificavam-se em:",
@@ -448,7 +448,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 30,
-    source: "FGV – Auditor do Estado / CGE-SC",
+    source: "FGV – Auditor do Estado / CGE-SC (2023)",
     topic: "Escolas do Pensamento Contábil (Aziendalismo)",
     type: "multiple",
     statement: "A escola do pensamento contábil fundada por Gino Zappa que revolucionou a contabilidade moderna ao conceber a empresa como uma \"azienda\" (sistema coordenado de forças materiais e humanas voltado à gestão econômica) denomina-se:",
@@ -623,7 +623,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 41,
-    source: "FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM",
+    source: "FGV – Auditor Fiscal da Receita Estadual / SEFAZ-AM (2022)",
     topic: "Conceito e Ciência Contábil",
     type: "multiple",
     statement: "Sob o aspecto epistemológico e científico, a Contabilidade classifica-se como uma ciência:",
@@ -639,7 +639,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 42,
-    source: "CEBRASPE / CESPE – Contador / DPE-RO",
+    source: "CEBRASPE – Contador / DPE-RO (2021)",
     topic: "Objeto da Contabilidade",
     type: "tf",
     statement: "Enquanto a administração estuda os processos de gestão, a Contabilidade foca a mensuração, a evidenciação e o controle do patrimônio aziendal, tornando o patrimônio o seu objeto exclusivo de estudo.",
@@ -652,7 +652,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 43,
-    source: "FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE",
+    source: "FCC – Auditor Fiscal do Tesouro Estadual / SEFAZ-PE (2022)",
     topic: "Conceito de Patrimônio",
     type: "multiple",
     statement: "O objeto da Contabilidade é o patrimônio das entidades. Entende-se juridicamente e contabilmente por patrimônio o conjunto de:",
@@ -668,7 +668,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 44,
-    source: "FGV – Auditor Fiscal de Rendas / SEFAZ-SP",
+    source: "FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)",
     topic: "Finalidades e Funções",
     type: "multiple",
     statement: "A Contabilidade desempenha basicamente duas funções essenciais: a função administrativa e a função econômica. Essas funções correspondem, respectivamente, a:",
@@ -684,7 +684,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 45,
-    source: "CEBRASPE / CESPE – Auditor Federal / TCU",
+    source: "CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)",
     topic: "Campo de Aplicação e Aziendas",
     type: "tf",
     statement: "O campo de aplicação da contabilidade restringe-se às entidades que exercem atividade mercantil ou industrial com fins eminentemente lucrativos, excluindo-se as autarquias públicas e associações sem fins econômicos.",
@@ -697,7 +697,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 46,
-    source: "VUNESP – Perito Contábil / TJ-SP",
+    source: "VUNESP – Perito Contábil / TJ-SP (2021)",
     topic: "Técnicas Contábeis",
     type: "multiple",
     statement: "Para alcançar suas finalidades de controle e informação patrimonial, a Contabilidade utiliza técnicas específicas. O rol tradicional das técnicas contábeis é composto por:",
@@ -713,7 +713,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 47,
-    source: "FGV – Analista de Controle Externo / TCE-TO",
+    source: "FGV – Analista de Controle Externo / TCE-TO (2022)",
     topic: "Usuários da Informação Contábil",
     type: "multiple",
     statement: "Os usuários da contabilidade classificam-se em internos e externos. Constitui exemplo típico de usuário interno:",
@@ -729,7 +729,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 48,
-    source: "CEBRASPE / CESPE – Contador / FUB",
+    source: "CEBRASPE – Contador / FUB (2018)",
     topic: "Campo de Aplicação e Aziendas",
     type: "tf",
     statement: "As aziendas sociais são aquelas cujo objetivo primordial é a prestação de serviços ou a consecução de metas de assistência, cultura ou educação, caracterizando-se pela ausência do objetivo de obtenção de lucro.",
@@ -742,7 +742,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 49,
-    source: "FCC – Auditor Fiscal / SEFAZ-SC",
+    source: "FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)",
     topic: "Conceito e Ciência Contábil",
     type: "multiple",
     statement: "Assinale a alternativa que conceitua acertadamente a ciência contábil em consonância com a doutrina tradicional:",
@@ -758,7 +758,7 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 50,
-    source: "CEBRASPE / CESPE – Agente da Polícia Federal",
+    source: "CEBRASPE – Agente da Polícia Federal (2018)",
     topic: "Objeto da Contabilidade",
     type: "tf",
     statement: "A Contabilidade tem como objeto o patrimônio das entidades, entendido como o complexo de bens, direitos e obrigações passíveis de mensuração econômica.",

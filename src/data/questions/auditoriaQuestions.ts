@@ -5,7 +5,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   0: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Objetivos Gerais do Auditor Independente (NBC TA 200 R1)',
       type: 'multiple',
       statement: 'De acordo com a NBC TA 200 (R1) – Objetivos Gerais do Auditor Independente e a Condução da Auditoria em Conformidade com Normas de Auditoria, o auditor deve obter asseguração razoável de que as demonstrações contábeis como um todo estão livres de distorção relevante. Sobre a asseguração razoável, assinale a afirmativa correta:',
@@ -21,7 +21,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Ceticismo Profissional',
       type: 'tf',
       statement: 'O ceticismo profissional é a postura que inclui uma mente alerta para condições que possam indicar possível distorção decorrente de erro ou fraude e uma avaliação crítica das evidências de auditoria.',
@@ -31,7 +31,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Risco de Auditoria e seus Componentes',
       type: 'multiple',
       statement: 'O Risco de Auditoria é a possibilidade de o auditor expressar uma opinião inadequada quando as demonstrações contábeis contiverem distorção relevante. Ele é composto pelo produto dos seguintes riscos:',
@@ -67,7 +67,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Confiabilidade das Evidências Externas',
       type: 'tf',
       statement: 'A evidência de auditoria obtida diretamente pelo auditor independente junto a fontes externas e independentes da entidade auditada é, em regra, mais confiável do que a evidência gerada internamente pela própria entidade.',
@@ -77,7 +77,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Procedimentos de Auditoria: Inspeção, Observação e Recálculo',
       type: 'multiple',
       statement: 'Assinale a alternativa que descreve corretamente o procedimento de auditoria denominado "Recálculo":',
@@ -97,7 +97,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   4: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal de Tributos Estaduais / SEFAZ-AM (2022)',
       topic: 'Amostragem Estatística vs Não Estatística (NBC TA 530)',
       type: 'multiple',
       statement: 'De acordo com a NBC TA 530 – Amostragem em Auditoria, uma amostragem é classificada como ESTATÍSTICA quando apresenta simultaneamente as seguintes características:',
@@ -113,7 +113,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Risco de Amostragem (Tipo I e Tipo II)',
       type: 'tf',
       statement: 'O risco de amostragem decorre da possibilidade de a conclusão do auditor com base na amostra ser diferente da conclusão que seria alcançada se toda a população fosse submetida ao mesmo procedimento de auditoria.',
@@ -143,7 +143,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA',
+      source: 'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA (2019)',
       topic: 'Parágrafo de Ênfase vs Outros Assuntos (NBC TA 706)',
       type: 'tf',
       statement: 'O parágrafo de ênfase é utilizado no relatório do auditor para destacar assunto apropriadamente apresentado ou divulgado nas demonstrações contábeis que, segundo o julgamento do auditor, é de fundamental importância para a compreensão das demonstrações pelos usuários, não modificando a opinião do auditor.',
@@ -157,7 +157,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   14: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-MG',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG (2023)',
       topic: 'Procedimentos de Auditoria em Livros Fiscais e SPED Fiscal',
       type: 'multiple',
       statement: 'Na execução da auditoria fiscal do ICMS, o Auditor Fiscal constata divergência entre os valores de créditos tributários escriturados na EFD-ICMS/IPI (SPED Fiscal) e os documentos fiscais eletrônicos (NF-e) emitidos por fornecedores idôneos. O procedimento inicial de fiscalização para apurar a legitimidade do crédito deve consistir em:',
@@ -173,7 +173,7 @@ export const AUDITORIA_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-DF',
+      source: 'CEBRASPE – Auditor Fiscal da Receita do DF / SEFAZ-DF (2020)',
       topic: 'Presunção Legal de Omissão de Receitas',
       type: 'tf',
       statement: 'No âmbito da auditoria fiscal, a constatação de passivo fictício ou de saldo credor na conta Caixa constitui presunção legal de omissão de receitas tributáveis, autorizando o Fisco a efetuar o lançamento de ofício das diferenças de tributos e das penalidades cabíveis.',

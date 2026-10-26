@@ -21,7 +21,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE / CESPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Natureza Jurídica Específica do Tributo',
       type: 'tf',
       statement: 'De acordo com o CTN, a natureza jurídica específica do tributo é determinada pelo fato gerador da respectiva obrigação, sendo irrelevantes para qualificá-la a denominação e demais características formais adotadas pela lei, bem como a destinação legal do produto da sua arrecadação.',
@@ -31,7 +31,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FGV – Auditor Fiscal de Receitas Estaduais / SEFAZ-MG',
+      source: 'FGV – Auditor Fiscal de Receitas Estaduais / SEFAZ-MG (2023)',
       topic: 'Teoria Pentapartida das Espécies Tributárias',
       type: 'multiple',
       statement: 'O Supremo Tribunal Federal (STF) pacificou a adoção da Teoria Pentapartida (quinquipartida) para a classificação dos tributos no ordenamento constitucional brasileiro de 1988. Segundo essa teoria, são espécies tributárias:',
@@ -47,7 +47,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 4,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Taxas de Polícia vs Preços Públicos',
       type: 'tf',
       statement: 'As taxas cobradas em razão do poder de polícia exigem a comprovação de fiscalização presencial prévia individualizada sobre cada estabelecimento autuado, sendo vedada a utilização de estrutura administrativa permanente como fundamento de sua cobrança.',
@@ -57,7 +57,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 5,
-      source: 'FCC – Auditor Fiscal / SEFAZ-SC',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC (2018)',
       topic: 'Contribuição de Melhoria',
       type: 'multiple',
       statement: 'A respeito da Contribuição de Melhoria, prevista no Art. 145, III da CF/88 e disciplinada pelo Decreto-Lei nº 195/1967 e pelo CTN, assinale a opção correta:',
@@ -77,7 +77,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   1: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Características da Competência Tributária',
       type: 'multiple',
       statement: 'A competência tributária, outorgada diretamente pela Constituição Federal aos entes políticos (União, Estados, DF e Municípios), possui características jurídicas próprias. Sobre essas características, assinale a afirmativa correta:',
@@ -93,7 +93,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-DF',
+      source: 'CEBRASPE – Auditor Fiscal da Receita do DF / SEFAZ-DF (2020)',
       topic: 'Competência Residual da União',
       type: 'tf',
       statement: 'A União poderá instituir, mediante lei complementar, impostos não previstos na Constituição, desde que sejam não cumulativos e não tenham fato gerador ou base de cálculo próprios dos discriminados na CF/88.',
@@ -123,7 +123,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   2: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-AM',
+      source: 'FGV – Auditor Fiscal de Tributos Estaduais / SEFAZ-AM (2022)',
       topic: 'Princípio da Legalidade e Exceções',
       type: 'multiple',
       statement: 'Em conformidade com a Constituição Federal de 1988, o Princípio da Estrita Legalidade Tributária (Art. 150, I) veda exigir ou aumentar tributo sem lei que o estabeleça. No entanto, o Poder Executivo pode alterar as alíquotas de determinados tributos mediante ato infralegal (decreto), observadas as condições e limites estabelecidos em lei. Essa exceção mitiga a legalidade estrita para:',
@@ -149,7 +149,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FCC – Auditor Fiscal / SEFAZ-PE',
+      source: 'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE (2022)',
       topic: 'Princípio da Anterioridade Anual e Nonagesimal',
       type: 'multiple',
       statement: 'Determinada lei estadual publicada em 15 de novembro de 2025 majorou as alíquotas do Imposto sobre a Propriedade de Veículos Automotores (IPVA). De acordo com o regramento constitucional das anterioridades (Art. 150, III, b e c da CF/88), a referida majoração poderá ser exigida a partir de:',
@@ -185,7 +185,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-CE',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE (2021)',
       topic: 'Imunidade Musical e Cultural (Art. 150, VI, e)',
       type: 'tf',
       statement: 'A imunidade tributária concedida aos fonogramas e videofonogramas musicais produzidos no Brasil contendo obras de autores brasileiros alcança todos os tributos da cadeia produtiva, inclusive o Imposto sobre a Renda dos artistas e as contribuições sociais sobre a folha de salários.',
@@ -195,7 +195,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 3,
-      source: 'FGV – Auditor Fiscal / SEFAZ-MG',
+      source: 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG (2023)',
       topic: 'Imunidade de Livros, Jornais e Periódicos (Art. 150, VI, d)',
       type: 'multiple',
       statement: 'O Supremo Tribunal Federal, ao julgar o Tema 593 da Repercussão Geral (Súmula Vinculante nº 57), decidiu que a imunidade tributária do Art. 150, VI, "d" da CF/88:',
@@ -231,7 +231,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     },
     {
       id: 2,
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-AL',
+      source: 'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL (2020)',
       topic: 'Lançamento de Ofício (Art. 149 do CTN)',
       type: 'tf',
       statement: 'A autoridade administrativa deve efetuar o lançamento de ofício quando o sujeito passivo, embora obrigado a prestar declaração prévia, deixar de fazê-lo no prazo estabelecido na legislação tributária.',
@@ -245,7 +245,7 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   9: [
     {
       id: 1,
-      source: 'FGV – Auditor Fiscal / SEFAZ-SP',
+      source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP (2023)',
       topic: 'Causas de Suspensão (Art. 151 do CTN)',
       type: 'multiple',
       statement: 'O Artigo 151 do Código Tributário Nacional elenca de forma taxativa as hipóteses que suspendem a exigibilidade do crédito tributário. Assinale a opção que indica EXCLUSIVAMENTE causas de suspensão:',
