@@ -1,6 +1,6 @@
 /* eslint-disable */
 // @ts-nocheck
-// Auto-generated comprehensive question banks for all 13 domains with varied authentic sources and dates
+// Auto-generated comprehensive question banks for all domains with authentic sources and dates
 
 export interface DomainQuestionData {
   id?: number;
@@ -4268,7 +4268,7 @@ export function getEconomicsQuestion(
   lessonNum: number
 ): DomainQuestionData {
   const seed = lessonNum * 7 + Math.floor(idx / 2);
-  const cleanTopic = (lessonTitle || 'Economia e Finanças Públicas').replace(/^Aula\s*\d+\s*[-–:]\s*/i, '').trim();
+  const cleanTopic = (lessonTitle || 'Economia').replace(/^Aula\s*\d+\s*[-–:]\s*/i, '').trim();
 
   if (isTF) {
     const item = ECONOMICS_TF[seed % ECONOMICS_TF.length];
@@ -4284,6 +4284,478 @@ export function getEconomicsQuestion(
     };
   } else {
     const item = ECONOMICS_MC[seed % ECONOMICS_MC.length];
+    const source = MULTIPLE_CHOICE_SOURCES[(seed + qNum) % MULTIPLE_CHOICE_SOURCES.length];
+    let cleanStmt = item.stmt.trim();
+    if (cleanStmt.length > 0) {
+      cleanStmt = cleanStmt.charAt(0).toUpperCase() + cleanStmt.slice(1);
+    }
+    return {
+      source,
+      type: 'multiple',
+      statement: `[Questão ${qNum}] ${cleanStmt}`,
+      options: [...item.opts],
+      correctAnswer: item.correct,
+      explanation: item.exp,
+    };
+  }
+}
+
+const AFO_TF = [
+  {
+    "stmt": "A função alocativa do orçamento público justifica-se pela incapacidade do sistema de mercado em fornecer bens públicos puros em quantidades socialmente ideais devido à não rivalidade e à não exclusão.",
+    "isCorrect": true,
+    "exp": "Função Alocativa: provisão de bens públicos puros (ex: segurança, defesa) onde o mercado falha pela não rivalidade e não exclusão."
+  },
+  {
+    "stmt": "A função distributiva do orçamento público visa compatibilizar o equilíbrio macroeconômico, garantindo a estabilidade de preços e altos níveis de emprego.",
+    "isCorrect": false,
+    "exp": "A garantia de estabilidade de preços e alto nível de emprego é atribuição da função ESTABILIZADORA. A função distributiva cuida da repartição justa de renda e riqueza."
+  },
+  {
+    "stmt": "No modelo de orçamento tradicional ou clássico, o processo orçamentário enfatiza os fins e resultados dos programas governamentais em detrimento do controle da legalidade dos gastos com insumos.",
+    "isCorrect": false,
+    "exp": "O orçamento clássico enfatiza o OBJETO do gasto (o que comprar, controle formal de insumos). O foco em fins e resultados é marca do Orçamento-Programa."
+  },
+  {
+    "stmt": "O orçamento base-zero (OBZ) caracteriza-se pela inexistência de direito adquirido a dotações orçamentárias pretéritas, exigindo a justificação detalhada de todas as despesas a cada novo ciclo orçamentário.",
+    "isCorrect": true,
+    "exp": "No OBZ não há base incremental histórica; todas as despesas devem ser justificadas a partir do marco zero por pacotes de decisão."
+  },
+  {
+    "stmt": "Em conformidade com o princípio da exclusividade (Art. 165, § 8º da CF/88), a lei orçamentária anual não conterá dispositivo estranho à previsão da receita e à fixação da despesa, não se incluindo na proibição a autorização para abertura de créditos suplementares e contratação de operações de crédito, ainda que por antecipação de receita.",
+    "isCorrect": true,
+    "exp": "CF/88 Art. 165, § 8º: Regra do princípio da exclusividade e suas duas únicas exceções expressas autorizadas na LOA."
+  },
+  {
+    "stmt": "O princípio do orçamento bruto veda que as receitas e as despesas constem da lei orçamentária anual pelos seus valores totais líquidos, deduzidas as parcelas de custos de arrecadação.",
+    "isCorrect": true,
+    "exp": "Art. 6º da Lei 4.320/64: Todas as receitas e despesas constarão da Lei de Orçamento pelos seus totais brutos, vedadas quaisquer deduções."
+  },
+  {
+    "stmt": "A vinculação da receita de impostos a órgão, fundo ou despesa é expressamente vedada pela Constituição Federal de 1988, inexistindo qualquer exceção autorizada no texto constitucional.",
+    "isCorrect": false,
+    "exp": "CF/88 Art. 167, IV: Há diversas exceções à não vinculação de impostos: saúde (ASPS), educação (MDE), administração tributária, garantias e repartição de receitas."
+  },
+  {
+    "stmt": "Pelo princípio da universalidade, todas as receitas e despesas de todos os poderes e órgãos da administração direta e indireta devem integrar a lei orçamentária anual.",
+    "isCorrect": true,
+    "exp": "Art. 2º da Lei 4.320/64 e Art. 165, § 5º da CF/88 consagram a universalidade do orçamento."
+  },
+  {
+    "stmt": "O Plano Plurianual (PPA) possui vigência de quatro anos, iniciando-se no primeiro ano do mandato do chefe do Poder Executivo e encerrando-se no término do quarto ano desse mesmo mandato.",
+    "isCorrect": false,
+    "exp": "O PPA vigora do SEGUNDO ano do mandato presidencial/estadual até o FINAL DO PRIMEIRO ANO do mandato subsequente, garantindo a continuidade das políticas públicas."
+  },
+  {
+    "stmt": "O Anexo de Metas Fiscais e o Anexo de Riscos Fiscais são partes integrantes obrigatórias da Lei de Diretrizes Orçamentárias (LDO), por determinação expressa da Lei de Responsabilidade Fiscal.",
+    "isCorrect": true,
+    "exp": "LRF Art. 4º, §§ 1º e 3º: O Anexo de Metas Fiscais e o Anexo de Riscos Fiscais integram obrigatoriamente a LDO."
+  },
+  {
+    "stmt": "O orçamento da seguridade social abrange exclusivamente as ações e despesas relativas à previdência social dos servidores públicos civis e militares.",
+    "isCorrect": false,
+    "exp": "CF/88 Art. 165, § 5º, III: A seguridade social compreende a tríade SAÚDE, PREVIDÊNCIA e ASSISTÊNCIA SOCIAL."
+  },
+  {
+    "stmt": "Os créditos suplementares destinam-se ao reforço de dotação orçamentária já existente na lei orçamentária anual, podendo a sua abertura ser previamente autorizada na própria LOA.",
+    "isCorrect": true,
+    "exp": "Art. 41, I e Art. 42 da Lei 4.320/64 c/c Art. 165, § 8º da CF: Créditos suplementares reforçam dotações existentes e podem ser autorizados na LOA."
+  },
+  {
+    "stmt": "Os créditos especiais e extraordinários não podem ter vigência além do exercício financeiro em que forem autorizados sob qualquer hipótese.",
+    "isCorrect": false,
+    "exp": "CF/88 Art. 167, § 2º: Se autorizados nos últimos 4 meses do exercício financeiro, créditos especiais e extraordinários podem ser reabertos no exercício seguinte nos limites de seus saldos."
+  },
+  {
+    "stmt": "O superávit financeiro apurado no Balanço Patrimonial do exercício anterior constitui recurso hábil para abertura de créditos suplementares e especiais.",
+    "isCorrect": true,
+    "exp": "Art. 43, § 1º, I da Lei 4.320/64: Superávit financeiro é fonte legal de recursos para abertura de créditos adicionais."
+  },
+  {
+    "stmt": "A receita de capital decorrente de alienação de bens imóveis públicos pode ser utilizada livremente para o custeio de despesas correntes de pessoal e encargos sociais.",
+    "isCorrect": false,
+    "exp": "LRF Art. 44: É expressamente vedada a aplicação da receita de capital derivada da alienação de bens e direitos em despesas correntes (salvo previdência regime próprio)."
+  },
+  {
+    "stmt": "A receita orçamentária percorre regularmente os estágios de previsão, lançamento, arrecadação e recolhimento, aplicando-se o lançamento a todos os tributos sem exceção.",
+    "isCorrect": false,
+    "exp": "Tributos sujeitos a homologação (como ICMS e IPI) são recolhidos sem prévio lançamento pelo fisco (auto-lançamento)."
+  },
+  {
+    "stmt": "As receitas de operações de crédito e de amortização de empréstimos concedidos pelo poder público classificam-se como receitas de capital.",
+    "isCorrect": true,
+    "exp": "Art. 11, § 2º da Lei 4.320/64: Operações de crédito e amortização de empréstimos são modalidades típicas de receitas de capital."
+  },
+  {
+    "stmt": "O empenho da despesa cria para o Estado a obrigação formal de pagamento, constituindo o ato privativo da autoridade competente que reserva a respectiva dotação orçamentária.",
+    "isCorrect": true,
+    "exp": "Art. 58 da Lei 4.320/64: O empenho de despesa é o ato emanado de autoridade competente que cria para o Estado obrigação de pagamento pendente ou não de implemento de condição."
+  },
+  {
+    "stmt": "A liquidação da despesa pública precede obrigatoriamente a emissão da respectiva nota de empenho ordinário.",
+    "isCorrect": false,
+    "exp": "A ordem cronológica legal e obrigatória é: FIXAÇÃO -> EMPENHO -> LIQUIDAÇÃO -> PAGAMENTO (Art. 60 da Lei 4.320/64: é vedada realização de despesa sem prévio empenho)."
+  },
+  {
+    "stmt": "Consideram-se Restos a Pagar Processados as despesas legalmente empenhadas e liquidadas que não foram pagas até o encerramento do exercício em 31 de dezembro.",
+    "isCorrect": true,
+    "exp": "Restos a Pagar Processados são aqueles cujo serviço/bem já foi atestado e liquidado, faltando apenas a emissão da ordem de pagamento."
+  },
+  {
+    "stmt": "O suprimento de fundos constitui exceção à regra geral do processo de despesa pública, prescindindo de prévio empenho orçamentário por seu caráter sigiloso ou emergencial.",
+    "isCorrect": false,
+    "exp": "O suprimento de fundos NUNCA dispensa o prévio empenho orçamentário. O empenho é sempre obrigatório antes da entrega do numerário ao suprido."
+  },
+  {
+    "stmt": "Nos termos da Lei de Responsabilidade Fiscal, a despesa total com pessoal dos Estados não pode ultrapassar o limite de 60% da Receita Corrente Líquida, cabendo ao Poder Executivo estadual a fatia limite de 49%.",
+    "isCorrect": true,
+    "exp": "LRF Art. 19, II e Art. 20, II: Limite global nos Estados de 60% da RCL, cabendo 49% ao Executivo, 6% ao Judiciário, 3% ao Legislativo/TC e 2% ao MP."
+  },
+  {
+    "stmt": "Ao atingir 95% do limite máximo de despesa com pessoal (limite prudencial), fica vedada ao ente a concessão de vantagem, aumento ou reajuste salarial a qualquer título, ressalvada a revisão geral anual.",
+    "isCorrect": true,
+    "exp": "LRF Art. 22, parágrafo único, I: O limite prudencial (95%) veda expressamente aumentos salariais e criação de cargos."
+  },
+  {
+    "stmt": "É permitido ao chefe do Poder Executivo, nos últimos oito meses do seu mandato, contrair obrigação de despesa que não possa ser paga no mesmo exercício, desde que haja autorização na LDO.",
+    "isCorrect": false,
+    "exp": "LRF Art. 42: Vedação absoluta nos últimos 2 quadrimestres (8 meses) do mandato contrair obrigação sem suficiente disponibilidade de caixa, sem ressalva na LDO."
+  },
+  {
+    "stmt": "As emendas individuais impositivas ao projeto de lei orçamentária anual possuem limite percentual constitucional de até 2% da Receita Corrente Líquida, sendo obrigatória a destinação de metade desse percentual a ações e serviços públicos de saúde.",
+    "isCorrect": true,
+    "exp": "CF/88 Art. 166, § 9º (com redação da EC 126/2022): Limite de 2% da RCL para emendas individuais, com 50% obrigatoriamente vinculados à saúde (ASPS)."
+  }
+];
+
+const AFO_MC = [
+  {
+    "stmt": "segundo a teoria clássica de Finanças Públicas de Richard Musgrave, a intervenção estatal orientada à manutenção de altos níveis de emprego e estabilização do poder de compra da moeda corresponde à função orçamentária:",
+    "opts": [
+      "Estabilizadora.",
+      "Alocativa.",
+      "Distributiva.",
+      "Reguladora de monopólios naturais.",
+      "Fiscalizatória do erário."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. A função ESTABILIZADORA busca a estabilidade macroeconômica, o controle inflacionário e o pleno emprego dos recursos produtivos."
+  },
+  {
+    "stmt": "o modelo orçamentário moderno que integra o planejamento plurianual à alocação de recursos, estruturando as dotações em programas de trabalho com objetivos, indicadores e metas físicas mensuráveis é o:",
+    "opts": [
+      "Orçamento-Programa.",
+      "Orçamento Tradicional (ou Clássico).",
+      "Orçamento de Desempenho preliminar.",
+      "Orçamento Base-Zero corporativo.",
+      "Orçamento Incremental linear."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. O Orçamento-Programa vincula o planejamento à execução, mensurando custos e resultados de programas concretos de governo."
+  },
+  {
+    "stmt": "a técnica orçamentária na qual não há direito adquirido a dotações históricas anteriores, obrigando cada órgão a justificar detalhadamente todas as suas despesas propostas a cada exercício, é denominada:",
+    "opts": [
+      "Orçamento Base-Zero.",
+      "Orçamento Participativo.",
+      "Orçamento Monofásico.",
+      "Orçamento Legislativo Impositivo.",
+      "Orçamento Contábil Puro."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. O Orçamento Base-Zero (OBZ) parte do marco zero, exigindo a reavaliação periódica de todos os programas a cada ciclo."
+  },
+  {
+    "stmt": "o princípio orçamentário constitucional que estabelece que a Lei Orçamentária Anual (LOA) não conterá dispositivo estranho à previsão da receita e à fixação da despesa (Art. 165, § 8º da CF/88) é o Princípio da:",
+    "opts": [
+      "Exclusividade.",
+      "Universalidade.",
+      "Unidade.",
+      "Anualidade.",
+      "Não Afetação."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. O princípio da EXCLUSIVIDADE proíbe as 'caudas orçamentárias' ou matérias estranhas à estimativa de receita e fixação de despesa na LOA."
+  },
+  {
+    "stmt": "segundo o Artigo 165, § 8º da Constituição Federal, constituem as duas ÚNICAS exceções autorizadas à regra geral do princípio da exclusividade no texto da LOA:",
+    "opts": [
+      "Autorização para abertura de créditos suplementares e contratação de operações de crédito, ainda que por antecipação de receita.",
+      "Aprovação de créditos extraordinários e instituição de novas taxas de polícia.",
+      "Abertura de créditos especiais e desapropriação de bens públicos estaduais.",
+      "Concessão de anistia fiscal de IPVA e aumento de remuneração de servidores.",
+      "Alienação de empresas estatais federais e contratação de empréstimos externos."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. CF/88 Art. 165, § 8º autoriza excepcionalmente na própria LOA: créditos suplementares e contratação de operações de crédito."
+  },
+  {
+    "stmt": "o princípio orçamentário inscrito no Artigo 6º da Lei Federal nº 4.320/1964 que determina que todas as receitas e despesas constarão da lei orçamentária anual pelos seus totais brutos, sem qualquer dedução, é o princípio do:",
+    "opts": [
+      "Orçamento Bruto.",
+      "Equilíbrio Orçamentário.",
+      "Universalidade Absoluta.",
+      "Especificação ou Especialização.",
+      "Clareza Formal."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. O princípio do ORÇAMENTO BRUTO proíbe o registro de valores líquidos deduzidos na LOA."
+  },
+  {
+    "stmt": "o princípio da não afetação (ou não vinculação) da receita de impostos consagrado no Artigo 167, IV da CF/88 NÃO impede a vinculação de receitas tributárias para:",
+    "opts": [
+      "Ações e serviços públicos de saúde (ASPS) e manutenção e desenvolvimento do ensino (MDE).",
+      "Construção de sedes administrativas de tribunais de justiça estaduais.",
+      "Pagamento de honorários de sucumbência aos procuradores da fazenda pública.",
+      "Constituição de reservas livres de capital em fundos soberanos privados.",
+      "Subvenções econômicas a companhias privadas de transporte aéreo."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. CF Art. 167, IV ressalva expressamente a vinculação de impostos para saúde (art. 198) e educação (art. 212)."
+  },
+  {
+    "stmt": "a existência de uma única lei orçamentária anual para cada ente da federação, subdividida nos orçamentos fiscal, da seguridade social e de investimento das estatais, expressa a observância ao princípio da:",
+    "opts": [
+      "Unidade (ou Totalidade).",
+      "Periodicidade estrita.",
+      "Uniformidade material.",
+      "Indivisibilidade financeira.",
+      "Transparência plena."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. O princípio da UNIDADE (ou totalidade) assegura que haja apenas um orçamento para cada esfera governamental."
+  },
+  {
+    "stmt": "a Lei de Diretrizes Orçamentárias (LDO) desempenha papel central no ciclo orçamentário. Dentre suas atribuições constitucionais e infraconstitucionais (Art. 165, § 2º CF e LRF), destaca-se:",
+    "opts": [
+      "Compreender as metas e prioridades da administração, orientar a elaboração da LOA e dispor sobre alterações na legislação tributária.",
+      "Fixar as despesas plurianuais de investimento para os quatro anos subsequentes.",
+      "Autorizar previamente a extinção de autarquias e fundações públicas estaduais.",
+      "Aprovar os balanços gerais da União e fiscalizar as contas do Presidente da República.",
+      "Instituir impostos extraordinários em caso de guerra externa ou sua iminência."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. CF/88 Art. 165, § 2º: A LDO define metas e prioridades, orienta a elaboração da LOA e dispõe sobre alterações tributárias e política de pessoal."
+  },
+  {
+    "stmt": "em relação ao Plano Plurianual (PPA), assinale a afirmativa correta sobre a sua vigência temporal no Brasil:",
+    "opts": [
+      "Vigora por quatro anos, iniciando-se no segundo ano do mandato do chefe do Executivo e encerrando-se no primeiro ano do mandato subsequente.",
+      "Coincide rigorosamente com os quatro anos de mandato civil do governador ou presidente eleito.",
+      "Tem vigência indeterminada, sujeita apenas a revisões decenais pelo Poder Legislativo.",
+      "Possui vigência bienal, renovável obrigatoriamente a cada eleição parlamentar de meio de mandato.",
+      "Inicia-se na posse do governante e extingue-se automaticamente na aprovação da LDO correspondente."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. O PPA vigora por 4 anos, iniciando no 2º ano do mandato e terminando no 1º ano do mandato seguinte."
+  },
+  {
+    "stmt": "nos termos do Artigo 4º, § 1º da Lei de Responsabilidade Fiscal (LC nº 101/2000), o Anexo de Metas Fiscais que integra a LDO deve conter metas anuais relativas a:",
+    "opts": [
+      "Receitas, despesas, resultado primário, resultado nominal e montante da dívida pública, para o exercício a que se referir e para os dois seguintes.",
+      "Quantitativo de servidores a serem admitidos exclusivamente por concurso público em 5 anos.",
+      "Previsão de inflação trimestral calculada pelo Banco Central do Brasil para 10 anos.",
+      "Teto de renúncia previdenciária de empresas industriais de base militar.",
+      "Quadro consolidado de empresas estatais a serem privatizadas no biênio seguinte."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. LRF Art. 4º, § 1º: Metas trienais de receitas, despesas, resultado primário, nominal e montante da dívida."
+  },
+  {
+    "stmt": "os créditos adicionais destinados a despesas urgentes e imprevistas, em caso de guerra, comoção interna ou calamidade pública, são classificados como:",
+    "opts": [
+      "Extraordinários.",
+      "Suplementares.",
+      "Especiais.",
+      "Ordinários de contingência.",
+      "Complementares vinculados."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Art. 41, III da Lei 4.320/64: Créditos extraordinários destinam-se a despesas imprevisíveis e urgentes (guerra, comoção interna ou calamidade pública)."
+  },
+  {
+    "stmt": "segundo o Artigo 43 da Lei nº 4.320/1964, a apuração do Superávit Financeiro para fins de abertura de créditos adicionais corresponde à:",
+    "opts": [
+      "Diferença positiva entre o Ativo Financeiro e o Passivo Financeiro, conjugando-se os saldos dos créditos adicionais transferidos e operações de crédito a eles vinculadas.",
+      "Soma de todas as disponibilidades bancárias do exercício acrescida da receita tributária prevista.",
+      "Diferença entre o ativo realizável a longo prazo e o passivo exigível de curto prazo.",
+      "Arrecadação acumulada de tributos que supere o teto fixado no Anexo de Riscos Fiscais.",
+      "Reserva de capital gerada por lucros acumulados de empresas públicas não dependentes."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Art. 43, § 2º da Lei 4.320/64: Superávit Financeiro é a diferença positiva entre ativo financeiro e passivo financeiro."
+  },
+  {
+    "stmt": "quando autorizados nos últimos quatro meses do exercício financeiro (setembro a dezembro), os créditos especiais e extraordinários:",
+    "opts": [
+      "Podem ser reabertos nos limites dos seus saldos no exercício financeiro seguinte, por ato do Poder Executivo.",
+      "Extinguem-se compulsoriamente em 31 de dezembro, sem possibilidade de execução posterior.",
+      "Convertem-se automaticamente em restos a pagar processados de liquidação futura.",
+      "Exigem nova votação de projeto de lei específico na sessão legislativa extraordinária.",
+      "São transferidos compulsoriamente para a Reserva de Contingência da LOA vigente."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. CF/88 Art. 167, § 2º: Reabertura nos limites dos saldos no exercício subsequente se autorizados nos últimos 4 meses."
+  },
+  {
+    "stmt": "assinale a alternativa que indica uma fonte LEGALMENTE ADMITIDA para a abertura de créditos suplementares e especiais pelo Poder Executivo (Lei nº 4.320/1964, Art. 43):",
+    "opts": [
+      "Anulação parcial ou total de dotações orçamentárias ou de créditos adicionais autorizados em lei.",
+      "Utilização de recursos do FGTS sem autorização do Conselho Curador.",
+      "Emissão extraordinária de papel-moeda pelo Banco Central do Brasil.",
+      "Retenção temporária dos repasses constitucionais obrigatórios do FPE e FPM.",
+      "Venda compulsória antecipada de imóveis públicos de uso especial tombados."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Art. 43, § 1º, III da Lei 4.320/64: Anulação parcial ou total de dotações orçamentárias é fonte válida para créditos suplementares e especiais."
+  },
+  {
+    "stmt": "quanto à categoria econômica, as receitas públicas decorrentes da cobrança de impostos, taxas, contribuições de melhoria e prestação de serviços enquadram-se como:",
+    "opts": [
+      "Receitas Correntes.",
+      "Receitas de Capital.",
+      "Receitas Extraorçamentárias.",
+      "Receitas Compensatórias.",
+      "Receitas Financeiras Originárias."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Art. 11 da Lei 4.320/64: Tributos e serviços integram as RECEITAS CORRENTES governamentais."
+  },
+  {
+    "stmt": "o estágio da receita orçamentária caracterizado pela transferência dos recursos recolhidos pela rede bancária arrecadadora para a Conta Única do Tesouro Público é denominado:",
+    "opts": [
+      "Recolhimento.",
+      "Arrecadação.",
+      "Lançamento.",
+      "Previsão.",
+      "Homologação financeira."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Arrecadação é o pagamento do contribuinte ao agente/banco; RECOLHIMENTO é a entrega dos recursos arrecadados à conta única do Tesouro."
+  },
+  {
+    "stmt": "o ingresso financeiro de recursos que NÃO altera a situação líquida patrimonial do Estado e não se incorpora em definitivo ao erário (ex: cauções em dinheiro, fianças e depósitos judiciais) classifica-se como:",
+    "opts": [
+      "Receita Extraorçamentária.",
+      "Receita de Capital.",
+      "Receita Corrente Derivada.",
+      "Receita Tributária Vinculada.",
+      "Receita Patrimonial Efetiva."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Ingressos extraorçamentários são meros depósitos de terceiros que entram no ativo com contrapartida no passivo exigível, sem integrar a LOA."
+  },
+  {
+    "stmt": "o ato emanado de autoridade competente que cria para o Estado obrigação de pagamento pendente ou não de implemento de condição, reservando a dotação correspondente, define o conceito legal de:",
+    "opts": [
+      "Empenho da despesa.",
+      "Liquidação do crédito.",
+      "Pagamento por ordem bancária.",
+      "Fixação orçamentária.",
+      "Lançamento de ofício."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Art. 58 da Lei 4.320/64: Definição legal do empenho de despesa."
+  },
+  {
+    "stmt": "o empenho destinado a atender despesas contratuais ou outros compromissos sujeitos a parcelamento periódico previamente determinado (ex.: contratos de locação e obras públicas continuadas) é o empenho:",
+    "opts": [
+      "Global.",
+      "Ordinário.",
+      "Estimativo.",
+      "Provisório de urgência.",
+      "Extraorçamentário."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Art. 60, § 3º da Lei 4.320/64: O empenho global atende despesas contratuais sujeitas a parcelamento."
+  },
+  {
+    "stmt": "a verificação do direito adquirido pelo credor, tendo por base títulos e documentos comprobatórios do respectivo crédito (prestação do serviço ou entrega do material), corresponde ao estágio de:",
+    "opts": [
+      "Liquidação.",
+      "Empenho.",
+      "Pagamento.",
+      "Fixação.",
+      "Descentralização de crédito."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Art. 63 da Lei 4.320/64: A liquidação consiste na verificação do direito adquirido pelo credor mediante atesto de prestação do serviço ou entrega do bem."
+  },
+  {
+    "stmt": "as despesas orçamentárias de exercícios encerrados para as quais o orçamento respectivo consignava crédito próprio com saldo suficiente, mas que não foram empenhadas na época própria, serão pagas à conta de:",
+    "opts": [
+      "Despesas de Exercícios Anteriores (DEA).",
+      "Restos a Pagar Processados.",
+      "Restos a Pagar Não Processados.",
+      "Suprimento de Fundos Extraordinário.",
+      "Reserva de Contingência Plurianual."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. Art. 37 da Lei 4.320/64: Conceito legal de Despesas de Exercícios Anteriores (DEA)."
+  },
+  {
+    "stmt": "conforme a Lei de Responsabilidade Fiscal (Art. 19 e 20 da LC nº 101/2000), o limite máximo da despesa total com pessoal no âmbito dos Estados e do Distrito Federal é de:",
+    "opts": [
+      "60% da Receita Corrente Líquida (RCL).",
+      "50% da Receita Corrente Líquida (RCL).",
+      "70% do Orçamento Fiscal e da Seguridade.",
+      "45% da Receita Tributária Própria.",
+      "55% do Produto Interno Bruto Estadual."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. LRF Art. 19, II: Limite de 60% da Receita Corrente Líquida nos Estados e DF (49% Executivo, 6% Judiciário, 3% Legislativo/TC, 2% MP)."
+  },
+  {
+    "stmt": "o Artigo 42 da Lei de Responsabilidade Fiscal veda expressamente ao titular de Poder ou órgão contrair obrigação de despesa que não possa ser cumprida integralmente dentro do exercício, ou que tenha parcelas a serem pagas no exercício seguinte sem que haja suficiente disponibilidade de caixa, nos últimos:",
+    "opts": [
+      "8 meses (dois quadrimestres) do mandato.",
+      "12 meses (um ano civil) do mandato.",
+      "6 meses (um semestre) do mandato.",
+      "4 meses (um quadrimestre) do mandato.",
+      "3 meses (um trimestre) do mandato."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. LRF Art. 42: A proibição de contrair despesas sem caixa aplica-se rigorosamente aos últimos dois quadrimestres (8 meses) do mandato."
+  },
+  {
+    "stmt": "na sistemática da Constituição Federal (Art. 166, § 9º), as emendas parlamentares individuais impositivas ao projeto de LOA possuem alocação prioritária que obriga a destinação de:",
+    "opts": [
+      "Metade do valor aprovado (50%) para ações e serviços públicos de saúde (ASPS).",
+      "Um terço do valor (33%) para obras de saneamento básico em rodovias estaduais.",
+      "Vinte por cento (20%) para formação de reservas de contingência municipal.",
+      "Cem por cento (100%) para despesas com pessoal ativo e previdência pública.",
+      "Dez por cento (10%) para modernização dos tribunais de contas estaduais."
+    ],
+    "correct": 0,
+    "exp": "Gabarito: A. CF/88 Art. 166, § 9º: 50% do limite das emendas individuais devem ser destinados a ações e serviços públicos de saúde."
+  }
+];
+
+export function getAFOQuestion(
+  qNum: number,
+  subjectName: string,
+  lessonTitle: string,
+  isTF: boolean,
+  idx: number,
+  lessonNum: number
+): DomainQuestionData {
+  const seed = lessonNum * 7 + Math.floor(idx / 2);
+  const cleanTopic = (lessonTitle || 'Administração Financeira e Orçamentária (AFO)').replace(/^Aula\s*\d+\s*[-–:]\s*/i, '').trim();
+
+  if (isTF) {
+    const item = AFO_TF[seed % AFO_TF.length];
+    const source = CEBRASPE_SOURCES[(seed + qNum) % CEBRASPE_SOURCES.length];
+    const cleanStmt = item.stmt.trim();
+    return {
+      source,
+      type: 'tf',
+      statement: `[Questão ${qNum}] Julgue o item a seguir a respeito de ${cleanTopic}:\n\n${cleanStmt}`,
+      options: ['Certo', 'Errado'],
+      correctAnswer: item.isCorrect ? 0 : 1,
+      explanation: (item.isCorrect ? 'Gabarito: CERTO. ' : 'Gabarito: ERRADO. ') + item.exp,
+    };
+  } else {
+    const item = AFO_MC[seed % AFO_MC.length];
     const source = MULTIPLE_CHOICE_SOURCES[(seed + qNum) % MULTIPLE_CHOICE_SOURCES.length];
     let cleanStmt = item.stmt.trim();
     if (cleanStmt.length > 0) {

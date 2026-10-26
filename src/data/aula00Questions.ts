@@ -791,6 +791,7 @@ import {
   getMathFinanceQuestion,
   getStatisticsQuestion,
   getEconomicsQuestion,
+  getAFOQuestion,
   getITQuestion,
   getRacialEqualityQuestion,
   getPortugueseQuestion,
@@ -809,7 +810,19 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
   let bank: QuestionData[] | undefined;
   let lessonSpecific: QuestionData[] | undefined;
 
-  if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
+  // PRIORITY 1: AFO / Finanças Públicas (MUST be checked before generic 'administração' or 'economia')
+  if (
+    lowerSubj.includes('finanças') ||
+    lowerSubj.includes('financas') ||
+    lowerSubj.includes('afo') ||
+    lowerSubj.includes('orçamento') ||
+    lowerSubj.includes('orcamento') ||
+    lowerSubj.includes('administração, economia') ||
+    (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
+  ) {
+    bank = REAL_CONCURSO_QUESTIONS.economia;
+    lessonSpecific = AFO_QUESTIONS_BY_LESSON[lessonNum];
+  } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
     bank = REAL_CONCURSO_QUESTIONS.tributario;
     lessonSpecific = TRIBUTARIO_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('matemática') || lowerSubj.includes('financeira')) {
@@ -822,7 +835,7 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
   } else if (lowerSubj.includes('contabil')) {
     bank = REAL_CONCURSO_QUESTIONS.contabilidade;
     lessonSpecific = CONTABILIDADE_QUESTIONS_BY_LESSON[lessonNum];
-  } else if (lowerSubj.includes('administra') && (lowerSubj.includes('direito') || lowerSubj.includes('adm'))) {
+  } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
     lessonSpecific = ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('constituc')) {
@@ -837,9 +850,6 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
   } else if (lowerSubj.includes('portug')) {
     bank = REAL_CONCURSO_QUESTIONS.portugues;
     lessonSpecific = PORTUGUES_QUESTIONS_BY_LESSON[lessonNum];
-  } else if (lowerSubj.includes('finanças') || lowerSubj.includes('afo') || lowerSubj.includes('orçamento')) {
-    bank = REAL_CONCURSO_QUESTIONS.economia;
-    lessonSpecific = AFO_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('economia')) {
     bank = REAL_CONCURSO_QUESTIONS.economia;
   } else if (lowerSubj.includes('informát') || lowerSubj.includes('tecnologia')) {
@@ -852,10 +862,6 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
   return rawList.map(q => balanceQuestion(q, lessonNum));
 }
 
-/**
- * Deterministically balances multiple-choice answers across options A, B, C, D, E (~20% each)
- * and keeps the explanation synchronized with the new letter.
- */
 export function balanceQuestion(q: QuestionData, lessonNum: number = 0): QuestionData {
   if (q.type !== 'multiple' || !Array.isArray(q.options) || q.options.length < 4) {
     return q;
@@ -961,7 +967,18 @@ function buildDomainSpecificQuestions(
     const isTF = idx % 2 === 0;
     let qData: any;
 
-    if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
+    // PRIORITY 1: AFO / Finanças Públicas
+    if (
+      lowerSubj.includes('finanças') ||
+      lowerSubj.includes('financas') ||
+      lowerSubj.includes('afo') ||
+      lowerSubj.includes('orçamento') ||
+      lowerSubj.includes('orcamento') ||
+      lowerSubj.includes('administração, economia') ||
+      (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
+    ) {
+      qData = getAFOQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
+    } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
       qData = getTaxLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('matemática') || lowerSubj.includes('matematica') || lowerSubj.includes('financeira')) {
       qData = getMathFinanceQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
@@ -971,7 +988,7 @@ function buildDomainSpecificQuestions(
       qData = getCASPQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('contabilidade')) {
       qData = getAccountingQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('administrativo')) {
+    } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
       qData = getAdminLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('constitucional')) {
       qData = getConstLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
@@ -979,7 +996,7 @@ function buildDomainSpecificQuestions(
       qData = getAuditQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua') || lowerSubj.includes('lingua') || lowerSubj.includes('português')) {
       qData = getPortugueseQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças') || lowerSubj.includes('financas') || lowerSubj.includes('administração') || lowerSubj.includes('orçament') || lowerSubj.includes('afo')) {
+    } else if (lowerSubj.includes('economia')) {
       qData = getEconomicsQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('informática') || lowerSubj.includes('informatica') || lowerSubj.includes('tecnologia') || lowerSubj.includes('ti')) {
       qData = getITQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
@@ -992,7 +1009,7 @@ function buildDomainSpecificQuestions(
     if (qData && qData.statement) {
       addIfUnique({
         id: qNum,
-        source: qData.source || 'FGV – Auditor Fiscal / SEFAZ-BA',
+        source: qData.source || 'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG (2023)',
         topic: lessonTitle,
         type: qData.type || (isTF ? 'tf' : 'multiple'),
         statement: qData.statement,
