@@ -781,6 +781,21 @@ import { ADMINISTRATIVO_QUESTIONS_BY_LESSON } from './questions/administrativoQu
 import { CONSTITUCIONAL_QUESTIONS_BY_LESSON } from './questions/constitucionalQuestions';
 import { PORTUGUES_QUESTIONS_BY_LESSON } from './questions/portuguesQuestions';
 import { AFO_QUESTIONS_BY_LESSON } from './questions/afoQuestions';
+import {
+  getAccountingQuestion,
+  getTaxLawQuestion,
+  getAdminLawQuestion,
+  getConstLawQuestion,
+  getCASPQuestion,
+  getAuditQuestion,
+  getMathFinanceQuestion,
+  getStatisticsQuestion,
+  getEconomicsQuestion,
+  getITQuestion,
+  getRacialEqualityQuestion,
+  getPortugueseQuestion,
+  getGeneralFiscalQuestion,
+} from './domainQuestionGenerators';
 
 export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number): QuestionData[] {
   const lessonTitle = getLessonName(subjectName, lessonNum);
@@ -895,8 +910,8 @@ function buildDomainSpecificQuestions(
   bank?: QuestionData[],
   lessonSpecific?: QuestionData[]
 ): QuestionData[] {
-  // 1. If we have a comprehensive authentic lesson battery (e.g. CASP Aula 00, Adm Aula 00), return it directly!
-  if (lessonSpecific && lessonSpecific.length >= 5) {
+  // 1. If we have a comprehensive authentic lesson battery of 50 questions, return it directly
+  if (lessonSpecific && lessonSpecific.length >= 50) {
     return lessonSpecific.map((q, idx) => ({
       ...q,
       id: idx + 1,
@@ -909,7 +924,8 @@ function buildDomainSpecificQuestions(
   const seenStatements = new Set<string>();
 
   const addIfUnique = (q: QuestionData) => {
-    const norm = q.statement.replace(/\[Questão \d+\]/gi, '').trim().slice(0, 80);
+    const raw = q.statement.replace(/\[Questão \d+\]/gi, '').trim();
+    const norm = raw.replace(/\s+/g, ' ').toLowerCase();
     if (!seenStatements.has(norm)) {
       seenStatements.add(norm);
       results.push({
@@ -942,12 +958,12 @@ function buildDomainSpecificQuestions(
   const lowerSubj = subjectName.trim().toLowerCase();
   for (let idx = 0; results.length < 50 && idx < 300; idx++) {
     const qNum = results.length + 1;
-    const isTF = (idx + lessonNum) % 3 === 0;
-    let qData: Partial<QuestionData>;
+    const isTF = idx % 2 === 0;
+    let qData: any;
 
     if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
       qData = getTaxLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('matemática') || lowerSubj.includes('financeira')) {
+    } else if (lowerSubj.includes('matemática') || lowerSubj.includes('matematica') || lowerSubj.includes('financeira')) {
       qData = getMathFinanceQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
       qData = getStatisticsQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
@@ -961,13 +977,13 @@ function buildDomainSpecificQuestions(
       qData = getConstLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else if (lowerSubj.includes('auditoria')) {
       qData = getAuditQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua')) {
+    } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua') || lowerSubj.includes('lingua') || lowerSubj.includes('português')) {
       qData = getPortugueseQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças') || lowerSubj.includes('administração')) {
+    } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças') || lowerSubj.includes('financas') || lowerSubj.includes('administração') || lowerSubj.includes('orçament') || lowerSubj.includes('afo')) {
       qData = getEconomicsQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('informática')) {
+    } else if (lowerSubj.includes('informática') || lowerSubj.includes('informatica') || lowerSubj.includes('tecnologia') || lowerSubj.includes('ti')) {
       qData = getITQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial')) {
+    } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial') || lowerSubj.includes('gênero') || lowerSubj.includes('genero')) {
       qData = getRacialEqualityQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
     } else {
       qData = getGeneralFiscalQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
@@ -978,7 +994,7 @@ function buildDomainSpecificQuestions(
         id: qNum,
         source: qData.source || 'FGV – Auditor Fiscal / SEFAZ-BA',
         topic: lessonTitle,
-        type: isTF ? 'tf' : 'multiple',
+        type: qData.type || (isTF ? 'tf' : 'multiple'),
         statement: qData.statement,
         options: qData.options || ['Certo', 'Errado'],
         correctAnswer: qData.correctAnswer ?? 0,
@@ -990,673 +1006,3 @@ function buildDomainSpecificQuestions(
   return results;
 }
 
-// ── DOMAIN GENERATORS WITH DISTINCT QUESTIONS PER LESSON ──────────────────────
-
-function getTaxLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const tfItems = [
-    {
-      stmt: `Em conformidade com o CTN, a outorga de isenção e a anistia tributária dependem de lei específica que regule exclusivamente a matéria ou o tributo incidente.`,
-      correct: 0,
-      exp: `CERTO. Art. 150, § 6º da CF/88 e Art. 176 do CTN exigem lei específica para isenção e anistia.`
-    },
-    {
-      stmt: `O lançamento tributário reporta-se à data da ocorrência do fato gerador da obrigação e rege-se pela lei então vigente, ainda que posteriormente modificada ou revogada.`,
-      correct: 0,
-      exp: `CERTO. Art. 144 do CTN estabelece a irretroatividade da legislação tributária sobre o lançamento.`
-    },
-    {
-      stmt: `A moratória e o parcelamento do crédito tributário constituem hipóteses de extinção do crédito tributário.`,
-      correct: 1,
-      exp: `ERRADO. Moratória e parcelamento são causas de SUSPENSÃO da exigibilidade (Art. 151 do CTN), e não de extinção.`
-    },
-    {
-      stmt: `A obrigação tributária principal surge com a ocorrência do fato gerador, tem por objeto o pagamento de tributo ou penalidade pecuniária e extingue-se juntamente com o crédito dela decorrente.`,
-      correct: 0,
-      exp: `CERTO. Art. 113, § 1º do CTN define a obrigação tributária principal.`
-    },
-    {
-      stmt: `As imunidades tributárias genéricas previstas no Artigo 150, VI da CF/88 aplicam-se a impostos, taxas e contribuições de melhoria de forma indistinta.`,
-      correct: 1,
-      exp: `ERRADO. As imunidades do Art. 150, VI da CF/88 aplicam-se exclusivamente aos IMPOSTOS.`
-    }
-  ];
-
-  const seed = lessonNum * 13 + idx;
-
-  if (isTF) {
-    const item = tfItems[seed % tfItems.length];
-    return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Direito Tributário)',
-      statement: `[Questão ${qNum}] No âmbito de "${lessonTitle}" em Direito Tributário, julgue a afirmativa:\n\n"${item.stmt}"`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: item.correct,
-      explanation: item.exp,
-    };
-  }
-
-  const mcScenarios = [
-    {
-      stmt: `Acerca do tema "${lessonTitle}", assinale a opção que indica uma hipótese de SUSPENSÃO da exigibilidade do crédito tributário prevista no Artigo 151 do Código Tributário Nacional:`,
-      opts: [
-        'Concessão de medida liminar em mandado de segurança ou em ação ordinária.',
-        'Dação em pagamento de bens imóveis na forma estabelecida em lei.',
-        'Compensação tributária com créditos líquidos e certos do sujeito passivo.',
-        'Remissão concedida por despacho fundamentado da autoridade administrativa.',
-        'Prescrição intercorrente e decadência do direito de lançar o tributo.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. A concessão de medida liminar suspende a exigibilidade do crédito tributário (Art. 151, IV do CTN).`
-    },
-    {
-      stmt: `No que se refere a "${lessonTitle}" e à jurisprudência do STF sobre impostos estaduais (ICMS, ITCMD, IPVA), assinale a afirmativa correta:`,
-      opts: [
-        'O ICMS não incide sobre operações que destinem mercadorias para o exterior, garantida a manutenção do crédito das entradas.',
-        'O IPVA incide sobre a propriedade de embarcações e aeronaves segundo entendimento fixado pelo STF.',
-        'O ITCMD sobre doações no exterior não necessita de lei complementar federal para ser cobrado pelos Estados.',
-        'A alíquota mínima do ICMS nas operações internas é fixada pelo Senado Federal por resolução obrigatória.',
-        'A seletividade do ICMS é obrigatória para todos os bens de consumo essencial.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. Art. 155, § 2º, X, 'a' da CF/88 estabelece a imunidade de exportação do ICMS com manutenção de créditos.`
-    },
-    {
-      stmt: `Na escrituração tributária e no estudo de "${lessonTitle}", a responsabilidade dos diretores e gerentes por dívidas tributárias da pessoa jurídica (Art. 135 do CTN) exige a comprovação de:`,
-      opts: [
-        'Atuação com excesso de poderes, infração de lei, contrato social ou estatuto.',
-        'Mera inadimplência da obrigação tributária principal pela sociedade empresária.',
-        'Insuficiência de bens penhoráveis da empresa no processo de execução fiscal.',
-        'Decisão definitiva lavrada no contencioso administrativo de 2ª instância.',
-        'Ajuizamento prévio de ação de falência pela Procuradoria Geral do Estado.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. Súmula 430 do STJ: o mero inadimplemento da obrigação tributária não gera responsabilidade pessoal dos sócios.`
-    }
-  ];
-
-  const scenario = mcScenarios[seed % mcScenarios.length];
-  return {
-    source: 'FGV – Auditor Fiscal / SEFAZ-BA',
-    statement: `[Questão ${qNum}] ${scenario.stmt}`,
-    options: scenario.opts,
-    correctAnswer: scenario.correct,
-    explanation: scenario.exp,
-  };
-}
-
-function getAdminLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 17 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Direito Administrativo)',
-      statement: `[Questão ${qNum}] A respeito das normas atinentes a "${lessonTitle}" em Direito Administrativo, julgue a afirmativa:\n\n"Em consonância com a Nova Lei de Licitações (Lei nº 14.133/2021), a inexigibilidade de licitação é cabível quando houver inviabilidade de competição, como na contratação de profissional do setor artístico consagrado pela crítica especializada."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. Artigo 74, II da Lei nº 14.133/2021 consagra a inexigibilidade por inviabilidade de competição.`
-        : `Gabarito: ERRADO. A contratação de artista consagrado é hipótese expressa de inexigibilidade de licitação.`,
-    };
-  }
-
-  const mcScenarios = [
-    {
-      stmt: `No âmbito dos atos administrativos e do tópico "${lessonTitle}", assinale a alternativa que apresenta um atributo do ato administrativo que permite sua execução direta e imediata pela Administração sem prévia autorização judicial:`,
-      opts: [
-        'Autoexecutoriedade.',
-        'Imperatividade exclusivamente negocial.',
-        'Presunção de veracidade relativa restrita a atos nulos.',
-        'Tipicidade vinculada apenas aos atos discricionários.',
-        'Motivação aliunde opcional.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. A autoexecutoriedade permite à Administração Pública executar diretamente suas decisões sem intervenção do Judiciário.`
-    },
-    {
-      stmt: `Em relação à responsabilidade civil do Estado aplicada a "${lessonTitle}", a Teoria do Risco Administrativo (Art. 37, § 6º da CF/88) exige do lesado a demonstração de:`,
-      opts: [
-        'Conduta estatal, dano efetivo e nexo de causalidade entre eles.',
-        'Dolo ou culpa grave do agente público causador do dano.',
-        'Ajuizamento prévio de ação regressiva contra o servidor envolvido.',
-        'Esgotamento da via administrativa para fixação de indenização.',
-        'Comprovação de omissão genérica ilícita da Administração.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. A responsabilidade objetiva do Estado prescinde de dolo ou culpa, exigindo apenas conduta, dano e nexo causal.`
-    }
-  ];
-
-  const scenario = mcScenarios[seed % mcScenarios.length];
-  return {
-    source: 'FCC – Auditor Fiscal / SEFAZ-PE',
-    statement: `[Questão ${qNum}] ${scenario.stmt}`,
-    options: scenario.opts,
-    correctAnswer: scenario.correct,
-    explanation: scenario.exp,
-  };
-}
-
-function getConstLawQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 19 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – SEFAZ-BA (Direito Constitucional)',
-      statement: `[Questão ${qNum}] Considerando os direitos fundamentais e o tópico "${lessonTitle}", julgue a afirmativa:\n\n"A casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito ou desastre, ou para prestar socorro, ou, durante o dia, por determinação judicial."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. Artigo 5º, XI da Constituição Federal de 1988.`
-        : `Gabarito: ERRADO. A regra do mandado judicial só autoriza o ingresso durante o dia.`,
-    };
-  }
-
-  return {
-    source: 'FGV – Auditor Fiscal / SEFAZ-BA',
-    statement: `[Questão ${qNum}] No âmbito do Direito Constitucional sobre o tópico "${lessonTitle}", assinale a alternativa correta conforme o texto da Carta Magna de 1988:`,
-    options: [
-      'A criação, a incorporação, a fusão e o desmembramento de Municípios far-se-ão por lei estadual, dentro do período determinado por Lei Complementar Federal.',
-      'Os Estados membros possuem competência privativa para legislar sobre Direito Civil, Processual e do Trabalho.',
-      'O Mandado de Segurança coletivo só pode ser impetrado por cidadão eleitor no pleno gozo dos direitos políticos.',
-      'As emendas à Constituição podem abolir a forma federativa de Estado se aprovadas por três quintos do Congresso.',
-      'A ação direta de inconstitucionalidade (ADI) pode ser proposta por qualquer cidadão em defesa da ordem jurídica.'
-    ],
-    correctAnswer: 0,
-    explanation: 'Gabarito: A. Artigo 18, § 4º da Constituição Federal de 1988.',
-  };
-}
-
-function getAccountingQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 23 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Contabilidade)',
-      statement: `[Questão ${qNum}] De acordo com a Estrutura Conceitual para Relatório Financeiro (CPC 00 R2) e a temática de "${lessonTitle}", julgue a afirmativa:\n\n"Ativo é um recurso econômico presente controlado pela entidade como resultado de eventos passados, sendo recurso econômico um direito que tem o potencial de produzir benefícios econômicos."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. Definição oficial de Ativo constante do item 4.3 do CPC 00 (R2).`
-        : `Gabarito: ERRADO. A definição de ativo no CPC 00 R2 exige controle, evento passado e potencial de produzir benefícios econômicos.`,
-    };
-  }
-
-  const mcScenarios = [
-    {
-      stmt: `Na escrituração contábil referente a "${lessonTitle}", assinale a opção que representa um fato contábil PERMUTATIVO:`,
-      opts: [
-        'Compra de mercadorias a prazo com emissão de duplicata a pagar.',
-        'Pagamento de despesa de aluguel em dinheiro.',
-        'Venda de estoques à vista com lucro bruto apurado.',
-        'Reconhecimento de despesa de salários do mês.',
-        'Cancelamento de dívida tributária com remissão impositiva.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. A compra a prazo é fato permutativo (+Ativo estoques / +Passivo fornecedores), sem alterar o Patrimônio Líquido.`
-    },
-    {
-      stmt: `No contexto de "${lessonTitle}" e da elaboração da Demonstração dos Fluxos de Caixa (DFC - CPC 03), o pagamento de dividendos aos acionistas é classificado como fluxo de caixa de:`,
-      opts: [
-        'Financiamento.',
-        'Operação obrigatoriamente.',
-        'Investimento permanente.',
-        'Reserva de Lucro não operacional.',
-        'Ajuste de Avaliação Patrimonial.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. O pagamento de dividendos e juros sobre o capital próprio é classificado como atividade de Financiamento.`
-    }
-  ];
-
-  const scenario = mcScenarios[seed % mcScenarios.length];
-  return {
-    source: 'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
-    statement: `[Questão ${qNum}] ${scenario.stmt}`,
-    options: scenario.opts,
-    correctAnswer: scenario.correct,
-    explanation: scenario.exp,
-  };
-}
-
-function getAuditQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 29 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Auditoria)',
-      statement: `[Questão ${qNum}] Acerca dos procedimentos de auditoria em "${lessonTitle}", julgue a afirmativa:\n\n"A confirmação externa (circularização) consiste na obtenção de evidência de auditoria direta de um terceiro (parte confirmante) em formato escrito, em papel ou por meio eletrônico."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. NBC TA 505 - Confirmação Externa.`
-        : `Gabarito: ERRADO. A circularização traz evidência altamente confiável vinda diretamente de terceiros.`,
-    };
-  }
-
-  return {
-    source: 'FGV – Auditor Fiscal / SEFAZ-BA',
-    statement: `[Questão ${qNum}] Em auditoria independente no tópico "${lessonTitle}", quando o auditor conclui que as distorções são relevantes, mas NÃO generalizadas, o relatório deve conter opinião:`,
-    options: [
-      'Com ressalva.',
-      'Adversa.',
-      'Com abstenção de opinião.',
-      'Sem ressalva com parágrafo de ênfase.',
-      'Favorável incondicional.'
-    ],
-    correctAnswer: 0,
-    explanation: 'Gabarito: A. NBC TA 705: distorção relevante contudo não generalizada enseja opinião com ressalva.',
-  };
-}
-
-function getPortugueseQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 31 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – SEFAZ-BA (Língua Portuguesa)',
-      statement: `[Questão ${qNum}] Quanto às regras gramaticais e ao tema "${lessonTitle}", julgue o item:\n\n"Na frase 'Trata-se de processos fiscais complexos', o verbo 'tratar' permanece obrigatoriamente no singular por acompanhar a partícula de indeterminação do sujeito 'se' intermediada pela preposição 'de'."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. Verbo transitivo indireto + 'se' gera sujeito indeterminado e o verbo fica obrigatoriamente na 3ª pessoa do singular.`
-        : `Gabarito: ERRADO. Em 'trata-se de', o verbo não flexiona no plural por ser sujeito indeterminado.`,
-    };
-  }
-
-  return {
-    source: 'FGV – Auditor Fiscal / SEFAZ-BA',
-    statement: `[Questão ${qNum}] Assinale a alternativa em que o sinal indicativo de crase está empregado em estrita conformidade com a norma-padrão no tópico "${lessonTitle}":`,
-    options: [
-      'Encaminhou o relatório fiscal à diretoria financeira após as 18 horas.',
-      'O auditor dirigiu-se à qualquer repartição pública para fiscalizar.',
-      'Refiro-me à pessoas que cumpriram rigorosamente suas obrigações.',
-      'O documento foi entregue à ele em mãos durante a sessão plenária.',
-      'Começou à escrever o parecer técnico sobre a autuação fiscal.'
-    ],
-    correctAnswer: 0,
-    explanation: 'Gabarito: A. Crase correta antes de substantivo feminino determinado (diretoria) antecedido da preposição a.',
-  };
-}
-
-function getEconomicsQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 37 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – SEFAZ-BA (Economia e Finanças)',
-      statement: `[Questão ${qNum}] No contexto das Finanças Públicas e da LRF aplicáveis a "${lessonTitle}", julgue o item:\n\n"A Lei de Responsabilidade Fiscal (LC 101/2000) veda expressamente a realização de operações de crédito que excedam o montante das despesas de capital, ressalvadas as autorizadas mediante créditos suplementares ou especiais com finalidade precisa, aprovados pelo Poder Legislativo por maioria absoluta (Regra de Ouro)."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. Artigo 167, III da CF/88 e disposições da LRF (Regra de Ouro da gestão fiscal).`
-        : `Gabarito: ERRADO. A Regra de Ouro proíbe operações de crédito maiores que as despesas de capital.`,
-    };
-  }
-
-  return {
-    source: 'FGV – SEFAZ-BA (Economia)',
-    statement: `[Questão ${qNum}] Em relação à Microeconomia no tópico "${lessonTitle}", quando a elasticidade-preço da demanda em módulo é maior do que 1 (|Epd| > 1), afirma-se que:`,
-    options: [
-      'A demanda é elástica, e uma redução no preço do bem aumentará a receita total dos vendedores.',
-      'A demanda é inelástica, e um aumento no preço aumentará a receita total.',
-      'A demanda é de elasticidade unitária, permanecendo a receita inalterada.',
-      'O bem é considerado um bem inferior obrigatoriamente.',
-      'A curva de demanda é perfeitamente vertical em relação ao eixo dos preços.'
-    ],
-    correctAnswer: 0,
-    explanation: 'Gabarito: A. Se a demanda é elástica, a variação percentual na quantidade demandada é maior que a variação percentual no preço.',
-  };
-}
-
-function getMathFinanceQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 41 + idx;
-
-  const tfScenarios = [
-    {
-      stmt: `No Sistema de Amortização Constante (SAC), a quota de amortização do saldo devedor permanece constante durante todo o prazo do contrato, resultando em prestações periódicas decrescentes ao longo do tempo.`,
-      correct: 0,
-      exp: `Gabarito: CERTO. No SAC, a amortização é fixa (A = SD / n) e os juros caem a cada período, gerando prestações decrescentes.`
-    },
-    {
-      stmt: `A taxa nominal de 12% ao ano com capitalização mensal é exatamente equivalente à taxa efetiva de 12% ao ano.`,
-      correct: 1,
-      exp: `Gabarito: ERRADO. A taxa efetiva com capitalização mensal é (1,01)^12 - 1 = 12,68% ao ano, superior à taxa nominal.`
-    },
-    {
-      stmt: `No Desconto Racional Simples (por dentro), a taxa de desconto incide sobre o valor presente (atual) do título, enquanto no Desconto Comercial Simples (por fora), incide sobre o valor nominal.`,
-      correct: 0,
-      exp: `Gabarito: CERTO. O desconto racional é calculado sobre o valor presente (Dr = A * i * n), e o desconto comercial sobre o nominal (Dc = N * i * n).`
-    }
-  ];
-
-  if (isTF) {
-    const item = tfScenarios[seed % tfScenarios.length];
-    return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Matemática Financeira)',
-      statement: `[Questão ${qNum}] No estudo de "${lessonTitle}" em Matemática Financeira, julgue a afirmativa:\n\n"${item.stmt}"`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: item.correct,
-      explanation: item.exp,
-    };
-  }
-
-  const mcScenarios = [
-    {
-      stmt: `Em Matemática Financeira aplicada ao tópico "${lessonTitle}", um capital de R$ 10.000,00 aplicado à taxa de juros compostos de 10% ao ano, durante 2 anos, produz um montante final de:`,
-      opts: [
-        'R$ 12.100,00',
-        'R$ 12.000,00',
-        'R$ 11.000,00',
-        'R$ 12.200,00',
-        'R$ 12.500,00'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. M = C * (1 + i)^n = 10.000 * (1,10)^2 = 10.000 * 1,21 = R$ 12.100,00.`
-    },
-    {
-      stmt: `Um título de valor nominal R$ 11.000,00 é resgatado 2 meses antes do vencimento à taxa de desconto racional simples de 5% ao mês referente ao estudo de "${lessonTitle}". O valor líquido recebido é:`,
-      opts: [
-        'R$ 10.000,00',
-        'R$ 9.900,00',
-        'R$ 10.450,00',
-        'R$ 10.200,00',
-        'R$ 9.800,00'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. N = A * (1 + i*n) => 11.000 = A * (1 + 0,10) => A = R$ 10.000,00.`
-    },
-    {
-      stmt: `No Sistema de Amortização Francês (Tabela Price) no tópico "${lessonTitle}", o valor das prestações periódicas ao longo do contrato é:`,
-      opts: [
-        'Constante, enquanto a parcela de amortização é crescente e a de juros é decrescente.',
-        'Decrescente, enquanto a parcela de amortização é constante.',
-        'Crescente em razão do acréscimo contínuo dos juros compostos.',
-        'Nulo nos primeiros 6 meses de carência.',
-        'Variável segundo o índice diário da taxa SELIC.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. Na Tabela Price as prestações são iguais/constantes. A amortização cresce a cada mês à medida que a parcela de juros diminui.`
-    }
-  ];
-
-  const scenario = mcScenarios[seed % mcScenarios.length];
-  return {
-    source: 'FGV – Auditor Fiscal / SEFAZ-AM',
-    statement: `[Questão ${qNum}] ${scenario.stmt}`,
-    options: scenario.opts,
-    correctAnswer: scenario.correct,
-    explanation: scenario.exp,
-  };
-}
-
-function getStatisticsQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 43 + idx;
-
-  const tfScenarios = [
-    {
-      stmt: `Em estatística descritiva, a mediana é uma medida de tendência central insensível a valores discrepantes (outliers) no conjunto de dados ordenados, ao contrário da média aritmética simples.`,
-      correct: 0,
-      exp: `Gabarito: CERTO. A mediana depende unicamente da posição dos elementos ordenados e não é afetada por discrepantes extremos.`
-    },
-    {
-      stmt: `O desvio padrão é uma medida de dispersão expressa na mesma unidade de medida dos dados originais, correspondendo à raiz quadrada da variância.`,
-      correct: 0,
-      exp: `Gabarito: CERTO. O desvio padrão é a raiz quadrada da variância e mantém a mesma unidade de medida da variável analisada.`
-    }
-  ];
-
-  if (isTF) {
-    const item = tfScenarios[seed % tfScenarios.length];
-    return {
-      source: 'CEBRASPE – Auditor Fiscal / SEFAZ-BA (Estatística)',
-      statement: `[Questão ${qNum}] Em relação ao tema "${lessonTitle}" em Estatística, julgue a afirmativa:\n\n"${item.stmt}"`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: item.correct,
-      explanation: item.exp,
-    };
-  }
-
-  const mcScenarios = [
-    {
-      stmt: `Em estatística descritiva para o tópico "${lessonTitle}", a medida de tendência central definida como o valor que ocupa a posição central de um conjunto de dados ordenados, dividindo-o em duas partes iguais de 50%, é a:`,
-      opts: [
-        'Mediana.',
-        'Média aritmética simples.',
-        'Moda amostral.',
-        'Variância populacional.',
-        'Desvio padrão amostral.'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. A mediana é a medida de posição central que divide a distribuição em 50% acima e 50% abaixo.`
-    },
-    {
-      stmt: `Uma distribuição estatística referente a "${lessonTitle}" possui média aritmética igual a 50 e desvio padrão igual a 5. O Coeficiente de Variação (CV) dessa distribuição é de:`,
-      opts: [
-        '10%',
-        '5%',
-        '20%',
-        '2,5%',
-        '15%'
-      ],
-      correct: 0,
-      exp: `Gabarito: A. CV = (Desvio Padrão / Média) * 100 = (5 / 50) * 100 = 10%.`
-    }
-  ];
-
-  const scenario = mcScenarios[seed % mcScenarios.length];
-  return {
-    source: 'FCC – Auditor Fiscal / SEFAZ-PE',
-    statement: `[Questão ${qNum}] ${scenario.stmt}`,
-    options: scenario.opts,
-    correctAnswer: scenario.correct,
-    explanation: scenario.exp,
-  };
-}
-
-function getCASPQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const tfItems = [
-    {
-      stmt: 'No âmbito do MCASP e da NBC TSP, as receitas e despesas orçamentárias devem ser reconhecidas, sob a ótica patrimonial, em estrita observância ao regime de competência, independentemente do ingresso ou desembolso de disponibilidades.',
-      correct: 0,
-      exp: 'CERTO. Sob o enfoque patrimonial, o regime de competência é integralmente aplicável tanto às variações ativas (receitas) quanto às variações passivas (despesas).'
-    },
-    {
-      stmt: 'No Balanço Orçamentário elaborado segundo as normas do MCASP, a economia de despesa reflete o montante de dotação autorizada que não foi executado no exercício financeiro.',
-      correct: 0,
-      exp: 'CERTO. No Balanço Orçamentário a economia de despesa é a diferença positiva entre a despesa fixada/atualizada e a despesa executada/empenhada.'
-    },
-    {
-      stmt: 'No Plano de Contas Aplicado ao Setor Público (PCASP), os lançamentos que envolvem o subsistema orçamentário (Classes 5 e 6) exigem contrapartida obrigatória nas contas do subsistema patrimonial (Classes 1 a 4).',
-      correct: 1,
-      exp: 'ERRADO. O PCASP adota o princípio das partidas dobradas dentro de subsistemas segregados: lançamentos nas contas de orçamento (5 e 6) fecham entre si (5 com 6), sem exigir contrapartida patrimonial direta.'
-    },
-    {
-      stmt: 'Os Restos a Pagar Não Processados referem-se a despesas legalmente empenhadas, porém ainda não liquidadas até o término do exercício financeiro em 31 de dezembro.',
-      correct: 0,
-      exp: 'CERTO. RPNP são despesas empenhadas que não passaram pelo estágio da liquidação no exercício de emissão do empenho.'
-    },
-    {
-      stmt: 'O cancelamento da inscrição de Restos a Pagar de exercícios anteriores configura, no exercício do cancelamento, uma Variação Patrimonial Aumentativa (VPA).',
-      correct: 0,
-      exp: 'CERTO. O cancelamento de passivo financeiro de restos a pagar desonera o patrimônio líquido da entidade, constituindo VPA (superveniência ativa).'
-    },
-    {
-      stmt: 'A aquisição de material permanente mediante pagamento à vista é um fato que altera de imediato o Resultado Patrimonial apurado na DVP no momento da liquidação da despesa orçamentária.',
-      correct: 1,
-      exp: 'ERRADO. Trata-se de um fato permutativo (Débito em Imobilizado e Crédito em Caixa/Bancos), não alterando o Patrimônio Líquido nem figurando como VPD no resultado patrimonial.'
-    }
-  ];
-
-  const seed = lessonNum * 47 + idx;
-
-  if (isTF) {
-    const item = tfItems[seed % tfItems.length];
-    return {
-      source: 'CEBRASPE – Contador / SEFAZ-AL (CASP)',
-      statement: `[Questão ${qNum}] Em Contabilidade Aplicada ao Setor Público (CASP) sobre o tema "${lessonTitle}", julgue a afirmativa:
-
-"${item.stmt}"`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: item.correct,
-      explanation: item.exp,
-    };
-  }
-
-  const mcScenarios = [
-    {
-      stmt: `No Plano de Contas Aplicado ao Setor Público (PCASP), referente a "${lessonTitle}", as contas de natureza de controle de atos potenciais (contratos, convênios e garantias concedidas) pertencem às Classes:`,
-      opts: [
-        '7 (Controles Devedores) e 8 (Controles Credores).',
-        '1 (Ativo) e 2 (Passivo).',
-        '5 (Orçamento Aprovado) e 6 (Execução Orçamentária).',
-        '3 (Variações Patrimoniais Diminutivas) e 4 (Variações Patrimoniais Aumentativas).',
-        '9 e 10 de Encerramento Contábil.'
-      ],
-      correct: 0,
-      exp: 'Gabarito: A. As Classes 7 e 8 do PCASP destinam-se exclusivamente ao registro dos atos potenciais e controles contratuais.'
-    },
-    {
-      stmt: `Em conformidade com a Lei nº 4.320/1964 e o MCASP, o Balanço Financeiro demonstrará:`,
-      opts: [
-        'A receita e a despesa orçamentárias bem como os recebimentos e os pagamentos de natureza extraorçamentária, conjugados com os saldos em espécie.',
-        'A segregação do patrimônio público em ativo circulante e não circulante com base na liquidez esperada.',
-        'As variações patrimoniais quantitativas aumentativas e diminutivas para apuração do superávit do exercício.',
-        'O confronto entre os créditos adicionais abertos e os recursos disponíveis para sua cobertura.',
-        'A conciliação dos fluxos de caixa estritamente das atividades operacionais.'
-      ],
-      correct: 0,
-      exp: 'Gabarito: A. O Balanço Financeiro evidencia as receitas/despesas orçamentárias e os ingressos/dispêndios extraorçamentários somados aos saldos de caixa.'
-    },
-    {
-      stmt: `Na Demonstração das Variações Patrimoniais (DVP), um exemplo típico de Variação Patrimonial Diminutiva (VPD) decorrente da desvalorização física ou tecnológica de bens móveis é:`,
-      opts: [
-        'A quota periódica de depreciação, amortização ou exaustão acumulada do exercício.',
-        'A liquidação da despesa orçamentária com a aquisição de novos veículos.',
-        'O empenho de despesa de capital para construção de edifício público.',
-        'O recolhimento de tributos retidos na fonte a título de consignações.',
-        'A amortização do principal da dívida fundada interna.'
-      ],
-      correct: 0,
-      exp: 'Gabarito: A. Depreciação é VPD que reduz o valor contábil do ativo sem envolver fluxo orçamentário financeiro direto no exercício.'
-    },
-    {
-      stmt: `Com relação à classificação orçamentária da despesa pública no contexto de "${lessonTitle}", a despesa incorrida que cria ou incorpora novos bens de capital ao patrimônio público classifica-se como:`,
-      opts: [
-        'Despesa de Capital (Investimentos ou Inversões Financeiras).',
-        'Despesa Corrente de Custeio e Manutenção.',
-        'Transferência Corrente Vinculada.',
-        'Receita de Alienação de Bens.',
-        'Reserva de Contingência Fiscal.'
-      ],
-      correct: 0,
-      exp: 'Gabarito: A. Conforme Art. 12 da Lei nº 4.320/64, despesas com obras, instalações e equipamentos são despesas de capital da categoria Investimentos.'
-    }
-  ];
-
-  const scenario = mcScenarios[seed % mcScenarios.length];
-  return {
-    source: 'FGV – Auditor do Estado / CGE-SC',
-    statement: `[Questão ${qNum}] ${scenario.stmt}`,
-    options: scenario.opts,
-    correctAnswer: scenario.correct,
-    explanation: scenario.exp,
-  };
-}
-
-function getITQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 53 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – SEFAZ-BA (TI)',
-      statement: `[Questão ${qNum}] No que tange à Segurança da Informação no tópico "${lessonTitle}", julgue a afirmativa:\n\n"A criptografia assimétrica (ou de chave pública) utiliza duas chaves distintas porém matematicamente relacionadas: uma chave pública para codificar e uma chave privada para decodificar."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. A criptografia assimétrica utiliza o par de chaves pública/privada.`
-        : `Gabarito: ERRADO. Criptografia assimétrica emprega par de chaves pública e privada.`,
-    };
-  }
-
-  return {
-    source: 'FGV – SEFAZ-BA (TI)',
-    statement: `[Questão ${qNum}] No Microsoft Excel em português, referente ao tópico de "${lessonTitle}", a função utilizada para procurar um valor na primeira coluna de uma tabela e retornar o valor na mesma linha de outra coluna é a:`,
-    options: [
-      'PROCV',
-      'CORRESP',
-      'INDEXAR',
-      'CONT.SE',
-      'CONCATENAR'
-    ],
-    correctAnswer: 0,
-    explanation: 'Gabarito: A. PROCV (Procura Vertical) realiza busca vertical na primeira coluna de uma matriz.',
-  };
-}
-
-function getRacialEqualityQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 59 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – SEFAZ-BA (Igualdade Racial)',
-      statement: `[Questão ${qNum}] Em consonância com a Lei nº 12.288/2010 (Estatuto da Igualdade Racial) e a Lei Estadual da Bahia nº 13.182/2014, julgue o item relativo a "${lessonTitle}":\n\n"Entende-se por ações afirmativas os programas e medidas especiais adotados pelo Estado e pela iniciativa privada para a reparação das distorções e desigualdades sociais e demais práticas discriminatórias adotadas nas relações públicas e privadas."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. Artigo 4º, VII da Lei nº 12.288/2010.`
-        : `Gabarito: ERRADO. Ações afirmativas são instrumentos legítimos de promoção da igualdade de oportunidades.`,
-    };
-  }
-
-  return {
-    source: 'FGV – SEFAZ-BA (Igualdade Racial)',
-    statement: `[Questão ${qNum}] Segundo o Estatuto da Igualdade Racial (Lei nº 12.288/2010) aplicado ao tema "${lessonTitle}", a assimetria na distribuição de oportunidades e recursos na sociedade em desfavor da população negra é denominada:`,
-    options: [
-      'Desigualdade de gênero e raça com viés estrutural.',
-      'Discriminação racial ou étnico-racial.',
-      'Preconceito de origem exclusivamente econômica.',
-      'Segregação compulsória de mercado.',
-      'Ação afirmativa involuntária.'
-    ],
-    correctAnswer: 1,
-    explanation: 'Gabarito: B. Artigo 1º, parágrafo único, I da Lei nº 12.288/2010.',
-  };
-}
-
-function getGeneralFiscalQuestion(qNum: number, subjectName: string, lessonTitle: string, isTF: boolean, idx: number, lessonNum: number): Partial<QuestionData> {
-  const seed = lessonNum * 61 + idx;
-
-  if (isTF) {
-    const isCorrect = seed % 2 === 0;
-    return {
-      source: 'CEBRASPE – SEFAZ-BA',
-      statement: `[Questão ${qNum}] No âmbito dos conhecimentos fiscais inerentes a "${lessonTitle}", julgue a afirmativa:\n\n"A atividade administrativa de lançamento é vinculada e obrigatória, sob pena de responsabilidade funcional da autoridade fiscal."`,
-      options: ['Certo', 'Errado'],
-      correctAnswer: isCorrect ? 0 : 1,
-      explanation: isCorrect
-        ? `Gabarito: CERTO. Artigo 142, parágrafo único do CTN.`
-        : `Gabarito: ERRADO. O lançamento tributário é ato estritamente vinculado.`,
-    };
-  }
-
-  return {
-    source: 'FGV – SEFAZ-BA',
-    statement: `[Questão ${qNum}] Com relação aos conhecimentos aplicados à Auditoria Fiscal e ao tópico "${lessonTitle}", assinale a afirmativa correta:`,
-    options: [
-      'O lançamento tributário vincula a autoridade fiscal e é efetuado com base na legislação vigente na data do fato gerador.',
-      'A concessão de isenção tributária extingue o crédito tributário definitivamente.',
-      'O mandado de segurança extingue a dívida tributária do contribuinte.',
-      'As certidões negativas de débito possuem validade indeterminada.',
-      'O pagamento parcial de tributo homologa a quitação integral do saldo.'
-    ],
-    correctAnswer: 0,
-    explanation: 'Gabarito: A. Artigo 144 do CTN: o lançamento vincula-se à lei da data do fato gerador.',
-  };
-}
