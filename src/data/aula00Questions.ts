@@ -228,16 +228,19 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 16,
-    source: "CESPE/Analista/Contabilidade/MPU/2010",
-    topic: "Objeto da Contabilidade",
-    type: "tf",
-    statement: "O patrimônio não é objeto de estudo exclusivo da contabilidade, haja vista que ciências como a administração e a economia tamb ém se interessam pelo patrimônio, mas é a única que restringe o estudo do patrimônio a seus aspectos quantitativos.",
+    source: "FGV – Auditor Fiscal da Receita Estadual / SEFAZ-RJ",
+    topic: "Teoria Personalista das Contas",
+    type: "multiple",
+    statement: "Na evolução doutrinária da contabilidade, a Escola Personalista (criada por Francesco Marchi e desenvolvida por Giuseppe Cerboni) dividia os elementos patrimoniais relacionando as contas a pessoas fictícias ou reais. De acordo com essa teoria, as contas classificavam-se em:",
     options: [
-      "Certo",
-      "Errado"
+      "Contas do Proprietário, Contas dos Agentes Consignatários e Contas dos Agentes Correspondentes.",
+      "Contas Integrais, Contas Diferenciais e Contas de Compensação.",
+      "Contas de Ativo Circulante, Passivo Circulante e Patrimônio Líquido.",
+      "Contas Patrimoniais e Contas de Resultado.",
+      "Contas de Débito, Contas de Crédito e Contas Mistas."
 ],
-    correctAnswer: 1,
-    explanation: "De fato, a Contabilidade não é a única ciência que possui como objeto de estudo o patrimônio. No entanto, não podemos afirmar que a Contabilidade restringe o estudo do patrimônio a seus aspectos quantitativos. A Contabilidade estuda os aspectos quantitativos e qualitativos do patrimônio. Quantitativamente, o Patrimônio representa os valores monetários do bem, direito ou obrigação. O aspecto qualitativo do patrimônio é entendido como a natureza dos elementos que o compõem , como dinheiro, valores a receber ou a pagar expressos em moeda, máquinas, estoques de mat eriais ou de mercadorias etc.",
+    correctAnswer: 0,
+    explanation: "Gabarito: A. A Teoria Personalista divide as contas em: 1) Contas do Proprietário (Patrimônio Líquido e Contas de Resultado); 2) Contas dos Agentes Consignatários (guardiões dos Bens da entidade); 3) Contas dos Agentes Correspondentes (Direitos e Obrigações de terceiros).",
   },
   {
     id: 17,
@@ -445,19 +448,19 @@ export const AULA_00_QUESTIONS: QuestionData[] = [
   },
   {
     id: 30,
-    source: "VUNESP/Perito Criminal/PC-SP/2014",
-    topic: "Objeto da Contabilidade",
+    source: "FGV – Auditor do Estado / CGE-SC",
+    topic: "Escolas do Pensamento Contábil (Aziendalismo)",
     type: "multiple",
-    statement: "A finalidade da contabilidade é assegurar o controle do patrimônio administrado e fornecer informações sobre a composição e as variações patrimoniais, bem como o resultado das atividades econômicas desenvolvidas. Analise a seguinte frase: A contabilidade é a ciência que estuda, registra, controla e interpreta os fatos ocorridos no patrimônio das _____________, com fins lucrativos ou não. Complete a frase com a alternativa que preenche corretamente a lacuna do texto.",
+    statement: "A escola do pensamento contábil fundada por Gino Zappa que revolucionou a contabilidade moderna ao conceber a empresa como uma \"azienda\" (sistema coordenado de forças materiais e humanas voltado à gestão econômica) denomina-se:",
     options: [
-      "entidades",
-      "sociedades civis",
-      "empresas",
-      "sociedades de economia privada",
-      "organizações não governamentais"
+      "Escola Contista (ou Cinco-Contista).",
+      "Escola Aziendalista.",
+      "Escola Controlista de Besta.",
+      "Escola Personalista de Cerboni.",
+      "Escola Positivista anglo-saxônica."
 ],
-    correctAnswer: 0,
-    explanation: "O campo de aplicação da Ciência Contábil são as aziendas. AZIENDAS = GESTÃO + PATRIMÔNIO Assim, a Contabilidade se aplica tanto em entidades que possuam fins lucrativos, como também naquelas em que não há fins lucrativos. A doutrina também se refere como campo de aplic ação da Contabilidade as ENTIDADES econômico-administrativas.",
+    correctAnswer: 1,
+    explanation: "Gabarito: B. A Escola Aziendalista, liderada por Gino Zappa (discípulo de Fabio Besta), integrou a Contabilidade à Economia Aziendal, tratando a azienda como um todo dinâmico.",
   },
   {
     id: 31,

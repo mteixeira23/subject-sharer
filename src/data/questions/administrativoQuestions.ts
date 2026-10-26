@@ -724,7 +724,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
       source: 'CEBRASPE – Auditor do Estado / CGE-SC',
       topic: 'Teoria dos Motivos Determinantes',
       type: 'tf',
-      statement: 'Pela Teoria dos Motivos Determinantes, a validade do ato administrativo fica vinculada à veracidade e procedência dos motivos expostos pela autoridade como justificativa para sua edição, de forma que, se os motivos declarados forem inexistentes ou falsos, o ato será nulo, ainda que a sua motivação original fosse facultativa por lei.',
+      statement: 'A convalidação dos atos administrativos consiste no suprimento da invalidade de um ato com efeitos retroativos (ex tunc). De acordo com a doutrina e a Lei nº 9.784/1999, são passíveis de convalidação pela própria Administração os atos com defeitos sanáveis relativos à competência (não exclusiva) e à forma (não essencial).',
       options: ['Certo', 'Errado'],
       correctAnswer: 0,
       explanation: 'Gabarito: CERTO. A Teoria dos Motivos Determinantes estabelece que, se a autoridade explicita os motivos de fato e de direito do ato (mesmo em ato discricionário cuja motivação fosse dispensada em tese), fica juridicamente vinculada a eles. Se comprovada a falsidade ou inexistência desses motivos, o ato é nulo de pleno direito.'
