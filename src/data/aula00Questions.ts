@@ -833,7 +833,59 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     bank = REAL_CONCURSO_QUESTIONS.igualdade_racial;
   }
 
-  return buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank, lessonSpecific);
+  const rawList = buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank, lessonSpecific);
+  return rawList.map(q => balanceQuestion(q, lessonNum));
+}
+
+/**
+ * Deterministically balances multiple-choice answers across options A, B, C, D, E (~20% each)
+ * and keeps the explanation synchronized with the new letter.
+ */
+export function balanceQuestion(q: QuestionData, lessonNum: number = 0): QuestionData {
+  if (q.type !== 'multiple' || !Array.isArray(q.options) || q.options.length < 4) {
+    return q;
+  }
+  if ((q as any)._balanced) {
+    return q;
+  }
+
+  const curIdx = typeof q.correctAnswer === 'number' ? q.correctAnswer : 0;
+  const numOpts = q.options.length;
+  if (curIdx < 0 || curIdx >= numOpts) {
+    return q;
+  }
+
+  // Calculate target index evenly distributed across 0 .. numOpts - 1
+  const targetIdx = ((q.id * 7 + lessonNum * 3 + 1) % numOpts + numOpts) % numOpts;
+  if (targetIdx === curIdx) {
+    return { ...q, _balanced: true } as QuestionData;
+  }
+
+  // Swap options to place correct answer at targetIdx while preserving all choices
+  const newOptions = [...q.options];
+  const temp = newOptions[curIdx];
+  newOptions[curIdx] = newOptions[targetIdx];
+  newOptions[targetIdx] = temp;
+
+  const oldLetter = String.fromCharCode(65 + curIdx);
+  const newLetter = String.fromCharCode(65 + targetIdx);
+
+  // Synchronize explanation with the new correct letter
+  let updatedExp = q.explanation || '';
+  if (updatedExp) {
+    updatedExp = updatedExp.replace(/(Gabarito\s*:\s*)[A-E]\b/gi, `$1${newLetter}`);
+    updatedExp = updatedExp.replace(/(Gabarito\s+comentado\s*:\s*)[A-E]\b/gi, `$1${newLetter}`);
+    updatedExp = updatedExp.replace(/(^|\n)(\s*(?:Letra|Alternativa|Opção)\s+)[A-E]\b/gi, `$1$2${newLetter}`);
+    updatedExp = updatedExp.replace(/((?:alternativa|letra|opção)\s+correta\s*(?:é\s*a\s*)?)[“"']?[A-E][”"']?/gi, `$1“${newLetter}”`);
+  }
+
+  return {
+    ...q,
+    options: newOptions,
+    correctAnswer: targetIdx,
+    explanation: updatedExp,
+    _balanced: true,
+  } as QuestionData;
 }
 
 function buildDomainSpecificQuestions(
