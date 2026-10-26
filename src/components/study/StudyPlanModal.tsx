@@ -36,7 +36,7 @@ interface StudyPlanModalProps {
 
 const SEFAZ_STORAGE_KEY = 'sefaz_ba_daily_plan_completed_tasks_v2';
 const UFBA_STORAGE_KEY = 'ufba_cgu_sprint_plan_completed_tasks_v2';
-const QUESTIONS_DONE_STORAGE_KEY = 'study_completed_questions_keys_v1';
+const QUESTIONS_DONE_STORAGE_KEY = 'study_completed_questions_keys_v2';
 
 function normalizeSubject(str: string): string {
   return (str || '')
@@ -114,14 +114,12 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
   const [crossPlanCompletedKeys, setCrossPlanCompletedKeys] = useState<Set<string>>(() => new Set());
 
   // Track completed exercise/question sessions per lesson: "canonical_subject|aula-X"
-  const [questionsDoneKeys, setQuestionsDoneKeys] = useState<Record<string, boolean>>(() => {
+    const [questionsDoneKeys, setQuestionsDoneKeys] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem(QUESTIONS_DONE_STORAGE_KEY);
-      const parsed = saved ? JSON.parse(saved) : {};
-      // Contabilidade Geral Aula 00 marked as completed as requested by user
-      return { 'contabilidade geral|aula-0': true, ...parsed };
+      return saved ? JSON.parse(saved) : {};
     } catch {
-      return { 'contabilidade geral|aula-0': true };
+      return {};
     }
   });
 
@@ -201,6 +199,8 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
         localStorage.removeItem('sefaz_ba_daily_plan_completed_tasks_v1');
         localStorage.removeItem('ufba_cgu_sprint_plan_completed_tasks_v1');
         localStorage.removeItem(QUESTIONS_DONE_STORAGE_KEY);
+        localStorage.removeItem('study_completed_questions_keys_v1');
+        localStorage.removeItem('study_completed_questions_keys_v2');
         Object.keys(localStorage).forEach(k => {
           if (k.startsWith('lesson_flag_')) {
             localStorage.removeItem(k);
@@ -284,35 +284,8 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
   const isQuestionsDoneForTask = useCallback((task: PlanTask, exInfo: { subjectName: string; lessonNumber: string }) => {
     const lKey = getLessonKey(exInfo.subjectName, 'Aula ' + exInfo.lessonNumber);
     if (lKey && questionsDoneKeys[lKey]) return true;
-
-    if (studyData?.questionSessions && studyData?.subjects) {
-      const cSub = getCanonicalSubject(exInfo.subjectName);
-      const sub = studyData.subjects.find(s => getCanonicalSubject(s.name) === cSub);
-      if (sub) {
-        const targetLessonNum = parseInt(exInfo.lessonNumber, 10);
-        const hasSession = studyData.questionSessions.some(qs => {
-          if (qs.subjectId !== sub.id) return false;
-          return qs.lessonNumber === targetLessonNum || qs.lessonNumber === targetLessonNum + 1;
-        });
-        if (hasSession) return true;
-      }
-    }
-
-    if (studyData?.lessons && studyData?.subjects) {
-      const cSub = getCanonicalSubject(exInfo.subjectName);
-      const sub = studyData.subjects.find(s => getCanonicalSubject(s.name) === cSub);
-      if (sub) {
-        const targetLessonNum = parseInt(exInfo.lessonNumber, 10);
-        const lesson = studyData.lessons.find(l => {
-          if (l.subjectId !== sub.id) return false;
-          return l.number === targetLessonNum || l.number === targetLessonNum + 1;
-        });
-        if (lesson && lesson.questionsCount > 0) return true;
-      }
-    }
-
     return false;
-  }, [questionsDoneKeys, studyData?.questionSessions, studyData?.lessons, studyData?.subjects]);
+  }, [questionsDoneKeys]);
 
   // Statistics
   const totalTasksCount = useMemo(() => {
