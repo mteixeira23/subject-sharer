@@ -776,6 +776,8 @@ import { CONTABILIDADE_QUESTIONS_BY_LESSON } from './questions/contabilidadeQues
 import { CASP_QUESTIONS_BY_LESSON } from './questions/caspQuestions';
 import { ADMINISTRATIVO_QUESTIONS_BY_LESSON } from './questions/administrativoQuestions';
 import { CONSTITUCIONAL_QUESTIONS_BY_LESSON } from './questions/constitucionalQuestions';
+import { PORTUGUES_QUESTIONS_BY_LESSON } from './questions/portuguesQuestions';
+import { AFO_QUESTIONS_BY_LESSON } from './questions/afoQuestions';
 
 export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number): QuestionData[] {
   const lessonTitle = getLessonName(subjectName, lessonNum);
@@ -816,7 +818,11 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     lessonSpecific = AUDITORIA_QUESTIONS_BY_LESSON[lessonNum];
   } else if (lowerSubj.includes('portug')) {
     bank = REAL_CONCURSO_QUESTIONS.portugues;
-  } else if (lowerSubj.includes('economia') || lowerSubj.includes('finanças')) {
+    lessonSpecific = PORTUGUES_QUESTIONS_BY_LESSON[lessonNum];
+  } else if (lowerSubj.includes('finanças') || lowerSubj.includes('afo') || lowerSubj.includes('orçamento')) {
+    bank = REAL_CONCURSO_QUESTIONS.economia;
+    lessonSpecific = AFO_QUESTIONS_BY_LESSON[lessonNum];
+  } else if (lowerSubj.includes('economia')) {
     bank = REAL_CONCURSO_QUESTIONS.economia;
   } else if (lowerSubj.includes('informát') || lowerSubj.includes('tecnologia')) {
     bank = REAL_CONCURSO_QUESTIONS.informatica;
@@ -835,7 +841,7 @@ function buildDomainSpecificQuestions(
   lessonSpecific?: QuestionData[]
 ): QuestionData[] {
   // 1. If we have a comprehensive authentic lesson battery (e.g. CASP Aula 00, Adm Aula 00), return it directly!
-  if (lessonSpecific && lessonSpecific.length >= 25) {
+  if (lessonSpecific && lessonSpecific.length >= 5) {
     return lessonSpecific.map((q, idx) => ({
       ...q,
       id: idx + 1,
