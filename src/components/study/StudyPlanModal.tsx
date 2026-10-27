@@ -912,6 +912,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
               <div className="flex-1 overflow-y-auto p-2 sm:p-6 overscroll-contain">
                 <Aula00QuestionsSimulado
+                  key={`${simuladoModalInfo.subjectId}-aula-${simuladoModalInfo.lessonNumber}`}
                   initialSubjectId={simuladoModalInfo.subjectId}
                   initialLessonNumber={simuladoModalInfo.lessonNumber}
                   isModalView={true}

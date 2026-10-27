@@ -57,6 +57,9 @@ export function Aula00QuestionsSimulado({
   React.useEffect(() => {
     if (initialSubjectId) setSelectedSubjectId(initialSubjectId);
     if (initialLessonNumber !== undefined) setSelectedLessonNumber(initialLessonNumber);
+    setAnswers({});
+    setRevealed({});
+    setFilterBlock('all');
   }, [initialSubjectId, initialLessonNumber]);
 
   const activeSubjectObj = availableSubjects.find(s => s.id === selectedSubjectId) || availableSubjects[0];

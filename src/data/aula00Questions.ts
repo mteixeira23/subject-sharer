@@ -952,8 +952,8 @@ function buildDomainSpecificQuestions(
     }
   }
 
-  // Add authentic general bank items
-  if (bank) {
+  // Add authentic general bank items only for introductory lesson (Aula 00)
+  if (bank && lessonNum === 0) {
     for (const q of bank) {
       addIfUnique(q);
       if (results.length >= 50) return results;
