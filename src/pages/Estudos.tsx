@@ -790,6 +790,7 @@ export default function Estudos() {
             </DialogTitle>
           </DialogHeader>
           <Aula00QuestionsSimulado 
+            key={`${simuladoSubjectId || "default"}-aula-${simuladoLessonNumber || "0"}`}
             initialSubjectId={simuladoSubjectId} 
             initialLessonNumber={simuladoLessonNumber} 
           />
