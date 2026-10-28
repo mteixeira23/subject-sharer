@@ -271,8 +271,8 @@ export const TRIBUTARIO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
     }
   ],
 
-  // ── Aula 15: Impostos Estaduais: ICMS (LC 87/96 e CF/88) ────────────────────
-  15: [
+  // ── Aula 17: Impostos de Competência dos Estados (ICMS, IPVA, ITCMD) ────────
+  17: [
     {
       id: 1,
       source: 'FGV – Auditor Fiscal / SEFAZ-BA (2022)',

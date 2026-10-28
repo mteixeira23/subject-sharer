@@ -781,6 +781,15 @@ import { ADMINISTRATIVO_QUESTIONS_BY_LESSON } from './questions/administrativoQu
 import { CONSTITUCIONAL_QUESTIONS_BY_LESSON } from './questions/constitucionalQuestions';
 import { PORTUGUES_QUESTIONS_BY_LESSON } from './questions/portuguesQuestions';
 import { AFO_QUESTIONS_BY_LESSON } from './questions/afoQuestions';
+import { generateFromLessonPropositions, SubjectLessonMatrix } from './matrix/types';
+import { AFO_LESSON_MATRIX } from './matrix/afoMatrix';
+import { AUDITORIA_LESSON_MATRIX } from './matrix/auditoriaMatrix';
+import { TRIBUTARIO_LESSON_MATRIX } from './matrix/tributarioMatrix';
+import { CONSTITUCIONAL_LESSON_MATRIX } from './matrix/constitucionalMatrix';
+import { ADMINISTRATIVO_LESSON_MATRIX } from './matrix/administrativoMatrix';
+import { CONTABILIDADE_LESSON_MATRIX, CASP_LESSON_MATRIX } from './matrix/contabilidadeCaspMatrix';
+import { ESTATISTICA_LESSON_MATRIX, MATEMATICA_FINANCEIRA_LESSON_MATRIX, ECONOMIA_LESSON_MATRIX } from './matrix/exatasMatrix';
+import { PORTUGUES_LESSON_MATRIX, INFORMATICA_LESSON_MATRIX, IGUALDADE_RACIAL_LESSON_MATRIX } from './matrix/humanasMatrix';
 import {
   getAccountingQuestion,
   getTaxLawQuestion,
@@ -952,23 +961,55 @@ function buildDomainSpecificQuestions(
     }
   }
 
-  // Add authentic general bank items only for introductory lesson (Aula 00)
-  if (bank && lessonNum === 0) {
-    for (const q of bank) {
-      addIfUnique(q);
-      if (results.length >= 50) return results;
-    }
+  // Fill remainder with Lesson-Topic Proposition Matrix (100% syllabus-convergent per lesson)
+  const lowerSubj = subjectName.trim().toLowerCase();
+  let subjectMatrix: SubjectLessonMatrix | undefined;
+  if (
+    lowerSubj.includes('finanças') ||
+    lowerSubj.includes('financas') ||
+    lowerSubj.includes('afo') ||
+    lowerSubj.includes('orçamento') ||
+    lowerSubj.includes('orcamento') ||
+    lowerSubj.includes('administração, economia') ||
+    (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
+  ) {
+    subjectMatrix = AFO_LESSON_MATRIX;
+  } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
+    subjectMatrix = TRIBUTARIO_LESSON_MATRIX;
+  } else if (lowerSubj.includes('matemática') || lowerSubj.includes('matematica') || lowerSubj.includes('financeira')) {
+    subjectMatrix = MATEMATICA_FINANCEIRA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
+    subjectMatrix = ESTATISTICA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
+    subjectMatrix = CASP_LESSON_MATRIX;
+  } else if (lowerSubj.includes('contabilidade')) {
+    subjectMatrix = CONTABILIDADE_LESSON_MATRIX;
+  } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
+    subjectMatrix = ADMINISTRATIVO_LESSON_MATRIX;
+  } else if (lowerSubj.includes('constitucional')) {
+    subjectMatrix = CONSTITUCIONAL_LESSON_MATRIX;
+  } else if (lowerSubj.includes('auditoria')) {
+    subjectMatrix = AUDITORIA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua') || lowerSubj.includes('lingua') || lowerSubj.includes('português')) {
+    subjectMatrix = PORTUGUES_LESSON_MATRIX;
+  } else if (lowerSubj.includes('economia')) {
+    subjectMatrix = ECONOMIA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('informática') || lowerSubj.includes('informatica') || lowerSubj.includes('tecnologia') || lowerSubj.includes('ti')) {
+    subjectMatrix = INFORMATICA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial') || lowerSubj.includes('gênero') || lowerSubj.includes('genero')) {
+    subjectMatrix = IGUALDADE_RACIAL_LESSON_MATRIX;
   }
 
-  // Fill remainder with domain generators, strictly deduplicating
-  const lowerSubj = subjectName.trim().toLowerCase();
+  const lessonProps = subjectMatrix ? subjectMatrix[lessonNum] : undefined;
+
   for (let idx = 0; results.length < 50 && idx < 300; idx++) {
     const qNum = results.length + 1;
     const isTF = idx % 2 === 0;
     let qData: any;
 
-    // PRIORITY 1: AFO / Finanças Públicas
-    if (
+    if (lessonProps && lessonProps.length >= 3) {
+      qData = generateFromLessonPropositions(lessonProps, qNum, lessonTitle, isTF, idx, lessonNum);
+    } else if (
       lowerSubj.includes('finanças') ||
       lowerSubj.includes('financas') ||
       lowerSubj.includes('afo') ||
