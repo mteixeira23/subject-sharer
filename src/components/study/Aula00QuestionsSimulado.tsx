@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CheckCircle2, XCircle, HelpCircle, Save, RotateCcw, Check, Sparkles, BookOpen } from 'lucide-react';
 import { useStudy } from '@/contexts/StudyContext';
+import { getLocalDateString } from '@/lib/dates';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -149,7 +150,7 @@ export function Aula00QuestionsSimulado({
         id: `session-${Date.now()}`,
         subjectId: currentSubj.id,
         lessonNumber: Number(selectedLessonNumber) + 1,
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalDateString(),
         questionsCount: answeredCount,
         correctAnswers: correctCount,
       });

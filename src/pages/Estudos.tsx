@@ -225,7 +225,25 @@ export default function Estudos() {
   const handleConfirmDeleteLesson = () => { if (!lessonToDelete) return; deleteLesson(lessonToDelete.id); toast.success('Aula excluída'); setDeleteLessonDialogOpen(false); setLessonToDelete(null); };
 
   // ── Questões handlers ──
-  const sessions = [...data.questionSessions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const parseLocalSessionDate = (dateStr: string) => {
+    if (!dateStr) return new Date();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr.trim())) {
+      return new Date(dateStr.trim() + 'T12:00:00');
+    }
+    return new Date(dateStr);
+  };
+  const sessions = [...data.questionSessions].sort((a, b) => parseLocalSessionDate(b.date).getTime() - parseLocalSessionDate(a.date).getTime());
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+  const todaySessions = sessions.filter(s => format(parseLocalSessionDate(s.date), 'yyyy-MM-dd') === todayStr);
+  const weekSessions = sessions.filter(s => parseLocalSessionDate(s.date) >= sevenDaysAgo);
+  const todayQuestionsCount = todaySessions.reduce((acc, s) => acc + s.questionsCount, 0);
+  const todayCorrectCount = todaySessions.reduce((acc, s) => acc + s.correctAnswers, 0);
+  const weekQuestionsCount = weekSessions.reduce((acc, s) => acc + s.questionsCount, 0);
+  const weekCorrectCount = weekSessions.reduce((acc, s) => acc + s.correctAnswers, 0);
+  const weekPerf = weekQuestionsCount > 0 ? ((weekCorrectCount / weekQuestionsCount) * 100).toFixed(1) : '0.0';
   const getSubjectById = (id: string) => data.subjects.find(s => s.id === id);
 
   const handleEditSessionOpen = (session: QuestionSession) => {
@@ -567,6 +585,12 @@ export default function Estudos() {
       {/* ═══════ QUESTÕES ═══════ */}
       <SectionDivider label="Questões" />
 
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 mb-4">
+        <StatsCard title="Questões Hoje" value={todayQuestionsCount} icon={Target} subtitle={`${todayCorrectCount} acertos hoje`} />
+        <StatsCard title="Questões na Semana (7 dias)" value={weekQuestionsCount} icon={TrendingUp} subtitle={`${weekCorrectCount} acertos (${weekPerf}%)`} />
+        <StatsCard title="Total Acumulado" value={overall.totalQuestions} icon={BookOpen} subtitle={`${overall.totalCorrect} acertos (${overall.performance.toFixed(1)}%)`} />
+      </div>
+
       <Card>
         <CardHeader><CardTitle>Histórico de Questões</CardTitle></CardHeader>
         <CardContent>
@@ -590,7 +614,7 @@ export default function Estudos() {
                     const perf = (session.correctAnswers / session.questionsCount) * 100;
                     return (
                       <TableRow key={session.id}>
-                        <TableCell>{format(new Date(session.date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}</TableCell>
+                        <TableCell>{format(parseLocalSessionDate(session.date), 'dd/MM/yyyy', { locale: ptBR })}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: subject?.color }} />
