@@ -5,6 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       (function() {
+        var BUILD_VERSION = 'habitus_matrix_235_v2';
+        try {
+          if (localStorage.getItem('habitus_build_version') !== BUILD_VERSION) {
+            localStorage.setItem('habitus_build_version', BUILD_VERSION);
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                regs.forEach(function(r) { r.unregister(); });
+              });
+            }
+            if ('caches' in window) {
+              caches.keys().then(function(names) {
+                Promise.all(names.map(function(n) { return caches.delete(n); })).then(function() {
+                  window.location.reload();
+                });
+              });
+            }
+          }
+        } catch(e) {}
+
         if (window.location.search.includes('reset=1') || window.location.search.includes('clear=1')) {
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(regs) {
