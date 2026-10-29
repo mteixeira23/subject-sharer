@@ -1,3 +1,4 @@
+import { CASP_LESSON_5_QUESTIONS } from './caspLesson5Questions';
 import { QuestionData } from '../aula00Questions';
 
 export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
@@ -2675,4 +2676,5 @@ export const CASP_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
       explanation: "Gabarito: E. O encerramento das classes 3 e 4 apura o Resultado Patrimonial (superávit ou déficit) no Patrimônio Líquido.",
     },
   ],
+  5: CASP_LESSON_5_QUESTIONS,
 };

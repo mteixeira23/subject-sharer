@@ -1008,7 +1008,7 @@ function buildDomainSpecificQuestions(
     let qData: any;
 
     if (lessonProps && lessonProps.length >= 3) {
-      qData = generateFromLessonPropositions(lessonProps, qNum, lessonTitle, isTF, idx, lessonNum);
+      qData = generateFromLessonPropositions(lessonProps, qNum, lessonTitle, isTF, idx, lessonNum, subjectMatrix);
     } else if (
       lowerSubj.includes('finanças') ||
       lowerSubj.includes('financas') ||
