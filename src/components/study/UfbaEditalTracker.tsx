@@ -336,8 +336,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
             taskIdsInUfbaPlan: [task.id],
             taskIdsInSefazPlan: sefazTasksByLessonKey.get(lKey) || [],
             weightLabel: meta.weightLabel,
-            specialistTopicId: ex.specialistTopicId,
-          });
+                      });
         } else {
           existing.taskIdsInUfbaPlan.push(task.id);
           if (!existing.scheduledReviewDates.includes(day.dateStr) && day.dateStr !== existing.scheduledStudyDate) {
@@ -379,6 +378,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
           taskIdsInUfbaPlan: [],
           taskIdsInSefazPlan: sefazTasksByLessonKey.get(lKey) || [],
           weightLabel: meta.weightLabel,
+          specialistTopicId: ex.specialistTopicId,
         });
       }
     });
