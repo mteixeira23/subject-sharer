@@ -25,6 +25,8 @@ import {
 import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
 import { buildSefazBAPlan, DayPlan, PlanTask } from '@/data/sefazBAPlanningData';
 import { buildUfbaSprintPlan } from '@/data/ufbaPlanningData';
+import { UFBA_SPECIALIST_TOPICS, UfbaSpecialistTopic } from '@/data/ufbaSpecialistTopics';
+import { UfbaTheoryReaderModal } from '@/components/study/UfbaTheoryReaderModal';
 import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -217,6 +219,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'pending' | 'completed'>('all');
 
   // Active Simulado / Bateria Modal State
+  const [selectedReaderTopic, setSelectedReaderTopic] = useState<UfbaSpecialistTopic | null>(null);
   const [simuladoModalInfo, setSimuladoModalInfo] = useState<{
     subjectId: string;
     subjectName: string;
@@ -823,6 +826,22 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                                 return (
                                   <div className="pt-2 flex items-center justify-between flex-wrap gap-2 border-t border-border/40 mt-1">
                                     <div className="flex items-center gap-2 flex-wrap">
+                                      {task.specialistTopicId && (
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            const topicData = UFBA_SPECIALIST_TOPICS[task.specialistTopicId!];
+                                            if (topicData) setSelectedReaderTopic(topicData);
+                                          }}
+                                          className="h-7 text-xs font-semibold gap-1.5 border-purple-500/40 text-purple-300 hover:bg-purple-500/10 shadow-sm"
+                                          title="Ler caderno esquematizado e gerar PDF deste tema"
+                                        >
+                                          <BookOpen className="h-3.5 w-3.5 text-purple-400" />
+                                          <span>📖 Ler Teoria (PDF)</span>
+                                        </Button>
+                                      )}
                                       <Button
                                         size="sm"
                                         variant="outline"
@@ -934,7 +953,12 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
             </div>
           </div>
         )}
-      </DialogContent>
+        <UfbaTheoryReaderModal
+            topic={selectedReaderTopic}
+            open={Boolean(selectedReaderTopic)}
+            onOpenChange={(op) => !op && setSelectedReaderTopic(null)}
+          />
+        </DialogContent>
     </Dialog>
   );
 }

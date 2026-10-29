@@ -10,6 +10,7 @@ export interface PlanTask {
   title: string;
   description: string;
   isVaccine?: boolean;
+  specialistTopicId?: string;
 }
 
 export interface DayPlan {
@@ -28,6 +29,11 @@ export function buildUfbaSprintPlan(): DayPlan[] {
 
   // Sequência de matérias prioritárias UFBA 100% alinhada à numeração oficial do catálogo SEFAZ-BA / Matrizes
   const UFBA_WEEKDAY_SEQUENCE: { subject: string; lesson: string; title: string; desc: string }[] = [
+    // Módulos Especializados da UFBA (Lacunas do Edital UFBA cobertas pelos Especialistas Hermes)
+    { subject: 'Auditoria', lesson: 'Aula 16', title: 'Perícia Contábil - Aula 16 (NBC TP 01 e NBC PP 01)', desc: 'Conceitos, Laudo e Parecer Pericial, NBC TP 01, Provas e Quesitos Judiciais', specialistTopicId: 'pericia-contabil' },
+    { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 18', title: 'CASP Municipal e Sistemas Federais - Aula 18', desc: 'Arrecadação Municipal, Fundos Especiais, Siconfi, Siope e Siops (MEC/MS)', specialistTopicId: 'casp-municipal-siconfi' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 24', title: 'Legislação Institucional da UFBA e IFES - Aula 24', desc: 'Estatuto e Regimento Geral da UFBA, CONSUNI, CONSEPE, Curadores e Gestão Universitária', specialistTopicId: 'legislacao-ufba-ifes' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 23', title: 'Governo Digital e Gestão de Riscos - Aula 23', desc: 'Lei do Governo Digital (Lei 14.129/21), LINDB/Riscos (Decreto 9.830/19) e Agenda Ambiental A3P', specialistTopicId: 'governo-digital-governanca' },
     // Bloco 1: Fundação Contábil, CASP, AFO, Administrativo e Português
     { subject: 'Contabilidade Geral', lesson: 'Aula 00', title: 'Contabilidade Geral - Aula 00', desc: 'Aspectos Introdutórios da Contabilidade (Objeto, Finalidade e Técnicas)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 00', title: 'CASP - Aula 00', desc: 'Aspectos Introdutórios e Conceito da CASP (MCASP e NBC TSP)' },
@@ -393,7 +399,8 @@ export function buildUfbaSprintPlan(): DayPlan[] {
         subject: item.subject,
         lesson: item.lesson,
         title: item.title,
-        description: `${item.desc} (PDF da pasta Sefaz BA)`
+        description: item.specialistTopicId ? item.desc : `${item.desc} (PDF da pasta Sefaz BA)`,
+        specialistTopicId: item.specialistTopicId
       });
     }
 
