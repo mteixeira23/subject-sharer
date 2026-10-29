@@ -30,6 +30,7 @@ import { Subject, Lesson, QuestionSession, SUBJECT_COLORS } from '@/types/study'
 import { getLessonName } from '@/data/sefazBA';
 import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
 import { StudyPlanModal } from '@/components/study/StudyPlanModal';
+import { UfbaEditalTracker } from '@/components/study/UfbaEditalTracker';
 import { cn } from '@/lib/utils';
 
 function SectionDivider({ label }: { label: string }) {
@@ -343,6 +344,12 @@ export default function Estudos() {
       </div>
 
       <ModuleGoals categories={['questions', 'study_time']} />
+
+      {/* ═══════ PAINEL DO EDITAL UFBA 2026 (ACOMPANHAMENTO EM TEMPO REAL) ═══════ */}
+      <UfbaEditalTracker
+        onOpenSimulado={(subjectId, dbLessonNumber) => handleOpenSimuladoForLesson(subjectId, dbLessonNumber)}
+        onOpenStudyPlan={() => setStudyPlanDialogOpen(true)}
+      />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-1">

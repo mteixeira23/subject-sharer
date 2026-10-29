@@ -367,6 +367,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
     }
 
     if (newState) {
+      window.dispatchEvent(new Event('ufba-plan-sync'));
       toast.success(`Concluído: ${task.title}`);
     }
   };

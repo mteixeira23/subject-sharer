@@ -155,6 +155,29 @@ export function Aula00QuestionsSimulado({
         correctAnswers: correctCount,
       });
 
+      try {
+        const n = currentSubj.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+        let cSub = n;
+        if (n.includes("casp") || n.includes("setor publico")) cSub = "casp";
+        else if (n.includes("contabilid")) cSub = "contabilidade geral";
+        else if (n.includes("portug") || n.includes("lingua")) cSub = "lingua portuguesa";
+        else if (n.includes("constitucional")) cSub = "direito constitucional";
+        else if (n.includes("administrativo")) cSub = "direito administrativo";
+        else if (n.includes("tribut")) cSub = "direito tributario";
+        else if (n.includes("auditoria")) cSub = "auditoria";
+        else if (n.includes("estat")) cSub = "estatistica";
+        else if (n.includes("economia")) cSub = "economia";
+        else if (n.includes("financas") || n.includes("afo") || n.includes("orcamento") || n.includes("administracao")) cSub = "afo";
+        else if (n.includes("racial")) cSub = "igualdade racial";
+        else if (n.includes("matem")) cSub = "matematica financeira";
+        else if (n.includes("inform") || n.includes("tecnologia")) cSub = "informatica";
+        const lKey = cSub + "|aula-" + Number(selectedLessonNumber);
+        const raw = localStorage.getItem("study_completed_questions_keys_v2");
+        const map = raw ? JSON.parse(raw) : {};
+        map[lKey] = true;
+        localStorage.setItem("study_completed_questions_keys_v2", JSON.stringify(map));
+        window.dispatchEvent(new Event("ufba-plan-sync"));
+      } catch (e) {}
       toast.success(`🎉 Sessão salva no sistema! ${correctCount}/${answeredCount} acertos (${accuracyPercent}%).`);
       if (onSaveSession) onSaveSession();
     } catch (err) {
