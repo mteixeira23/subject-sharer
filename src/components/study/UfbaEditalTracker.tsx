@@ -25,6 +25,8 @@ import {
 import { buildUfbaSprintPlan, PlanTask } from '@/data/ufbaPlanningData';
 import { buildSefazBAPlan } from '@/data/sefazBAPlanningData';
 import { getLessonName } from '@/data/sefazBA';
+import { UFBA_SPECIALIST_TOPICS, UfbaSpecialistTopic } from '@/data/ufbaSpecialistTopics';
+import { UfbaTheoryReaderModal } from '@/components/study/UfbaTheoryReaderModal';
 import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -91,6 +93,7 @@ export interface UfbaEditalItem {
   taskIdsInUfbaPlan: string[];
   taskIdsInSefazPlan: string[];
   weightLabel: string;
+  specialistTopicId?: string;
 }
 
 interface UfbaEditalTrackerProps {
@@ -256,6 +259,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
   });
 
   const [editingDateKey, setEditingDateKey] = useState<string | null>(null);
+  const [selectedReaderTopic, setSelectedReaderTopic] = useState<UfbaSpecialistTopic | null>(null);
 
   // Sync with storage events & custom window event so modal updates reflect immediately
   const reloadFromStorage = useCallback(() => {
@@ -332,6 +336,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
             taskIdsInUfbaPlan: [task.id],
             taskIdsInSefazPlan: sefazTasksByLessonKey.get(lKey) || [],
             weightLabel: meta.weightLabel,
+            specialistTopicId: ex.specialistTopicId,
           });
         } else {
           existing.taskIdsInUfbaPlan.push(task.id);
@@ -343,7 +348,11 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
     });
 
     // Ensure any remaining high-yield Edital UFBA items (e.g., Português Aula 15, Contab. Geral Aulas 28-30) are included
-    const extraItems: { subject: string; aulaNum: number; dateStr: string; dayNumber: number; desc: string }[] = [
+    const extraItems: { subject: string; aulaNum: number; dateStr: string; dayNumber: number; desc: string; specialistTopicId?: string }[] = [
+      { subject: 'Auditoria', aulaNum: 16, dateStr: '14/11/2026', dayNumber: 24, desc: 'Perícia Contábil Judicial e Extrajudicial (NBC TP 01 e NBC PP 01)', specialistTopicId: 'pericia-contabil' },
+      { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', aulaNum: 18, dateStr: '18/11/2026', dayNumber: 28, desc: 'Contabilidade Municipal, Fundos e Sistemas Federais (Siconfi, Siope e Siops)', specialistTopicId: 'casp-municipal-siconfi' },
+      { subject: 'Direito Administrativo', aulaNum: 24, dateStr: '25/11/2026', dayNumber: 35, desc: 'Estatuto e Regimento Geral da UFBA e Governança das IFES (CONSUNI, CONSEPE, Curadores)', specialistTopicId: 'legislacao-ufba-ifes' },
+      { subject: 'Direito Administrativo', aulaNum: 23, dateStr: '28/11/2026', dayNumber: 38, desc: 'Governo Digital (Lei 14.129/21), Riscos/LINDB (Decreto 9.830/19) e Sustentabilidade (A3P)', specialistTopicId: 'governo-digital-governanca' },
       { subject: 'Língua Portuguesa', aulaNum: 15, dateStr: '11/12/2026', dayNumber: 51, desc: 'Figuras de Linguagem, Funções do "Que" e do "Se" e Bateria Comentada' },
       { subject: 'Contabilidade Geral', aulaNum: 28, dateStr: '11/12/2026', dayNumber: 51, desc: 'Arrendamento Mercantil (CPC 06), Subvenção (CPC 07) e Custos de Empréstimos' },
       { subject: 'Contabilidade Geral', aulaNum: 29, dateStr: '12/12/2026', dayNumber: 52, desc: 'Instrumentos Financeiros (CPC 48), Receita de Contrato (CPC 47) e Ajustes de Exercícios' },
@@ -1134,10 +1143,26 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
 
                       {/* Col 6: Ação Rápida (Fazer Questões) */}
                       <TableCell className="text-right align-middle">
-                        <Button
-                          size="sm"
-                          variant={item.hasDoneQuestions ? 'outline' : 'default'}
-                          onClick={() => {
+                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                          {item.specialistTopicId && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const topicData = UFBA_SPECIALIST_TOPICS[item.specialistTopicId!];
+                                if (topicData) setSelectedReaderTopic(topicData);
+                              }}
+                              className="h-8 text-xs font-semibold gap-1 border-purple-500/40 text-purple-300 hover:bg-purple-500/10 shadow-sm"
+                              title="Ler caderno esquematizado e gerar PDF deste tema"
+                            >
+                              <BookOpen className="h-3.5 w-3.5 text-purple-400" />
+                              <span>Ler Teoria (PDF)</span>
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant={item.hasDoneQuestions ? 'outline' : 'default'}
+                            onClick={() => {
                             if (item.subjectObj) {
                               onOpenSimulado(item.subjectObj.id, item.dbLessonNumber);
                             } else {
@@ -1154,6 +1179,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
                           <Sparkles className="h-3.5 w-3.5" />
                           {item.hasDoneQuestions ? 'Refazer Questões' : 'Fazer Questões'}
                         </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -1163,6 +1189,20 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
           </Table>
         </div>
       </CardContent>
+      <UfbaTheoryReaderModal
+        topic={selectedReaderTopic}
+        open={Boolean(selectedReaderTopic)}
+        onOpenChange={(op) => !op && setSelectedReaderTopic(null)}
+        onOpenExercises={() => {
+          if (selectedReaderTopic) {
+            const targetItem = enrichedItems.find(i => i.specialistTopicId === selectedReaderTopic.id);
+            if (targetItem && targetItem.subjectObj) {
+              onOpenSimulado(targetItem.subjectObj.id, targetItem.dbLessonNumber);
+              setSelectedReaderTopic(null);
+            }
+          }
+        }}
+      />
     </Card>
   );
 }
