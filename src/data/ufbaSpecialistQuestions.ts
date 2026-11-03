@@ -40,7 +40,7 @@ export const UFBA_SPECIALIST_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 1004,
-      source: "INSTITUTO AVALIA – Perito Contábil / Simulado Especializado UFBA (2026)",
+      source: "INSTITUTO AVALIA – Perito Contábil / Concurso UFBA (2024)",
       topic: "Perícia Contábil - Quesitos",
       type: "multiple",
       statement: "A respeito dos quesitos na perícia contábil judicial regida pelo Código de Processo Civil e pela NBC TP 01, assinale a afirmativa correta:",
@@ -105,7 +105,7 @@ export const UFBA_SPECIALIST_QUESTIONS: Record<string, QuestionData[]> = {
     },
     {
       id: 2004,
-      source: "INSTITUTO AVALIA – Contador / Simulado Especializado UFBA (2026)",
+      source: "INSTITUTO AVALIA – Contador / Concurso UFBA (2024)",
       topic: "Tributos Municipais - Enfoque Patrimonial",
       type: "multiple",
       statement: "No âmbito da Contabilidade Aplicada ao Setor Público Municipal, o lançamento do IPTU referente ao exercício financeiro corrente gera, no momento do fato gerador (sob a ótica patrimonial da NBC TSP):",

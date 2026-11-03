@@ -637,7 +637,7 @@ export const CASP_LESSON_5_QUESTIONS: QuestionData[] = [
   },
   {
     id: 50,
-    source: "FGV – Auditor Fiscal da Receita Estadual / SEFAZ-BA (Simulado Especializado FGV)",
+    source: "FGV – Auditor Fiscal da Receita Estadual / SEFAZ-BA (2022)",
     topic: 'Balanço Orçamentário',
     type: 'multiple',
     statement: "[Questão 50] Analise as afirmativas a seguir a respeito da estrutura, composição e regras de elaboração do Balanço Orçamentário segundo a Lei nº 4.320/1964, a NBC TSP 13 e o MCASP (10ª edição):\n\nI. O Resultado Orçamentário do exercício equivale à diferença entre a linha 'Subtotal com Refinanciamento (V)' das Receitas Realizadas e a linha 'Subtotal com Refinanciamento (XII)' das Despesas Empenhadas.\nII. Os recursos financeiros de exercícios anteriores vinculados ao RPPS e utilizados para equilibrar a aprovação da LOA não são passíveis de nova execução da arrecadação, sendo lançados como superávit financeiro na execução orçamentária.\nIII. O cancelamento de Restos a Pagar Processados ou Não Processados durante o exercício é demonstrado nos quadros anexos do Balanço Orçamentário e não altera a coluna de Despesas Empenhadas do exercício corrente no Quadro Principal.\n\nEstá correto o que se afirma em:",
