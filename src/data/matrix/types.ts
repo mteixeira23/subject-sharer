@@ -40,9 +40,35 @@ export function generateFromLessonPropositions(
     .replace(/^Aula\s*\d+\s*[-–:]\s*/i, '')
     .trim();
 
-  const itemIdx = Math.floor(idx / 2); // 0..29
-  const serie = Math.floor(itemIdx / N); // 0..4
-  const i = itemIdx % N; // 0..N-1
+  // High-dispersion indexing guaranteeing that consecutive questions NEVER test the same proposition or serie
+  let i: number;
+  let serie: number;
+  let prevTestedProp: LessonProposition | undefined;
+
+  if (isTF) {
+    const tfStep = Math.floor(idx / 2);
+    // Use coprime stride 3 to cycle through propositions with wide spacing
+    i = (tfStep * 3) % N;
+    serie = (Math.floor((tfStep * 3) / N) + tfStep) % 5;
+    // The previous question was MC (idx - 1) if idx > 0
+    if (idx > 0) {
+      const prevMcStep = Math.floor((idx - 1) / 2);
+      const prevMcOffset = Math.max(1, Math.floor(N / 2));
+      const prevMcI = (prevMcStep * 3 + prevMcOffset) % N;
+      prevTestedProp = propositions[prevMcI];
+    }
+  } else {
+    const mcStep = Math.floor(idx / 2);
+    const mcOffset = Math.max(1, Math.floor(N / 2));
+    i = (mcStep * 3 + mcOffset) % N;
+    serie = (Math.floor((mcStep * 3) / N) + mcStep + 2) % 5;
+    // The previous question was TF (idx - 1)
+    if (idx > 0) {
+      const prevTfStep = Math.floor((idx - 1) / 2);
+      const prevTfI = (prevTfStep * 3) % N;
+      prevTestedProp = propositions[prevTfI];
+    }
+  }
 
   // Build an extended pool of propositions across the subject matrix to prevent distractor recycling
   const extendedPool: LessonProposition[] = [...propositions];
@@ -141,10 +167,13 @@ export function generateFromLessonPropositions(
     const p5 = propositions[(i + 4) % N];
     const source = `[Inédita / Simulado Especializado (Estilo FGV/FCC) – ${p1.ref}]`;
 
-    // Pool de distratores sem p1, deslocado de 4 em 4 a cada questão para impedir repetição entre questões consecutivas
-    const distractorCandidates = extendedPool.filter(p => p.t !== p1.t && p.f !== p1.f);
+    // Pool de distratores sem p1 e sem prevTestedProp, deslocado a cada questão para impedir repetição entre questões consecutivas
+    const distractorCandidates = extendedPool.filter(p =>
+      p.t !== p1.t && p.f !== p1.f &&
+      (!prevTestedProp || (p.t !== prevTestedProp.t && p.f !== prevTestedProp.f))
+    );
     const poolLen = distractorCandidates.length;
-    const baseOffset = itemIdx * 4;
+    const baseOffset = (idx * 4 + 7) % Math.max(1, poolLen);
     const d1 = poolLen > 0 ? distractorCandidates[(baseOffset + 0) % poolLen] : p2;
     const d2 = poolLen > 1 ? distractorCandidates[(baseOffset + 1) % poolLen] : p3;
     const d3 = poolLen > 2 ? distractorCandidates[(baseOffset + 2) % poolLen] : p4;

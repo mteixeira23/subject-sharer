@@ -925,23 +925,107 @@ function buildDomainSpecificQuestions(
   bank?: QuestionData[],
   lessonSpecific?: QuestionData[]
 ): QuestionData[] {
-  // 1. If we have a comprehensive authentic lesson battery of 50 questions, return it directly
-  if (lessonSpecific && lessonSpecific.length >= 50) {
-    return lessonSpecific.map((q, idx) => ({
-      ...q,
-      id: idx + 1,
-      topic: q.topic || lessonTitle,
-    }));
-  }
-
-  // 2. Otherwise, dynamically build up to 50 unique questions, NEVER repeating statements
   const results: QuestionData[] = [];
   const seenStatements = new Set<string>();
+
+  const cleanKey = (str: string) => {
+    return (str || '')
+      .replace(/\[Questão \d+\]/gi, '')
+      .replace(/[^a-zA-Z0-9À-ÿ\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  };
+
+  const hasConsecutiveOverlap = (candidate: QuestionData): boolean => {
+    if (results.length === 0) return false;
+    // Inspect the last 2 accepted questions to prevent immediate repetition
+    const recent = results.slice(-2);
+
+    const candStmt = cleanKey(candidate.statement);
+    const candCorrectText = candidate.type === 'multiple' && Array.isArray(candidate.options)
+      ? cleanKey(candidate.options[candidate.correctAnswer] || '')
+      : '';
+
+    for (const prevQ of recent) {
+      const prevStmt = cleanKey(prevQ.statement);
+      const prevCorrectText = prevQ.type === 'multiple' && Array.isArray(prevQ.options)
+        ? cleanKey(prevQ.options[prevQ.correctAnswer] || '')
+        : '';
+
+      // 1. Statements cannot be identical or contain each other
+      if (candStmt === prevStmt || (candStmt.length > 25 && prevStmt.length > 25 && (candStmt.includes(prevStmt) || prevStmt.includes(candStmt)))) {
+        return true;
+      }
+
+      // 2. Candidate correct answer cannot match prev statement or prev correct answer
+      if (candCorrectText && candCorrectText.length > 20) {
+        if (candCorrectText === prevStmt || prevStmt.includes(candCorrectText) || candCorrectText.includes(prevStmt)) {
+          return true;
+        }
+        if (prevCorrectText && (candCorrectText === prevCorrectText || prevCorrectText.includes(candCorrectText) || candCorrectText.includes(prevCorrectText))) {
+          return true;
+        }
+      }
+
+      // 3. Candidate statement cannot match prev correct answer
+      if (prevCorrectText && prevCorrectText.length > 20) {
+        if (candStmt === prevCorrectText || candStmt.includes(prevCorrectText) || prevCorrectText.includes(candStmt)) {
+          return true;
+        }
+      }
+
+      // 4. Candidate options cannot contain the statement or correct answer of the previous question
+      if (Array.isArray(candidate.options)) {
+        for (const opt of candidate.options) {
+          if (opt === 'Certo' || opt === 'Errado') continue;
+          const cOpt = cleanKey(opt);
+          if (cOpt.length > 25) {
+            if (cOpt === prevStmt || (prevStmt.length > 25 && (prevStmt.includes(cOpt) || cOpt.includes(prevStmt)))) {
+              return true;
+            }
+            if (prevCorrectText && (cOpt === prevCorrectText || (prevCorrectText.length > 25 && (prevCorrectText.includes(cOpt) || cOpt.includes(prevCorrectText))))) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+    return false;
+  };
+
+  // 1. If we have a comprehensive authentic lesson battery of 50 questions, verify and de-collide before returning
+  if (lessonSpecific && lessonSpecific.length >= 50) {
+    const arranged: QuestionData[] = [];
+    const pool = [...lessonSpecific];
+    while (pool.length > 0) {
+      // Find the first question in pool that does not collide with the last arranged question
+      let foundIdx = -1;
+      for (let j = 0; j < pool.length; j++) {
+        if (!hasConsecutiveOverlap(pool[j])) {
+          foundIdx = j;
+          break;
+        }
+      }
+      if (foundIdx === -1) {
+        foundIdx = 0;
+      }
+      const [chosen] = pool.splice(foundIdx, 1);
+      arranged.push({
+        ...chosen,
+        id: arranged.length + 1,
+        topic: chosen.topic || lessonTitle,
+      });
+      results.push(arranged[arranged.length - 1]);
+    }
+    return arranged;
+  }
 
   const addIfUnique = (q: QuestionData) => {
     const raw = q.statement.replace(/\[Questão \d+\]/gi, '').trim();
     const norm = raw.replace(/\s+/g, ' ').toLowerCase();
-    if (!seenStatements.has(norm)) {
+    if (!seenStatements.has(norm) && !hasConsecutiveOverlap(q)) {
       seenStatements.add(norm);
       results.push({
         ...q,
@@ -1002,12 +1086,13 @@ function buildDomainSpecificQuestions(
 
   const lessonProps = subjectMatrix ? subjectMatrix[lessonNum] : undefined;
 
-  for (let idx = 0; results.length < 50 && idx < 300; idx++) {
+  for (let idx = 0; results.length < 50 && idx < 800; idx++) {
     const qNum = results.length + 1;
     const isTF = idx % 2 === 0;
     let qData: any;
 
-    if (lessonProps && lessonProps.length >= 3) {
+    const useMatrix = lessonProps && lessonProps.length >= 3 && idx < 120;
+    if (useMatrix) {
       qData = generateFromLessonPropositions(lessonProps, qNum, lessonTitle, isTF, idx, lessonNum, subjectMatrix);
     } else if (
       lowerSubj.includes('finanças') ||

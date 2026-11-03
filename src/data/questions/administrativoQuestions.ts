@@ -492,7 +492,7 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
       source: 'CEBRASPE – Auditor Federal de Controle Externo / TCU (2022)',
       topic: 'Elementos Vinculados e Discricionários do Ato Administrativo',
       type: 'tf',
-      statement: 'Em um ato administrativo discricionário, todos os cinco elementos estruturais do ato (competência, finalidade, forma, motivo e objeto) são discricionários e flexíveis à escolha pessoal do administrador.',
+      statement: 'Em um ato administrativo discricionário, todos os seus requisitos estruturais de validade são flexíveis e submetidos ao juízo de pura conveniência e oportunidade do administrador público.',
       options: ['Certo', 'Errado'],
       correctAnswer: 1,
       explanation: 'Gabarito: ERRADO. Em regra, a Competência, a Finalidade e a Forma são SEMPRE elementos VINCULADOS pela lei. A discricionariedade (margem de mérito administrativo) situa-se precipuamente no MOTIVO e no OBJETO.'
