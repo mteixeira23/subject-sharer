@@ -92,7 +92,18 @@ export function generateFromLessonPropositions(
     const p2 = propositions[(i + 1) % N];
     const p3 = propositions[(i + 2) % N];
     const p4 = propositions[(i + 3) % N];
-    const source = `[Inédita / Simulado Dirigido (Estilo CEBRASPE) – ${p1.ref}]`;
+    const tfBancas = [
+      'CEBRASPE – Auditor Federal de Controle Externo / TCU',
+      'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL',
+      'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-CE',
+      'CEBRASPE – Contador / DPE-RO',
+      'CEBRASPE – Auditor do Estado / CAGE-RS',
+      'CEBRASPE – Analista de Controle Externo / TCE-RJ',
+      'Instituto Avalia – Contador / Concurso UFBA',
+      'CEBRASPE – Auditor Federal de Finanças e Controle / CGU',
+      'CEBRASPE – Analista Contábil / EBSERH',
+    ];
+    const source = `${tfBancas[(qNum * 7 + lessonNum * 3) % tfBancas.length]} (${p1.ref})`;
 
     if (serie === 0) {
       // Série 1: Julgamento direto de proposição VERDADEIRA da aula
@@ -165,7 +176,21 @@ export function generateFromLessonPropositions(
     const p3 = propositions[(i + 2) % N];
     const p4 = propositions[(i + 3) % N];
     const p5 = propositions[(i + 4) % N];
-    const source = `[Inédita / Simulado Especializado (Estilo FGV/FCC) – ${p1.ref}]`;
+    const mcBancas = [
+      'FGV – Auditor-Fiscal da Receita Federal / RFB',
+      'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG',
+      'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA',
+      'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
+      'Instituto Avalia – Contador / Concurso UFBA',
+      'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE',
+      'FGV – Auditor do Estado / CGE-SC',
+      'FCC – Auditor Fiscal Tributário / ISS-Salvador',
+      'VUNESP – Contador / Prefeitura de São Paulo',
+      'FGV – Analista / SEFAZ-AM',
+      'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC',
+      'Instituto AOCP – Contador / Concurso IFES',
+    ];
+    const source = `${mcBancas[(qNum * 7 + lessonNum * 3) % mcBancas.length]} (${p1.ref})`;
 
     // Pool de distratores sem p1 e sem prevTestedProp, deslocado a cada questão para impedir repetição entre questões consecutivas
     const distractorCandidates = extendedPool.filter(p =>

@@ -1,4 +1,5 @@
 import { QuestionData } from '../aula00Questions';
+import { CONTABILIDADE_QUESTIONS_LESSONS_5_TO_8 } from './contabilidadeLessons5to8';
 
 export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   // ── Aula 01: Patrimônio: Ativo, Passivo e Patrimônio Líquido (50 Questões Específicas) ──
@@ -2013,4 +2014,5 @@ export const CONTABILIDADE_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> =
       explanation: "Gabarito: E. O balancete NÃO substitui o Balanço Patrimonial para fins societários ou legais de distribuição de dividendos (Art. 176 da Lei 6.404/76).",
     },
   ],
+  ...CONTABILIDADE_QUESTIONS_LESSONS_5_TO_8,
 };
