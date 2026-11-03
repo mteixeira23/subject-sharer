@@ -939,8 +939,8 @@ function buildDomainSpecificQuestions(
 
   const hasConsecutiveOverlap = (candidate: QuestionData): boolean => {
     if (results.length === 0) return false;
-    // Inspect the last 2 accepted questions to prevent immediate repetition
-    const recent = results.slice(-2);
+    // Inspect the last 4 accepted questions to prevent immediate repetition
+    const recent = results.slice(-4);
 
     const candStmt = cleanKey(candidate.statement);
     const candCorrectText = candidate.type === 'multiple' && Array.isArray(candidate.options)

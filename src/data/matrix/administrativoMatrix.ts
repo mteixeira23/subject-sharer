@@ -194,6 +194,55 @@ export const ADMINISTRATIVO_LESSON_MATRIX: SubjectLessonMatrix = {
       t: 'A cassação é a extinção de ato válido porque o beneficiário descumpriu condições que deveria manter para continuar usufruindo da situação jurídica (ex: hotel que vira casa de jogos ilícitos tem seu alvará cassado); a caducidade é a extinção do ato porque uma nova lei superveniente tornou inadmissível aquela situação antes permitida (ex: nova lei de zoneamento proíbe circo em praça pública); e a contraposição (derrubada) ocorre quando é editado novo ato baseado em competência diversa cujos efeitos são opostos ao anterior (ex: exoneração que derruba a nomeação).',
       f: 'Quando o particular descumpre as condições legais exigidas para a manutenção de sua licença ambiental, ocorre a extinção do ato por caducidade.',
       exp: 'Descumprimento de condição pelo particular = CASSAÇÃO; Superveniência de lei proibitiva = CADUCIDADE!'
+    },
+    {
+      sub: 'Decadência do Direito de Anular Atos Administrativos Favoráveis',
+      ref: 'Lei nº 9.784/1999, Art. 54',
+      t: 'O direito da Administração de anular os atos administrativos de que decorram efeitos favoráveis para os destinatários decai em cinco anos, contados da data em que foram praticados, salvo comprovada má-fé.',
+      f: 'O poder de anular atos administrativos ilegais favoráveis ao administrado é imprescritível e não se sujeita a prazo decadencial em nenhuma hipótese.',
+      exp: 'Art. 54 da Lei 9.784/99 fixa prazo decadencial de 5 anos para anulação de atos favoráveis, salvo má-fé comprovada.'
+    },
+    {
+      sub: 'Conversão e Reforma de Atos Administrativos',
+      ref: 'Doutrina de Direito Administrativo',
+      t: 'A conversão é o aproveitamento de ato nulo que é transformado retroativamente em ato válido de outra espécie pelo preenchimento de seus requisitos legais, enquanto a reforma suprime do ato apenas a parte inválida, mantendo a parte válida.',
+      f: 'O ato administrativo nulo por vício de finalidade é passível de convalidação mediante simples termo de aditamento.',
+      exp: 'A conversão cria nova roupagem jurídica para salvar a vontade do ato nulo; a convalidação aplica-se apenas a defeitos sanáveis (competência e forma).'
+    },
+    {
+      sub: 'Atos Irrevogáveis: Rol e Fundamentos',
+      ref: 'Doutrina e Jurisprudência',
+      t: 'São insuscetíveis de revogação os atos vinculados (pois não há mérito administrativo), os atos consumados ou exauridos (que já produziram integralmente seus efeitos), os atos que geraram direitos adquiridos (Súmula 473 do STF) e os meros atos administrativos (enunciativos, como certidões).',
+      f: 'A Administração Pública pode revogar discricionariamente licença para edificar cujo projeto já foi executado e que gerou direito adquirido.',
+      exp: 'Atos vinculados, consumados e que geraram direito adquirido são formalmente irrevogáveis.'
+    },
+    {
+      sub: 'Atos Enunciativos: Certidões, Atestados e Pareceres',
+      ref: 'Doutrina de Direito Administrativo',
+      t: 'Os atos enunciativos (certidões, atestados, pareceres e relatórios) limitam-se a atestar uma situação jurídica ou emitir uma opinião técnica prévia, não veiculando por si sós uma declaração de vontade da Administração nem criando direitos novos.',
+      f: 'O parecer opinativo emitido por procurador do Estado gera responsabilidade civil solidária imediata com o ordenador de despesas em todos os casos.',
+      exp: 'Atos enunciativos não têm conteúdo decisório direto; o parecerista só responde solidariamente se demonstrado erro grosseiro ou dolo (art. 28 da LINDB).'
+    },
+    {
+      sub: 'Atos Ordinatórios e Poder Hierárquico',
+      ref: 'Doutrina de Direito Administrativo',
+      t: 'Os atos ordinatórios (instruções, circulares, avisos, portarias internas e ordens de serviço) decorrem do poder hierárquico e visam disciplinar o funcionamento interno da Administração e a conduta de seus servidores, não obrigando particulares estranhos ao quadro funcional.',
+      f: 'Uma portaria administrativa de natureza ordinatória interna pode criar tributos ou restringir liberdades fundamentais dos cidadãos em geral.',
+      exp: 'Atos ordinatórios produzem apenas efeitos internos na repartição; obrigações a particulares exigem lei formal ou regulamento de execução.'
+    },
+    {
+      sub: 'Atos Punitivos Administrativos',
+      ref: 'Doutrina de Direito Administrativo',
+      t: 'Os atos punitivos impõem sanções aos servidores públicos decorrentes do poder disciplinar (como advertência e demissão) ou aos particulares decorrentes do poder de polícia (como multas e interdição) ou do vínculo contratual administrativo.',
+      f: 'As penalidades de demissão aplicadas a servidores públicos prescindem de processo administrativo disciplinar quando a infração for confessada.',
+      exp: 'A aplicação de penalidade grave a servidor exige obrigatoriamente PAD com contraditório e ampla defesa (art. 5º, LV da CF/88).'
+    },
+    {
+      sub: 'Desistência e Renúncia como Formas de Extinção',
+      ref: 'Lei nº 9.784/1999, Art. 51',
+      t: 'O interessado pode, mediante manifestação escrita, desistir total ou parcialmente do pedido formulado ou renunciar a direitos disponíveis, extinguindo-se o procedimento ou a situação jurídica conferida pelo ato negocial.',
+      f: 'A desistência do particular em processo administrativo impede de forma definitiva a Administração de prosseguir com o feito, ainda que haja relevante interesse público envolvido.',
+      exp: 'Art. 51, § 2º da Lei 9.784/99: O desentranhamento ou a desistência do interessado não impede o prosseguimento do processo se a Administração considerar que o interesse público assim o exige.'
     }
   ],
 
