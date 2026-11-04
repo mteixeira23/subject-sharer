@@ -105,6 +105,12 @@ export function Aula00QuestionsSimulado({
     return n;
   }, [activeSubjectName]);
 
+  // Stores user answers: questionId -> chosen answer index or string ('Certo'/'Errado' or number index)
+  const [answers, setAnswers] = useState<Record<number, number | string>>({});
+  // Stores revealed status: questionId -> boolean
+  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
+  const [filterBlock, setFilterBlock] = useState<number | 'all'>('all');
+
   const { isB1Done, isB2Done } = useMemo(() => {
     try {
       const raw = localStorage.getItem("study_completed_questions_keys_v2");
@@ -117,7 +123,7 @@ export function Aula00QuestionsSimulado({
     } catch (e) {
       return { isB1Done: false, isB2Done: false };
     }
-  }, [canonicalSubj, selectedLessonNumber, answers]);
+  }, [canonicalSubj, selectedLessonNumber]);
 
   const handleBatteryChange = (newBat: 1 | 2) => {
     if (newBat === selectedBattery) return;
@@ -126,12 +132,6 @@ export function Aula00QuestionsSimulado({
     setRevealed({});
     setFilterBlock('all');
   };
-
-  // Stores user answers: questionId -> chosen answer index or string ('Certo'/'Errado' or number index)
-  const [answers, setAnswers] = useState<Record<number, number | string>>({});
-  // Stores revealed status: questionId -> boolean
-  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
-  const [filterBlock, setFilterBlock] = useState<number | 'all'>('all');
 
   const handleSubjectChange = (newSubjId: string) => {
     setSelectedSubjectId(newSubjId);
