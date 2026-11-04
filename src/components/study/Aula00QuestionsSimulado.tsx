@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle2, XCircle, HelpCircle, Save, RotateCcw, Check, Sparkles, BookOpen } from 'lucide-react';
+import { CheckCircle2, XCircle, HelpCircle, Save, RotateCcw, Check, Sparkles, BookOpen, Layers, Zap } from 'lucide-react';
 import { useStudy } from '@/contexts/StudyContext';
 import { getLocalDateString } from '@/lib/dates';
 import { toast } from 'sonner';
@@ -17,16 +17,19 @@ interface Aula00QuestionsSimuladoProps {
   onSaveSession?: () => void;
   initialSubjectId?: string;
   initialLessonNumber?: string;
+  initialBatteryNumber?: 1 | 2;
   isModalView?: boolean;
 }
 
 export function Aula00QuestionsSimulado({
   initialSubjectId,
   initialLessonNumber,
+  initialBatteryNumber,
   onSaveSession,
   isModalView = false,
 }: Aula00QuestionsSimuladoProps = {}) {
   const [showSelectors, setShowSelectors] = useState<boolean>(!initialSubjectId && !isModalView);
+  const [selectedBattery, setSelectedBattery] = useState<1 | 2>(initialBatteryNumber || 1);
   const { data: studyData, addQuestionSession } = useStudy();
 
   // Filter studyData.subjects to ONLY SEFAZ-BA 13 subjects
@@ -58,10 +61,11 @@ export function Aula00QuestionsSimulado({
   React.useEffect(() => {
     if (initialSubjectId) setSelectedSubjectId(initialSubjectId);
     if (initialLessonNumber !== undefined) setSelectedLessonNumber(initialLessonNumber);
+    if (initialBatteryNumber !== undefined) setSelectedBattery(initialBatteryNumber);
     setAnswers({});
     setRevealed({});
     setFilterBlock('all');
-  }, [initialSubjectId, initialLessonNumber]);
+  }, [initialSubjectId, initialLessonNumber, initialBatteryNumber]);
 
   const activeSubjectObj = availableSubjects.find(s => s.id === selectedSubjectId) || availableSubjects[0];
   const activeSubjectName = activeSubjectObj ? activeSubjectObj.name : 'Contabilidade Geral';
@@ -77,11 +81,51 @@ export function Aula00QuestionsSimulado({
   }, [activeSubjectName, totalLessonsForActiveSubj]);
 
   const activeQuestions = useMemo(() => {
-    if (activeSubjectName.trim().toLowerCase() === 'contabilidade geral' && selectedLessonNumber === '0') {
+    if (activeSubjectName.trim().toLowerCase() === 'contabilidade geral' && selectedLessonNumber === '0' && selectedBattery === 1) {
       return AULA_00_QUESTIONS;
     }
-    return generateCustomQuestionsForSubject(activeSubjectName, Number(selectedLessonNumber));
-  }, [activeSubjectName, selectedLessonNumber]);
+    return generateCustomQuestionsForSubject(activeSubjectName, Number(selectedLessonNumber), selectedBattery);
+  }, [activeSubjectName, selectedLessonNumber, selectedBattery]);
+
+  const canonicalSubj = useMemo(() => {
+    const n = activeSubjectName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+    if (n.includes("casp") || n.includes("setor publico")) return "casp";
+    if (n.includes("contabilid")) return "contabilidade geral";
+    if (n.includes("portug") || n.includes("lingua")) return "lingua portuguesa";
+    if (n.includes("constitucional")) return "direito constitucional";
+    if (n.includes("administrativo")) return "direito administrativo";
+    if (n.includes("tribut")) return "direito tributario";
+    if (n.includes("auditoria")) return "auditoria";
+    if (n.includes("estat")) return "estatistica";
+    if (n.includes("economia")) return "economia";
+    if (n.includes("financas") || n.includes("afo") || n.includes("orcamento") || n.includes("administracao")) return "afo";
+    if (n.includes("racial")) return "igualdade racial";
+    if (n.includes("matem")) return "matematica financeira";
+    if (n.includes("inform") || n.includes("tecnologia")) return "informatica";
+    return n;
+  }, [activeSubjectName]);
+
+  const { isB1Done, isB2Done } = useMemo(() => {
+    try {
+      const raw = localStorage.getItem("study_completed_questions_keys_v2");
+      const map = raw ? JSON.parse(raw) : {};
+      const lKey = canonicalSubj + "|aula-" + Number(selectedLessonNumber);
+      return {
+        isB1Done: Boolean(map[lKey + "|b1"] || map[lKey]),
+        isB2Done: Boolean(map[lKey + "|b2"]),
+      };
+    } catch (e) {
+      return { isB1Done: false, isB2Done: false };
+    }
+  }, [canonicalSubj, selectedLessonNumber, answers]);
+
+  const handleBatteryChange = (newBat: 1 | 2) => {
+    if (newBat === selectedBattery) return;
+    setSelectedBattery(newBat);
+    setAnswers({});
+    setRevealed({});
+    setFilterBlock('all');
+  };
 
   // Stores user answers: questionId -> chosen answer index or string ('Certo'/'Errado' or number index)
   const [answers, setAnswers] = useState<Record<number, number | string>>({});
@@ -174,11 +218,16 @@ export function Aula00QuestionsSimulado({
         const lKey = cSub + "|aula-" + Number(selectedLessonNumber);
         const raw = localStorage.getItem("study_completed_questions_keys_v2");
         const map = raw ? JSON.parse(raw) : {};
-        map[lKey] = true;
+        if (selectedBattery === 1) {
+          map[lKey] = true;
+          map[lKey + "|b1"] = true;
+        } else {
+          map[lKey + "|b2"] = true;
+        }
         localStorage.setItem("study_completed_questions_keys_v2", JSON.stringify(map));
         window.dispatchEvent(new Event("ufba-plan-sync"));
       } catch (e) {}
-      toast.success(`🎉 Sessão salva no sistema! ${correctCount}/${answeredCount} acertos (${accuracyPercent}%).`);
+      toast.success(`🎉 Bateria ${selectedBattery} salva no sistema! ${correctCount}/${answeredCount} acertos (${accuracyPercent}%).`);
       if (onSaveSession) onSaveSession();
     } catch (err) {
       toast.error('Erro ao registrar sessão no sistema.');
@@ -263,6 +312,56 @@ export function Aula00QuestionsSimulado({
         </div>
       )}
 
+      {/* Battery Selector (Bateria 1 vs Bateria 2) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-card/90 p-2 sm:p-2.5 rounded-lg border border-border shadow-sm">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 shrink-0">
+            <Layers className="h-4 w-4 text-primary" /> Opção de Bateria:
+          </span>
+          <div className="inline-flex items-center p-0.5 rounded-lg bg-muted border border-border/80">
+            <button
+              type="button"
+              onClick={() => handleBatteryChange(1)}
+              className={cn(
+                "px-2.5 sm:px-3 py-1 text-xs font-bold rounded-md transition-all flex items-center gap-1.5",
+                selectedBattery === 1
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <span>⚡ Bateria 1</span>
+              <span className="text-[10px] opacity-80">(50 Q Fundamentais)</span>
+              {isB1Done && <CheckCircle2 className="h-3 w-3 text-emerald-300 shrink-0" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleBatteryChange(2)}
+              className={cn(
+                "px-2.5 sm:px-3 py-1 text-xs font-bold rounded-md transition-all flex items-center gap-1.5",
+                selectedBattery === 2
+                  ? "bg-amber-500 text-black shadow-sm font-extrabold"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <span>🎯 Bateria 2</span>
+              <span className="text-[10px] opacity-80">(50 Q Inéditas)</span>
+              {isB2Done && <CheckCircle2 className="h-3 w-3 text-emerald-300 shrink-0" />}
+            </button>
+          </div>
+        </div>
+
+        <Badge variant="outline" className={cn(
+          "text-[10px] sm:text-[11px] font-semibold py-1 px-2.5 border w-fit",
+          selectedBattery === 1
+            ? "bg-primary/10 text-primary border-primary/30"
+            : "bg-amber-500/15 text-amber-300 border-amber-500/40"
+        )}>
+          {selectedBattery === 1
+            ? '📘 Bateria 1: Questões Fundamentais & Normativas'
+            : '🔥 Bateria 2: Aprofundamento, Estágios & Tópicos Avançados'}
+        </Badge>
+      </div>
+
       {/* Mobile Compact Stats Bar */}
       <div className="sm:hidden space-y-2 bg-card/90 p-2.5 rounded-lg border border-primary/20 shadow-sm">
         <div className="flex items-center justify-between text-xs">
@@ -309,7 +408,7 @@ export function Aula00QuestionsSimulado({
             <div>
               <CardTitle className="text-lg font-bold flex items-center gap-2 leading-tight">
                 <Sparkles className="h-5 w-5 text-primary animate-pulse shrink-0" />
-                Simulado: {activeSubjectName} – {activeLessonTitle} ({totalQuestions} Questões)
+                Simulado: {activeSubjectName} – {activeLessonTitle} (Bateria {selectedBattery}: {totalQuestions} Questões)
               </CardTitle>
               <CardDescription className="text-xs mt-1">
                 Responda cada questão diretamente abaixo. O gabarito e a explicação detalhada aparecem imediatamente!

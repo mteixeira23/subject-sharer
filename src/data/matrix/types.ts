@@ -33,7 +33,8 @@ export function generateFromLessonPropositions(
   isTF: boolean,
   idx: number,
   lessonNum: number,
-  subjectMatrix?: SubjectLessonMatrix
+  subjectMatrix?: SubjectLessonMatrix,
+  batteryNum: 1 | 2 = 1
 ): DomainQuestionData {
   const N = propositions.length;
   const cleanTopic = (lessonTitle || 'Conhecimentos Específicos')
@@ -44,28 +45,29 @@ export function generateFromLessonPropositions(
   let i: number;
   let serie: number;
   let prevTestedProp: LessonProposition | undefined;
+  const batteryShift = batteryNum === 2 ? Math.max(1, Math.floor(N / 2) + 1) : 0;
 
   if (isTF) {
     const tfStep = Math.floor(idx / 2);
     // Use coprime stride 3 to cycle through propositions with wide spacing
-    i = (tfStep * 3) % N;
-    serie = (Math.floor((tfStep * 3) / N) + tfStep) % 5;
+    i = (tfStep * 3 + batteryShift) % N;
+    serie = (Math.floor((tfStep * 3) / N) + tfStep + (batteryNum === 2 ? 2 : 0)) % 5;
     // The previous question was MC (idx - 1) if idx > 0
     if (idx > 0) {
       const prevMcStep = Math.floor((idx - 1) / 2);
       const prevMcOffset = Math.max(1, Math.floor(N / 2));
-      const prevMcI = (prevMcStep * 3 + prevMcOffset) % N;
+      const prevMcI = (prevMcStep * 3 + prevMcOffset + batteryShift) % N;
       prevTestedProp = propositions[prevMcI];
     }
   } else {
     const mcStep = Math.floor(idx / 2);
     const mcOffset = Math.max(1, Math.floor(N / 2));
-    i = (mcStep * 3 + mcOffset) % N;
-    serie = (Math.floor((mcStep * 3) / N) + mcStep + 2) % 5;
+    i = (mcStep * 3 + mcOffset + batteryShift) % N;
+    serie = (Math.floor((mcStep * 3) / N) + mcStep + (batteryNum === 2 ? 3 : 2)) % 5;
     // The previous question was TF (idx - 1)
     if (idx > 0) {
       const prevTfStep = Math.floor((idx - 1) / 2);
-      const prevTfI = (prevTfStep * 3) % N;
+      const prevTfI = (prevTfStep * 3 + batteryShift) % N;
       prevTestedProp = propositions[prevTfI];
     }
   }

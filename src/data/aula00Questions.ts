@@ -780,8 +780,9 @@ import { CASP_QUESTIONS_BY_LESSON } from './questions/caspQuestions';
 import { ADMINISTRATIVO_QUESTIONS_BY_LESSON } from './questions/administrativoQuestions';
 import { CONSTITUCIONAL_QUESTIONS_BY_LESSON } from './questions/constitucionalQuestions';
 import { PORTUGUES_QUESTIONS_BY_LESSON } from './questions/portuguesQuestions';
-import { AFO_QUESTIONS_BY_LESSON } from './questions/afoQuestions';
+import { AFO_QUESTIONS_BY_LESSON, AFO_QUESTIONS_B2_BY_LESSON } from './questions/afoQuestions';
 import { generateFromLessonPropositions, SubjectLessonMatrix } from './matrix/types';
+import { getBattery2Matrix } from './matrix/battery2Matrix';
 import { AFO_LESSON_MATRIX } from './matrix/afoMatrix';
 import { AUDITORIA_LESSON_MATRIX } from './matrix/auditoriaMatrix';
 import { TRIBUTARIO_LESSON_MATRIX } from './matrix/tributarioMatrix';
@@ -807,12 +808,12 @@ import {
   getGeneralFiscalQuestion,
 } from './domainQuestionGenerators';
 
-export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number): QuestionData[] {
+export function generateCustomQuestionsForSubject(subjectName: string, lessonNum: number, batteryNum: 1 | 2 = 1): QuestionData[] {
   const lessonTitle = getLessonName(subjectName, lessonNum);
   const lowerSubj = subjectName.trim().toLowerCase();
 
-  // If Contabilidade Geral and Lesson 00, return the 50 hardcoded authentic questions
-  if (lowerSubj === 'contabilidade geral' && lessonNum === 0) {
+  // If Contabilidade Geral and Lesson 00 and Battery 1, return the 50 hardcoded authentic questions
+  if (lowerSubj === 'contabilidade geral' && lessonNum === 0 && batteryNum === 1) {
     return AULA_00_QUESTIONS;
   }
 
@@ -830,35 +831,35 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
   ) {
     bank = REAL_CONCURSO_QUESTIONS.economia;
-    lessonSpecific = AFO_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? AFO_QUESTIONS_BY_LESSON[lessonNum] : AFO_QUESTIONS_B2_BY_LESSON?.[lessonNum];
   } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
     bank = REAL_CONCURSO_QUESTIONS.tributario;
-    lessonSpecific = TRIBUTARIO_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? TRIBUTARIO_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('matemática') || lowerSubj.includes('financeira')) {
     bank = REAL_CONCURSO_QUESTIONS.matematica_financeira;
   } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
     bank = REAL_CONCURSO_QUESTIONS.estatistica;
   } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
     bank = REAL_CONCURSO_QUESTIONS.casp;
-    lessonSpecific = CASP_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? CASP_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('contabil')) {
     bank = REAL_CONCURSO_QUESTIONS.contabilidade;
-    lessonSpecific = CONTABILIDADE_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? CONTABILIDADE_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
-    lessonSpecific = ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('constituc')) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
-    lessonSpecific = CONSTITUCIONAL_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? CONSTITUCIONAL_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('direito')) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
-    lessonSpecific = ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('auditoria')) {
     bank = REAL_CONCURSO_QUESTIONS.auditoria;
-    lessonSpecific = AUDITORIA_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? AUDITORIA_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('portug')) {
     bank = REAL_CONCURSO_QUESTIONS.portugues;
-    lessonSpecific = PORTUGUES_QUESTIONS_BY_LESSON[lessonNum];
+    lessonSpecific = batteryNum === 1 ? PORTUGUES_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('economia')) {
     bank = REAL_CONCURSO_QUESTIONS.economia;
   } else if (lowerSubj.includes('informát') || lowerSubj.includes('tecnologia')) {
@@ -867,8 +868,8 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     bank = REAL_CONCURSO_QUESTIONS.igualdade_racial;
   }
 
-  const rawList = buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank, lessonSpecific);
-  return rawList.map(q => balanceQuestion(q, lessonNum));
+  const rawList = buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank, lessonSpecific, batteryNum);
+  return rawList.map(q => balanceQuestion(q, lessonNum + (batteryNum === 2 ? 7 : 0)));
 }
 
 export function balanceQuestion(q: QuestionData, lessonNum: number = 0): QuestionData {
@@ -923,10 +924,12 @@ function buildDomainSpecificQuestions(
   lessonNum: number,
   lessonTitle: string,
   bank?: QuestionData[],
-  lessonSpecific?: QuestionData[]
+  lessonSpecific?: QuestionData[],
+  batteryNum: 1 | 2 = 1
 ): QuestionData[] {
   const results: QuestionData[] = [];
   const seenStatements = new Set<string>();
+  const b1Statements = new Set<string>();
 
   const cleanKey = (str: string) => {
     return (str || '')
@@ -936,6 +939,19 @@ function buildDomainSpecificQuestions(
       .trim()
       .toLowerCase();
   };
+
+  // When generating Battery 2, collect statements from Battery 1 to guarantee 0% repetition
+  if (batteryNum === 2) {
+    try {
+      const b1Questions = buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank, lessonSpecific, 1);
+      b1Questions.forEach(q => {
+        const k = cleanKey(q.statement);
+        if (k) b1Statements.add(k);
+      });
+    } catch (e) {
+      // Fallback
+    }
+  }
 
   const hasConsecutiveOverlap = (candidate: QuestionData): boolean => {
     if (results.length === 0) return false;
@@ -1025,8 +1041,10 @@ function buildDomainSpecificQuestions(
   const addIfUnique = (q: QuestionData) => {
     const raw = q.statement.replace(/\[Questão \d+\]/gi, '').trim();
     const norm = raw.replace(/\s+/g, ' ').toLowerCase();
-    if (!seenStatements.has(norm) && !hasConsecutiveOverlap(q)) {
+    const cleanK = cleanKey(raw);
+    if (!seenStatements.has(norm) && !b1Statements.has(cleanK) && !hasConsecutiveOverlap(q)) {
       seenStatements.add(norm);
+      if (cleanK) b1Statements.add(cleanK);
       results.push({
         ...q,
         id: results.length + 1,
@@ -1038,7 +1056,7 @@ function buildDomainSpecificQuestions(
   };
 
   // Add all authentic lesson-specific questions first
-  if (lessonSpecific) {
+  if (lessonSpecific && batteryNum === 1) {
     for (const q of lessonSpecific) {
       addIfUnique(q);
       if (results.length >= 50) return results;
@@ -1048,40 +1066,45 @@ function buildDomainSpecificQuestions(
   // Fill remainder with Lesson-Topic Proposition Matrix (100% syllabus-convergent per lesson)
   const lowerSubj = subjectName.trim().toLowerCase();
   let subjectMatrix: SubjectLessonMatrix | undefined;
-  if (
-    lowerSubj.includes('finanças') ||
-    lowerSubj.includes('financas') ||
-    lowerSubj.includes('afo') ||
-    lowerSubj.includes('orçamento') ||
-    lowerSubj.includes('orcamento') ||
-    lowerSubj.includes('administração, economia') ||
-    (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
-  ) {
-    subjectMatrix = AFO_LESSON_MATRIX;
-  } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
-    subjectMatrix = TRIBUTARIO_LESSON_MATRIX;
-  } else if (lowerSubj.includes('matemática') || lowerSubj.includes('matematica') || lowerSubj.includes('financeira')) {
-    subjectMatrix = MATEMATICA_FINANCEIRA_LESSON_MATRIX;
-  } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
-    subjectMatrix = ESTATISTICA_LESSON_MATRIX;
-  } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
-    subjectMatrix = CASP_LESSON_MATRIX;
-  } else if (lowerSubj.includes('contabilidade')) {
-    subjectMatrix = CONTABILIDADE_LESSON_MATRIX;
-  } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
-    subjectMatrix = ADMINISTRATIVO_LESSON_MATRIX;
-  } else if (lowerSubj.includes('constitucional')) {
-    subjectMatrix = CONSTITUCIONAL_LESSON_MATRIX;
-  } else if (lowerSubj.includes('auditoria')) {
-    subjectMatrix = AUDITORIA_LESSON_MATRIX;
-  } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua') || lowerSubj.includes('lingua') || lowerSubj.includes('português')) {
-    subjectMatrix = PORTUGUES_LESSON_MATRIX;
-  } else if (lowerSubj.includes('economia')) {
-    subjectMatrix = ECONOMIA_LESSON_MATRIX;
-  } else if (lowerSubj.includes('informática') || lowerSubj.includes('informatica') || lowerSubj.includes('tecnologia') || lowerSubj.includes('ti')) {
-    subjectMatrix = INFORMATICA_LESSON_MATRIX;
-  } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial') || lowerSubj.includes('gênero') || lowerSubj.includes('genero')) {
-    subjectMatrix = IGUALDADE_RACIAL_LESSON_MATRIX;
+  if (batteryNum === 2) {
+    subjectMatrix = getBattery2Matrix(subjectName);
+  }
+  if (!subjectMatrix) {
+    if (
+      lowerSubj.includes('finanças') ||
+      lowerSubj.includes('financas') ||
+      lowerSubj.includes('afo') ||
+      lowerSubj.includes('orçamento') ||
+      lowerSubj.includes('orcamento') ||
+      lowerSubj.includes('administração, economia') ||
+      (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
+    ) {
+      subjectMatrix = AFO_LESSON_MATRIX;
+    } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
+      subjectMatrix = TRIBUTARIO_LESSON_MATRIX;
+    } else if (lowerSubj.includes('matemática') || lowerSubj.includes('matematica') || lowerSubj.includes('financeira')) {
+      subjectMatrix = MATEMATICA_FINANCEIRA_LESSON_MATRIX;
+    } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
+      subjectMatrix = ESTATISTICA_LESSON_MATRIX;
+    } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
+      subjectMatrix = CASP_LESSON_MATRIX;
+    } else if (lowerSubj.includes('contabilidade')) {
+      subjectMatrix = CONTABILIDADE_LESSON_MATRIX;
+    } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
+      subjectMatrix = ADMINISTRATIVO_LESSON_MATRIX;
+    } else if (lowerSubj.includes('constitucional')) {
+      subjectMatrix = CONSTITUCIONAL_LESSON_MATRIX;
+    } else if (lowerSubj.includes('auditoria')) {
+      subjectMatrix = AUDITORIA_LESSON_MATRIX;
+    } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua') || lowerSubj.includes('lingua') || lowerSubj.includes('português')) {
+      subjectMatrix = PORTUGUES_LESSON_MATRIX;
+    } else if (lowerSubj.includes('economia')) {
+      subjectMatrix = ECONOMIA_LESSON_MATRIX;
+    } else if (lowerSubj.includes('informática') || lowerSubj.includes('informatica') || lowerSubj.includes('tecnologia') || lowerSubj.includes('ti')) {
+      subjectMatrix = INFORMATICA_LESSON_MATRIX;
+    } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial') || lowerSubj.includes('gênero') || lowerSubj.includes('genero')) {
+      subjectMatrix = IGUALDADE_RACIAL_LESSON_MATRIX;
+    }
   }
 
   const lessonProps = subjectMatrix ? subjectMatrix[lessonNum] : undefined;
@@ -1091,45 +1114,48 @@ function buildDomainSpecificQuestions(
     const isTF = idx % 2 === 0;
     let qData: any;
 
-    const useMatrix = lessonProps && lessonProps.length >= 3 && idx < 120;
+    const useMatrix = lessonProps && lessonProps.length >= 2 && idx < 160;
     if (useMatrix) {
-      qData = generateFromLessonPropositions(lessonProps, qNum, lessonTitle, isTF, idx, lessonNum, subjectMatrix);
-    } else if (
-      lowerSubj.includes('finanças') ||
-      lowerSubj.includes('financas') ||
-      lowerSubj.includes('afo') ||
-      lowerSubj.includes('orçamento') ||
-      lowerSubj.includes('orcamento') ||
-      lowerSubj.includes('administração, economia') ||
-      (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
-    ) {
-      qData = getAFOQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
-      qData = getTaxLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('matemática') || lowerSubj.includes('matematica') || lowerSubj.includes('financeira')) {
-      qData = getMathFinanceQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
-      qData = getStatisticsQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
-      qData = getCASPQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('contabilidade')) {
-      qData = getAccountingQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
-      qData = getAdminLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('constitucional')) {
-      qData = getConstLawQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('auditoria')) {
-      qData = getAuditQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua') || lowerSubj.includes('lingua') || lowerSubj.includes('português')) {
-      qData = getPortugueseQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('economia')) {
-      qData = getEconomicsQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('informática') || lowerSubj.includes('informatica') || lowerSubj.includes('tecnologia') || lowerSubj.includes('ti')) {
-      qData = getITQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
-    } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial') || lowerSubj.includes('gênero') || lowerSubj.includes('genero')) {
-      qData = getRacialEqualityQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
+      qData = generateFromLessonPropositions(lessonProps, qNum, lessonTitle, isTF, idx, lessonNum, subjectMatrix, batteryNum);
     } else {
-      qData = getGeneralFiscalQuestion(qNum, subjectName, lessonTitle, isTF, idx, lessonNum);
+      const offsetIdx = idx + (batteryNum === 2 ? 60 : 0);
+      if (
+        lowerSubj.includes('finanças') ||
+        lowerSubj.includes('financas') ||
+        lowerSubj.includes('afo') ||
+        lowerSubj.includes('orçamento') ||
+        lowerSubj.includes('orcamento') ||
+        lowerSubj.includes('administração, economia') ||
+        (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
+      ) {
+        qData = getAFOQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
+        qData = getTaxLawQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('matemática') || lowerSubj.includes('matematica') || lowerSubj.includes('financeira')) {
+        qData = getMathFinanceQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
+        qData = getStatisticsQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
+        qData = getCASPQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('contabilidade')) {
+        qData = getAccountingQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
+        qData = getAdminLawQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('constitucional')) {
+        qData = getConstLawQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('auditoria')) {
+        qData = getAuditQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua') || lowerSubj.includes('lingua') || lowerSubj.includes('português')) {
+        qData = getPortugueseQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('economia')) {
+        qData = getEconomicsQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('informática') || lowerSubj.includes('informatica') || lowerSubj.includes('tecnologia') || lowerSubj.includes('ti')) {
+        qData = getITQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial') || lowerSubj.includes('gênero') || lowerSubj.includes('genero')) {
+        qData = getRacialEqualityQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      } else {
+        qData = getGeneralFiscalQuestion(qNum, subjectName, lessonTitle, isTF, offsetIdx, lessonNum);
+      }
     }
 
     if (qData && qData.statement) {

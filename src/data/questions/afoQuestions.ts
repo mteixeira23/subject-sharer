@@ -1,4 +1,5 @@
 import { QuestionData } from '../aula00Questions';
+import { AFO_LESSON_5_QUESTIONS_B1, AFO_LESSON_5_QUESTIONS_B2 } from './afoLesson5Questions';
 
 export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   // ── Aula 00: Conceito e Funções do Orçamento Público ────────────────────────
@@ -101,5 +102,13 @@ export const AFO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
       correctAnswer: 0,
       explanation: 'Gabarito: CERTO. Art. 2º da Lei 4.320/64 e Art. 165, § 5º da CF/88: nenhuma receita ou despesa pode ser executada fora do orçamento anual.'
     }
-  ]
+  ],
+
+  // ── Aula 05: Receita Pública: Conceito e Classificações (50 Questões Reais) ──
+  5: AFO_LESSON_5_QUESTIONS_B1,
+};
+
+export const AFO_QUESTIONS_B2_BY_LESSON: Record<number, QuestionData[]> = {
+  // ── Aula 05: Receita Pública - Novos Tópicos & Aprofundamento (50 Questões Reais Inéditas) ──
+  5: AFO_LESSON_5_QUESTIONS_B2,
 };
