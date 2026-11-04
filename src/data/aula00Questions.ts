@@ -777,7 +777,7 @@ import { TRIBUTARIO_QUESTIONS_BY_LESSON } from './questions/tributarioQuestions'
 import { AUDITORIA_QUESTIONS_BY_LESSON } from './questions/auditoriaQuestions';
 import { CONTABILIDADE_QUESTIONS_BY_LESSON } from './questions/contabilidadeQuestions';
 import { CASP_QUESTIONS_BY_LESSON } from './questions/caspQuestions';
-import { ADMINISTRATIVO_QUESTIONS_BY_LESSON } from './questions/administrativoQuestions';
+import { ADMINISTRATIVO_QUESTIONS_BY_LESSON, ADMINISTRATIVO_QUESTIONS_B2_BY_LESSON } from './questions/administrativoQuestions';
 import { CONSTITUCIONAL_QUESTIONS_BY_LESSON } from './questions/constitucionalQuestions';
 import { PORTUGUES_QUESTIONS_BY_LESSON } from './questions/portuguesQuestions';
 import { AFO_QUESTIONS_BY_LESSON, AFO_QUESTIONS_B2_BY_LESSON } from './questions/afoQuestions';
@@ -847,13 +847,13 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     lessonSpecific = batteryNum === 1 ? CONTABILIDADE_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
-    lessonSpecific = batteryNum === 1 ? ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum] : undefined;
+    lessonSpecific = batteryNum === 1 ? ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum] : ADMINISTRATIVO_QUESTIONS_B2_BY_LESSON?.[lessonNum];
   } else if (lowerSubj.includes('constituc')) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
     lessonSpecific = batteryNum === 1 ? CONSTITUCIONAL_QUESTIONS_BY_LESSON[lessonNum] : undefined;
   } else if (lowerSubj.includes('direito')) {
     bank = REAL_CONCURSO_QUESTIONS.direito;
-    lessonSpecific = batteryNum === 1 ? ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum] : undefined;
+    lessonSpecific = batteryNum === 1 ? ADMINISTRATIVO_QUESTIONS_BY_LESSON[lessonNum] : ADMINISTRATIVO_QUESTIONS_B2_BY_LESSON?.[lessonNum];
   } else if (lowerSubj.includes('auditoria')) {
     bank = REAL_CONCURSO_QUESTIONS.auditoria;
     lessonSpecific = batteryNum === 1 ? AUDITORIA_QUESTIONS_BY_LESSON[lessonNum] : undefined;
@@ -1056,7 +1056,7 @@ function buildDomainSpecificQuestions(
   };
 
   // Add all authentic lesson-specific questions first
-  if (lessonSpecific && batteryNum === 1) {
+  if (lessonSpecific) {
     for (const q of lessonSpecific) {
       addIfUnique(q);
       if (results.length >= 50) return results;

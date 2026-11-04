@@ -1,4 +1,8 @@
 import { QuestionData } from '../aula00Questions';
+import {
+  ADMINISTRATIVO_LESSON_8_QUESTIONS_B1,
+  ADMINISTRATIVO_LESSON_8_QUESTIONS_B2,
+} from './administrativoLesson8Questions';
 
 export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> = {
   // ── Aula 00: Princípios do Direito Administrativo e Regime Jurídico (50 Questões Únicas) ──
@@ -731,6 +735,9 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
     }
   ],
 
+  // ── Aula 08: Agentes Públicos e Estatuto dos Servidores (50 Questões Reais) ───
+  8: ADMINISTRATIVO_LESSON_8_QUESTIONS_B1,
+
   // ── Aula 09: Licitações Públicas (Lei nº 14.133/2021 - Modalidades e Contratação Direta) ─
   9: [
     {
@@ -866,4 +873,8 @@ export const ADMINISTRATIVO_QUESTIONS_BY_LESSON: Record<number, QuestionData[]> 
       explanation: 'Gabarito: CERTO. Artigo 23, caput da Lei nº 8.429/1992 (com redação da Lei nº 14.230/2021): Fixou-se prazo prescricional unificado de 8 anos a contar do fato (ou da cessação da permanência), extinguindo os antigos prazos contados do término do mandato eletivo.'
     }
   ]
+};
+
+export const ADMINISTRATIVO_QUESTIONS_B2_BY_LESSON: Record<number, QuestionData[]> = {
+  8: ADMINISTRATIVO_LESSON_8_QUESTIONS_B2,
 };

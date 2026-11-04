@@ -314,22 +314,40 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
         const lKey = getLessonKey(task.subject, task.lesson);
         if (!lKey) return;
 
-        const aulaNum = getCanonicalLessonNum(task.lesson) ?? 0;
+        const isSpecialist = Boolean(task.specialistTopicId);
+        const specialistData = task.specialistTopicId ? UFBA_SPECIALIST_TOPICS[task.specialistTopicId] : undefined;
+        const parsedAulaNum = getCanonicalLessonNum(task.lesson);
+        const aulaNum = parsedAulaNum ?? 0;
         const cleanDesc = task.description.replace(/\s*\(PDF da pasta Sefaz BA\)\s*/i, '').trim();
 
         const existing = map.get(lKey);
         if (!existing) {
-          const meta = mapSubjectToEditalMeta(task.subject, aulaNum, cleanDesc);
+          const meta = specialistData
+            ? {
+                editalBlock: specialistData.block,
+                editalCategory: specialistData.category,
+                editalItemCode: specialistData.code,
+                weightLabel: specialistData.weightLabel,
+              }
+            : mapSubjectToEditalMeta(task.subject, aulaNum, cleanDesc);
+
           const officialLessonTitle = getLessonName(task.subject, aulaNum);
+          const displayTopicTitle = specialistData
+            ? specialistData.title
+            : (cleanDesc || officialLessonTitle);
+          const displayHabitusLesson = isSpecialist
+            ? 'Especialista UFBA'
+            : `Aula ${String(aulaNum).padStart(2, '0')}`;
+
           map.set(lKey, {
             id: lKey,
             lessonKey: lKey,
             editalBlock: meta.editalBlock,
             editalCategory: meta.editalCategory,
             editalItemCode: meta.editalItemCode,
-            editalTopicTitle: cleanDesc || officialLessonTitle,
+            editalTopicTitle: displayTopicTitle,
             habitusSubject: task.subject,
-            habitusLesson: `Aula ${String(aulaNum).padStart(2, '0')}`,
+            habitusLesson: displayHabitusLesson,
             aulaNumberZeroBased: aulaNum,
             scheduledStudyDate: day.dateStr,
             scheduledDayNumber: day.dayNumber,
@@ -337,7 +355,8 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
             taskIdsInUfbaPlan: [task.id],
             taskIdsInSefazPlan: sefazTasksByLessonKey.get(lKey) || [],
             weightLabel: meta.weightLabel,
-                      });
+            specialistTopicId: task.specialistTopicId,
+          });
         } else {
           existing.taskIdsInUfbaPlan.push(task.id);
           if (!existing.scheduledReviewDates.includes(day.dateStr) && day.dateStr !== existing.scheduledStudyDate) {
@@ -349,13 +368,13 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
 
     // Ensure any remaining high-yield Edital UFBA items (e.g., Português Aula 15, Contab. Geral Aulas 28-30) are included
     const extraItems: { subject: string; aulaNum: number; dateStr: string; dayNumber: number; desc: string; specialistTopicId?: string }[] = [
-      { subject: 'Auditoria', aulaNum: 16, dateStr: '14/11/2026', dayNumber: 24, desc: 'Perícia Contábil Judicial e Extrajudicial (NBC TP 01 e NBC PP 01)', specialistTopicId: 'pericia-contabil' },
-      { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', aulaNum: 18, dateStr: '18/11/2026', dayNumber: 28, desc: 'Contabilidade Municipal, Fundos e Sistemas Federais (Siconfi, Siope e Siops)', specialistTopicId: 'casp-municipal-siconfi' },
-      { subject: 'Direito Administrativo', aulaNum: 24, dateStr: '25/11/2026', dayNumber: 35, desc: 'Estatuto e Regimento Geral da UFBA e Governança das IFES (CONSUNI, CONSEPE, Curadores)', specialistTopicId: 'legislacao-ufba-ifes' },
-      { subject: 'Direito Administrativo', aulaNum: 23, dateStr: '28/11/2026', dayNumber: 38, desc: 'Governo Digital (Lei 14.129/21), Riscos/LINDB (Decreto 9.830/19) e Sustentabilidade (A3P)', specialistTopicId: 'governo-digital-governanca' },
-      { subject: 'Língua Portuguesa', aulaNum: 15, dateStr: '11/12/2026', dayNumber: 51, desc: 'Figuras de Linguagem, Funções do "Que" e do "Se" e Bateria Comentada' },
-      { subject: 'Contabilidade Geral', aulaNum: 28, dateStr: '11/12/2026', dayNumber: 51, desc: 'Arrendamento Mercantil (CPC 06), Subvenção (CPC 07) e Custos de Empréstimos' },
-      { subject: 'Contabilidade Geral', aulaNum: 29, dateStr: '12/12/2026', dayNumber: 52, desc: 'Instrumentos Financeiros (CPC 48), Receita de Contrato (CPC 47) e Ajustes de Exercícios' },
+      { subject: 'Auditoria', aulaNum: 16, dateStr: '14/11/2026', dayNumber: 24, desc: 'Aula 16 - Estrutura Conceitual para Trabalhos de Asseguração' },
+      { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', aulaNum: 18, dateStr: '18/11/2026', dayNumber: 28, desc: 'Aula 18 - Princípios Aplicados à Contabilidade Pública' },
+      { subject: 'Direito Administrativo', aulaNum: 23, dateStr: '28/11/2026', dayNumber: 38, desc: 'Aula 23 - Lei Estadual da Bahia nº 14.634-2023 (Licitações)' },
+      { subject: 'Direito Administrativo', aulaNum: 24, dateStr: '25/11/2026', dayNumber: 35, desc: 'Aula 24 - Lei Estadual da Bahia nº 9.290-2004' },
+      { subject: 'Língua Portuguesa', aulaNum: 15, dateStr: '11/12/2026', dayNumber: 51, desc: 'Aula 15 - Figuras de Linguagem e Bateria de Questões Comentadas FGV' },
+      { subject: 'Contabilidade Geral', aulaNum: 28, dateStr: '11/12/2026', dayNumber: 51, desc: 'Aula 28 - Contabilidade Geral - Tópicos Especiais I' },
+      { subject: 'Contabilidade Geral', aulaNum: 29, dateStr: '12/12/2026', dayNumber: 52, desc: 'Aula 29 - Contabilidade Geral - Tópicos Especiais II e Pronunciamentos' },
     ];
 
     extraItems.forEach(ex => {

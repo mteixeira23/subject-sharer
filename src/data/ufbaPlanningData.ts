@@ -30,10 +30,10 @@ export function buildUfbaSprintPlan(): DayPlan[] {
   // Sequência de matérias prioritárias UFBA 100% alinhada à numeração oficial do catálogo SEFAZ-BA / Matrizes
   const UFBA_WEEKDAY_SEQUENCE: { subject: string; lesson: string; title: string; desc: string }[] = [
     // Módulos Especializados da UFBA (Lacunas do Edital UFBA cobertas pelos Especialistas Hermes)
-    { subject: 'Auditoria', lesson: 'Aula 16', title: 'Perícia Contábil - Aula 16 (NBC TP 01 e NBC PP 01)', desc: 'Conceitos, Laudo e Parecer Pericial, NBC TP 01, Provas e Quesitos Judiciais', specialistTopicId: 'pericia-contabil' },
-    { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 18', title: 'CASP Municipal e Sistemas Federais - Aula 18', desc: 'Arrecadação Municipal, Fundos Especiais, Siconfi, Siope e Siops (MEC/MS)', specialistTopicId: 'casp-municipal-siconfi' },
-    { subject: 'Direito Administrativo', lesson: 'Aula 24', title: 'Legislação Institucional da UFBA e IFES - Aula 24', desc: 'Estatuto e Regimento Geral da UFBA, CONSUNI, CONSEPE, Curadores e Gestão Universitária', specialistTopicId: 'legislacao-ufba-ifes' },
-    { subject: 'Direito Administrativo', lesson: 'Aula 23', title: 'Governo Digital e Gestão de Riscos - Aula 23', desc: 'Lei do Governo Digital (Lei 14.129/21), LINDB/Riscos (Decreto 9.830/19) e Agenda Ambiental A3P', specialistTopicId: 'governo-digital-governanca' },
+    { subject: 'Auditoria', lesson: 'Módulo Especialista', title: 'Perícia Contábil (NBC TP 01 e NBC PP 01) [Especialista UFBA]', desc: 'Conceitos, Laudo e Parecer Pericial, NBC TP 01, Provas e Quesitos Judiciais [Leitor Teórico no Habitus]', specialistTopicId: 'pericia-contabil' },
+    { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Módulo Especialista', title: 'CASP Municipal e Sistemas Federais [Especialista UFBA]', desc: 'Arrecadação Municipal, Fundos Especiais, Siconfi, Siope e Siops (MEC/MS) [Leitor Teórico no Habitus]', specialistTopicId: 'casp-municipal-siconfi' },
+    { subject: 'Direito Administrativo', lesson: 'Módulo Especialista UFBA 1', title: 'Legislação Institucional da UFBA e IFES [Especialista UFBA]', desc: 'Estatuto e Regimento Geral da UFBA, CONSUNI, CONSEPE, Curadores e Gestão Universitária [Leitor Teórico no Habitus]', specialistTopicId: 'legislacao-ufba-ifes' },
+    { subject: 'Direito Administrativo', lesson: 'Módulo Especialista UFBA 2', title: 'Governo Digital e Gestão de Riscos [Especialista UFBA]', desc: 'Lei do Governo Digital (Lei 14.129/21), LINDB/Riscos (Decreto 9.830/19) e Agenda Ambiental A3P [Leitor Teórico no Habitus]', specialistTopicId: 'governo-digital-governanca' },
     // Bloco 1: Fundação Contábil, CASP, AFO, Administrativo e Português
     { subject: 'Contabilidade Geral', lesson: 'Aula 00', title: 'Contabilidade Geral - Aula 00', desc: 'Aspectos Introdutórios da Contabilidade (Objeto, Finalidade e Técnicas)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 00', title: 'CASP - Aula 00', desc: 'Aspectos Introdutórios e Conceito da CASP (MCASP e NBC TSP)' },
@@ -129,7 +129,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Direito Administrativo', lesson: 'Aula 16', title: 'Direito Administrativo - Aula 16', desc: 'Improbidade Administrativa (Lei 8.429/1992 atualizada pela Lei 14.230/2021)' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 18', title: 'Contabilidade Geral - Aula 18', desc: 'Demonstração do Resultado do Exercício (DRE - Receita Líquida, Lucro Bruto e LAIR)' },
-    { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 18', title: 'CASP - Aula 18', desc: 'Síntese Geral de Contabilidade Pública (Regimes, PCASP, DCASP e NBC TSP)' },
+    { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 18', title: 'CASP - Aula 18', desc: 'Princípios Aplicados à Contabilidade Pública' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 12', title: 'AFO / Finanças - Aula 12', desc: 'Lei de Responsabilidade Fiscal (LRF Parte 4 - Transparência, RREO, RGF e Contas)' },
     { subject: 'Língua Portuguesa', lesson: 'Aula 14', title: 'Português - Aula 14', desc: 'Reescritura de Frases, Nominalização e Equivalência de Estruturas' },
 
@@ -144,8 +144,8 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Matemática Financeira', lesson: 'Aula 00', title: 'Matemática Financeira - Aula 00', desc: 'Juros Simples e Desconto Simples (Racional e Comercial)' },
 
     { subject: 'Matemática Financeira', lesson: 'Aula 01', title: 'Matemática Financeira - Aula 01', desc: 'Juros Compostos, Taxas Equivalentes e Convenções Linear/Exponencial' },
-    { subject: 'Matemática Financeira', lesson: 'Aula 08', title: 'Matemática Financeira - Aula 08', desc: 'Sistemas de Amortização: Tabela Price (Sistema Francês - SAF)' },
-    { subject: 'Matemática Financeira', lesson: 'Aula 09', title: 'Matemática Financeira - Aula 09', desc: 'Sistemas de Amortização: SAC (Amortização Constante) e SAM' },
+    { subject: 'Matemática Financeira', lesson: 'Aula 06', title: 'Matemática Financeira - Aula 06', desc: 'Sistemas de amortização' },
+    { subject: 'Matemática Financeira', lesson: 'Aula 08', title: 'Matemática Financeira - Aula 08', desc: 'Sistemas de numeração' },
     { subject: 'Direito Tributário', lesson: 'Aula 00', title: 'Direito Tributário - Aula 00', desc: 'Conceito de Tributo (Art. 3º do CTN) e Espécies Tributárias (Teoria Pentapartite)' },
 
     { subject: 'Direito Constitucional', lesson: 'Aula 10', title: 'Direito Constitucional - Aula 10', desc: 'Administração Pública na CF/88 (Art. 37 ao 41 da CF/88)' },

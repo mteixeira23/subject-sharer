@@ -91,9 +91,6 @@ export function generateFromLessonPropositions(
 
   if (isTF) {
     const p1 = propositions[i];
-    const p2 = propositions[(i + 1) % N];
-    const p3 = propositions[(i + 2) % N];
-    const p4 = propositions[(i + 3) % N];
     const tfBancas = [
       'CEBRASPE – Auditor Federal de Controle Externo / TCU',
       'CEBRASPE – Auditor Fiscal da Receita Estadual / SEFAZ-AL',
@@ -107,70 +104,27 @@ export function generateFromLessonPropositions(
     ];
     const source = `${tfBancas[(qNum * 7 + lessonNum * 3) % tfBancas.length]} (${p1.ref})`;
 
-    if (serie === 0) {
-      // Série 1: Julgamento direto de proposição VERDADEIRA da aula
-      return {
-        source,
-        type: 'tf',
-        statement: `[Questão ${qNum}] Julgue o item a seguir a respeito de ${cleanTopic} (${p1.sub}):\n\n${ensurePeriod(p1.t)}`,
-        options: ['Certo', 'Errado'],
-        correctAnswer: 0,
-        explanation: `Gabarito: CERTO. Nos termos de ${p1.ref}: ${p1.exp}`,
-      };
-    } else if (serie === 1) {
-      // Série 2: Julgamento direto de proposição FALSA (pegadinha clássica) da aula
-      return {
-        source,
-        type: 'tf',
-        statement: `[Questão ${qNum}] Acerca de ${cleanTopic}, especificamente no tocante a ${p1.sub} (${p1.ref}), julgue o item subsequente:\n\n${ensurePeriod(p1.f)}`,
-        options: ['Certo', 'Errado'],
-        correctAnswer: 1,
-        explanation: `Gabarito: ERRADO. De acordo com ${p1.ref}: ${p1.exp}`,
-      };
-    } else if (serie === 2) {
-      // Série 3: Análise integrada verdadeira de dois subtópicos da mesma aula
-      return {
-        source,
-        type: 'tf',
-        statement: `[Questão ${qNum}] Na análise sistemática de ${cleanTopic}, julgue o item quanto à correlação entre ${p1.sub} e ${p2.sub}:\n\n${ensurePeriod(p1.t)} Outrossim, sob a regência de ${p2.ref}, ${lowerFirst(ensurePeriod(p2.t))}`,
-        options: ['Certo', 'Errado'],
-        correctAnswer: 0,
-        explanation: `Gabarito: CERTO. Ambas as proposições estão corretas. 1) ${p1.sub} (${p1.ref}): ${p1.exp} 2) ${p2.sub} (${p2.ref}): ${p2.exp}`,
-      };
-    } else if (serie === 3) {
-      // Série 4: Primeira parte verdadeira + segunda parte falsa (padrão CEBRASPE)
-      const firstPart = ensurePeriod(p1.t).replace(/\.$/, '');
-      return {
-        source,
-        type: 'tf',
-        statement: `[Questão ${qNum}] Considerando a disciplina normativa e técnica de ${cleanTopic} (${p1.ref} e ${p3.ref}), julgue a assertiva:\n\nEmbora seja correto afirmar, quanto a ${p1.sub}, que ${lowerFirst(firstPart)}, no que concerne a ${p3.sub} verifica-se que ${lowerFirst(ensurePeriod(p3.f))}`,
-        options: ['Certo', 'Errado'],
-        correctAnswer: 1,
-        explanation: `Gabarito: ERRADO. A primeira parte sobre ${p1.sub} é verdadeira, mas a segunda parte referente a ${p3.sub} está incorreta (${p3.ref}): ${p3.exp}`,
-      };
-    } else {
-      // Série 5+: Caso aplicado alternando Certo (par) e Errado (ímpar)
-      const isTrueCase = i % 2 === 0;
-      if (isTrueCase) {
-        return {
-          source,
-          type: 'tf',
-          statement: `[Questão ${qNum}] Em sede de verificação técnica sobre ${cleanTopic}, avaliou-se a aplicação conjunta de ${p4.sub} e ${p1.sub}. Julgue o item:\n\n${ensurePeriod(p4.t)} Tal diretriz mostra-se plenamente compatível com o preceito de ${p1.ref} segundo o qual ${lowerFirst(ensurePeriod(p1.t))}`,
-          options: ['Certo', 'Errado'],
-          correctAnswer: 0,
-          explanation: `Gabarito: CERTO. Tanto a premissa relativa a ${p4.sub} (${p4.ref}) quanto a conclusão sobre ${p1.sub} (${p1.ref}) estão integralmente corretas. ${p1.exp}`,
-        };
-      } else {
-        return {
-          source,
-          type: 'tf',
-          statement: `[Questão ${qNum}] Em sede de verificação técnica sobre ${cleanTopic}, avaliou-se a aplicação de ${p4.sub} (${p4.ref}). Julgue o item:\n\n${ensurePeriod(p4.f)} Consequentemente, no âmbito de ${p1.sub}, ${lowerFirst(ensurePeriod(p1.f))}`,
-          options: ['Certo', 'Errado'],
-          correctAnswer: 1,
-          explanation: `Gabarito: ERRADO. Ambas as afirmativas contrariam a disciplina de ${cleanTopic}: ${p4.exp} Além disso, quanto a ${p1.sub}: ${p1.exp}`,
-        };
-      }
-    }
+    const isTrue = (idx + lessonNum + (batteryNum === 2 ? 1 : 0)) % 2 === 0;
+    const testProp = isTrue ? p1.t : p1.f;
+    const promptPrefixes = [
+      `A respeito de ${cleanTopic}, especificamente quanto a ${p1.sub}, julgue o item a seguir:`,
+      `No que concerne a ${p1.sub}, julgue o item subsequente:`,
+      `Acerca da disciplina de ${cleanTopic} (${p1.sub}), julgue a assertiva:`,
+      `Considerando as disposições aplicáveis a ${p1.sub}, julgue o item:`,
+      `Julgue o item a seguir a respeito de ${cleanTopic} (${p1.sub}):`,
+    ];
+    const prefix = promptPrefixes[(qNum + idx) % promptPrefixes.length];
+
+    return {
+      source,
+      type: 'tf',
+      statement: `[Questão ${qNum}] ${prefix}\n\n${ensurePeriod(testProp)}`,
+      options: ['Certo', 'Errado'],
+      correctAnswer: isTrue ? 0 : 1,
+      explanation: isTrue
+        ? `Gabarito: CERTO. Nos termos de ${p1.ref}: ${p1.exp}`
+        : `Gabarito: ERRADO. De acordo com ${p1.ref}: ${p1.exp}`,
+    };
   } else {
     // MULTIPLE CHOICE (5 séries distintas com motor anti-reciclagem de distratores)
     const p1 = propositions[i];
@@ -299,60 +253,34 @@ export function generateFromLessonPropositions(
         explanation: `Gabarito: ${placed.letter}. ${expDetail}`,
       };
     } else if (serie === 3) {
-      // Série 4: Articulação comparativa dupla entre p1 e d3
+      // Série 4: Assinale a afirmativa CORRETA sobre p2.sub
       const placed = placeCorrectAt(
-        `No tocante a ${p1.sub}, ${lowerFirst(ensurePeriod(p1.t))} Já quanto a ${d3.sub}, ${lowerFirst(ensurePeriod(d3.t))}`,
-        [
-          `No tocante a ${p1.sub}, ${lowerFirst(ensurePeriod(p1.f))} Já quanto a ${d3.sub}, ${lowerFirst(ensurePeriod(d3.t))}`,
-          `No tocante a ${p1.sub}, ${lowerFirst(ensurePeriod(p1.t))} Já quanto a ${d3.sub}, ${lowerFirst(ensurePeriod(d3.f))}`,
-          `No tocante a ${p1.sub}, ${lowerFirst(ensurePeriod(p1.f))} Já quanto a ${d3.sub}, ${lowerFirst(ensurePeriod(d3.f))}`,
-          `No tocante a ${d1.sub}, ${lowerFirst(ensurePeriod(d1.f))} Já quanto a ${d4.sub}, ${lowerFirst(ensurePeriod(d4.f))}`,
-        ],
+        ensurePeriod(p2.t),
+        [ensurePeriod(d1.f), ensurePeriod(d2.f), ensurePeriod(d3.f), ensurePeriod(d4.f)],
         targetPos
       );
       return {
         source,
         type: 'multiple',
-        statement: `[Questão ${qNum}] Considerando o conteúdo programático de ${cleanTopic}, assinale a alternativa que articula corretamente os preceitos de ${p1.sub} (${p1.ref}) e ${d3.sub} (${d3.ref}):`,
+        statement: `[Questão ${qNum}] No que tange a ${cleanTopic}, especificamente quanto a ${p2.sub} (${p2.ref}), assinale a afirmativa correta:`,
         options: placed.options,
         correctAnswer: placed.correctAnswer,
-        explanation: `Gabarito: ${placed.letter}. Ambas as proposições são verdadeiras: 1) ${p1.sub} (${p1.ref}): ${p1.exp} 2) ${d3.sub} (${d3.ref}): ${d3.exp}`,
+        explanation: `Gabarito: ${placed.letter}. Conforme ${p2.ref}: ${p2.exp}`,
       };
     } else {
-      // Série 5+: Classificação V / F em 3 assertivas
-      const pat = i % 5;
-      let a1 = '', a2 = '', a3 = '', targetSeq = '', expSeq = '';
-      if (pat === 0) {
-        a1 = ensurePeriod(p1.t); a2 = ensurePeriod(d2.f); a3 = ensurePeriod(d4.t);
-        targetSeq = 'V – F – V';
-        expSeq = `1ª (V): ${p1.ref}. 2ª (F): ${d2.exp} 3ª (V): ${d4.ref}.`;
-      } else if (pat === 1) {
-        a1 = ensurePeriod(p1.f); a2 = ensurePeriod(d2.t); a3 = ensurePeriod(d4.f);
-        targetSeq = 'F – V – F';
-        expSeq = `1ª (F): ${p1.exp} 2ª (V): ${d2.ref}. 3ª (F): ${d4.exp}`;
-      } else if (pat === 2) {
-        a1 = ensurePeriod(p1.t); a2 = ensurePeriod(d2.t); a3 = ensurePeriod(d4.f);
-        targetSeq = 'V – V – F';
-        expSeq = `1ª (V): ${p1.ref}. 2ª (V): ${d2.ref}. 3ª (F): ${d4.exp}`;
-      } else if (pat === 3) {
-        a1 = ensurePeriod(p1.f); a2 = ensurePeriod(d2.f); a3 = ensurePeriod(d4.t);
-        targetSeq = 'F – F – V';
-        expSeq = `1ª (F): ${p1.exp} 2ª (F): ${d2.exp} 3ª (V): ${d4.ref}.`;
-      } else {
-        a1 = ensurePeriod(p1.t); a2 = ensurePeriod(d2.t); a3 = ensurePeriod(d4.t);
-        targetSeq = 'V – V – V';
-        expSeq = `Todas as três afirmativas são verdadeiras (${p1.ref}, ${d2.ref} e ${d4.ref}).`;
-      }
-      const seqPool = ['V – F – V', 'F – V – F', 'V – V – F', 'F – F – V', 'V – V – V'];
-      const restSeq = seqPool.filter(s => s !== targetSeq);
-      const placed = placeCorrectAt(targetSeq, restSeq, targetPos);
+      // Série 5+: Assinale a afirmativa CORRETA sobre p3.sub
+      const placed = placeCorrectAt(
+        ensurePeriod(p3.t),
+        [ensurePeriod(d1.f), ensurePeriod(d2.f), ensurePeriod(d3.f), ensurePeriod(d4.f)],
+        targetPos
+      );
       return {
         source,
         type: 'multiple',
-        statement: `[Questão ${qNum}] Sobre ${cleanTopic}, classifique as assertivas a seguir como Verdadeiras (V) ou Falsas (F) segundo ${p1.ref}, ${d2.ref} e ${d4.ref}:\n\n( ) ${a1}\n( ) ${a2}\n( ) ${a3}\n\nAs assertivas são, na ordem apresentada, respectivamente:`,
+        statement: `[Questão ${qNum}] Em relação a ${cleanTopic}, assinale a opção que apresenta preceito correto acerca de ${p3.sub} (${p3.ref}):`,
         options: placed.options,
         correctAnswer: placed.correctAnswer,
-        explanation: `Gabarito: ${placed.letter} (${targetSeq}). ${expSeq}`,
+        explanation: `Gabarito: ${placed.letter}. Nos termos de ${p3.ref}: ${p3.exp}`,
       };
     }
   }
