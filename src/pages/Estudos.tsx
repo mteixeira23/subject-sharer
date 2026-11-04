@@ -148,11 +148,13 @@ export default function Estudos() {
   const [simuladoDialogOpen, setSimuladoDialogOpen] = useState(false);
   const [simuladoSubjectId, setSimuladoSubjectId] = useState<string | undefined>(undefined);
   const [simuladoLessonNumber, setSimuladoLessonNumber] = useState<string | undefined>(undefined);
+  const [simuladoBatteryNumber, setSimuladoBatteryNumber] = useState<1 | 2>(1);
   const [studyPlanDialogOpen, setStudyPlanDialogOpen] = useState(false);
 
-  const handleOpenSimuladoForLesson = (subjectId: string, lessonNumber: number) => {
+  const handleOpenSimuladoForLesson = (subjectId: string, lessonNumber: number, batteryNum: 1 | 2 = 1) => {
     setSimuladoSubjectId(subjectId);
     setSimuladoLessonNumber(String(lessonNumber - 1));
+    setSimuladoBatteryNumber(batteryNum);
     setSimuladoDialogOpen(true);
   };
 
@@ -347,7 +349,7 @@ export default function Estudos() {
 
       {/* ═══════ PAINEL DO EDITAL UFBA 2026 (ACOMPANHAMENTO EM TEMPO REAL) ═══════ */}
       <UfbaEditalTracker
-        onOpenSimulado={(subjectId, dbLessonNumber) => handleOpenSimuladoForLesson(subjectId, dbLessonNumber)}
+        onOpenSimulado={(subjectId, dbLessonNumber, batteryNum) => handleOpenSimuladoForLesson(subjectId, dbLessonNumber, batteryNum)}
         onOpenStudyPlan={() => setStudyPlanDialogOpen(true)}
       />
 
@@ -821,9 +823,10 @@ export default function Estudos() {
             </DialogTitle>
           </DialogHeader>
           <Aula00QuestionsSimulado 
-            key={`${simuladoSubjectId || "default"}-aula-${simuladoLessonNumber || "0"}`}
+            key={`${simuladoSubjectId || "default"}-aula-${simuladoLessonNumber || "0"}-b${simuladoBatteryNumber}`}
             initialSubjectId={simuladoSubjectId} 
             initialLessonNumber={simuladoLessonNumber} 
+            initialBatteryNumber={simuladoBatteryNumber}
           />
         </DialogContent>
       </Dialog>

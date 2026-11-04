@@ -21,6 +21,7 @@ import {
   Award,
   TrendingUp,
   CheckSquare,
+  Zap,
 } from 'lucide-react';
 import { buildUfbaSprintPlan, PlanTask } from '@/data/ufbaPlanningData';
 import { buildSefazBAPlan } from '@/data/sefazBAPlanningData';
@@ -97,7 +98,7 @@ export interface UfbaEditalItem {
 }
 
 interface UfbaEditalTrackerProps {
-  onOpenSimulado: (subjectId: string, dbLessonNumber: number) => void;
+  onOpenSimulado: (subjectId: string, dbLessonNumber: number, batteryNum?: 1 | 2) => void;
   onOpenStudyPlan: () => void;
 }
 
@@ -1159,26 +1160,79 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
                               <span>Ler Teoria (PDF)</span>
                             </Button>
                           )}
-                          <Button
-                            size="sm"
-                            variant={item.hasDoneQuestions ? 'outline' : 'default'}
-                            onClick={() => {
-                            if (item.subjectObj) {
-                              onOpenSimulado(item.subjectObj.id, item.dbLessonNumber);
-                            } else {
-                              toast.error('Clique em "Restaurar 13 Matérias" no topo para vincular a disciplina.');
-                            }
-                          }}
-                          className={cn(
-                            "h-8 text-xs font-semibold gap-1.5",
-                            item.hasDoneQuestions
-                              ? "border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10"
-                              : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-                          )}
-                        >
-                          <Sparkles className="h-3.5 w-3.5" />
-                          {item.hasDoneQuestions ? 'Refazer Questões' : 'Fazer Questões'}
-                        </Button>
+
+                          {(() => {
+                            const isB1Done = Boolean(questionsDoneKeys[item.lessonKey + '|b1'] || questionsDoneKeys[item.lessonKey]);
+                            const isB2Done = Boolean(questionsDoneKeys[item.lessonKey + '|b2']);
+
+                            return (
+                              <>
+                                {/* Botão Bateria 1 */}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    if (item.subjectObj) {
+                                      onOpenSimulado(item.subjectObj.id, item.dbLessonNumber, 1);
+                                    } else {
+                                      toast.error('Clique em "Restaurar 13 Matérias" no topo para vincular a disciplina.');
+                                    }
+                                  }}
+                                  className={cn(
+                                    "h-8 text-xs font-semibold gap-1 transition-all shadow-sm",
+                                    isB1Done
+                                      ? "bg-emerald-950/40 text-emerald-300 border-emerald-500/50 hover:bg-emerald-950/60"
+                                      : "bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border-emerald-500/30 hover:border-emerald-400"
+                                  )}
+                                  title="Resolver 50 questões da Bateria 1 (Conceitos Fundamentais)"
+                                >
+                                  {isB1Done ? (
+                                    <>
+                                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                                      <span>B1 Feita</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+                                      <span>⚡ B1 (50 Q)</span>
+                                    </>
+                                  )}
+                                </Button>
+
+                                {/* Botão Bateria 2 */}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    if (item.subjectObj) {
+                                      onOpenSimulado(item.subjectObj.id, item.dbLessonNumber, 2);
+                                    } else {
+                                      toast.error('Clique em "Restaurar 13 Matérias" no topo para vincular a disciplina.');
+                                    }
+                                  }}
+                                  className={cn(
+                                    "h-8 text-xs font-semibold gap-1 transition-all shadow-sm",
+                                    isB2Done
+                                      ? "bg-amber-950/40 text-amber-300 border-amber-500/50 hover:bg-amber-950/60 font-bold"
+                                      : "bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 border-amber-500/40 hover:border-amber-300 font-bold"
+                                  )}
+                                  title="Resolver 50 questões da Bateria 2 (Tópicos Avançados & Inéditas)"
+                                >
+                                  {isB2Done ? (
+                                    <>
+                                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-400" />
+                                      <span>B2 Feita</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Zap className="h-3.5 w-3.5 text-amber-400" />
+                                      <span>🎯 B2 (50 Q)</span>
+                                    </>
+                                  )}
+                                </Button>
+                              </>
+                            );
+                          })()}
                         </div>
                       </TableCell>
                     </TableRow>
