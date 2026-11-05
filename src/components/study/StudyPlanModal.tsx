@@ -20,13 +20,14 @@ import {
   Target,
   RotateCcw,
   Sparkles,
+  FileText,
   X
 } from 'lucide-react';
 import { Aula00QuestionsSimulado } from '@/components/study/Aula00QuestionsSimulado';
 import { buildSefazBAPlan, DayPlan, PlanTask } from '@/data/sefazBAPlanningData';
 import { buildUfbaSprintPlan } from '@/data/ufbaPlanningData';
 import { UFBA_SPECIALIST_TOPICS, UfbaSpecialistTopic } from '@/data/ufbaSpecialistTopics';
-import { UfbaTheoryReaderModal } from '@/components/study/UfbaTheoryReaderModal';
+import { UfbaTheoryReaderModal, printCompleteUfbaApostilaPdf } from '@/components/study/UfbaTheoryReaderModal';
 import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -228,7 +229,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPhase, setSelectedPhase] = useState<'all' | 'phase1' | 'phase2' | 'phase3' | 'phase4'>('all');
+  const [selectedPhase, setSelectedPhase] = useState<'all' | 'phase1' | 'phase2' | 'phase3' | 'phase4' | 'assistente'>('all');
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'pending' | 'completed'>('all');
 
   // Active Simulado / Bateria Modal State
@@ -450,6 +451,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
       if (selectedPhase === 'phase2' && !day.phase.includes('Fase 2')) return false;
       if (selectedPhase === 'phase3' && !day.phase.includes('Fase 3') && !day.phase.includes('CGU')) return false;
       if (selectedPhase === 'phase4' && !day.phase.includes('Fase 4') && !day.phase.includes('UFBA')) return false;
+      if (selectedPhase === 'assistente' && !day.tasks.some(t => t.isAssistenteExclusive)) return false;
 
       // Status filter
       const dayTasksCompleted = day.tasks.filter(t => isTaskCompleted(t)).length;
@@ -519,7 +521,20 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
               </Button>
             </div>
 
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {activePlanType === 'ufba' && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => printCompleteUfbaApostilaPdf('all')}
+                  className="h-8 text-xs font-semibold gap-1.5 border-purple-500/40 text-purple-300 hover:bg-purple-500/15 transition-colors"
+                  title="Baixar Apostila Completa em PDF com todos os 13 temas fora da pasta SEFAZ + Questões de Concursos Comentadas"
+                >
+                  <FileText className="h-3.5 w-3.5 text-purple-400" />
+                  <span>📥 Apostila PDF + Questões (13 Temas)</span>
+                </Button>
+              )}
+
               <Button
                 size="sm"
                 variant="outline"
@@ -677,7 +692,10 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                   <TabsTrigger value="phase1" className="text-xs px-2.5">Fase 1</TabsTrigger>
                   <TabsTrigger value="phase2" className="text-xs px-2.5">Fase 2</TabsTrigger>
                   {activePlanType === 'ufba' ? (
-                    <TabsTrigger value="phase4" className="text-xs px-2.5">Reta Final UFBA</TabsTrigger>
+                    <>
+                      <TabsTrigger value="phase4" className="text-xs px-2.5">Reta Final UFBA</TabsTrigger>
+                      <TabsTrigger value="assistente" className="text-xs px-2.5">📋 Só Assistente (Final)</TabsTrigger>
+                    </>
                   ) : (
                     <TabsTrigger value="phase3" className="text-xs px-2.5">Fase 3</TabsTrigger>
                   )}
@@ -838,6 +856,12 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                                   {task.isVaccine && (
                                     <Badge variant="secondary" className="text-[10px] py-0 px-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/40">
                                       💉 Vacina CGU (10%)
+                                    </Badge>
+                                  )}
+
+                                  {task.isAssistenteExclusive && (
+                                    <Badge variant="secondary" className="text-[10px] py-0 px-1.5 bg-blue-500/20 text-blue-300 border border-blue-500/40 font-semibold">
+                                      📋 Só Assistente Adm. (Final do Plano)
                                     </Badge>
                                   )}
 
@@ -1054,6 +1078,23 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
             topic={selectedReaderTopic}
             open={Boolean(selectedReaderTopic)}
             onOpenChange={(op) => !op && setSelectedReaderTopic(null)}
+            onOpenExercises={() => {
+              if (selectedReaderTopic) {
+                const targetTask = allDays.flatMap(d => d.tasks).find(t => t.specialistTopicId === selectedReaderTopic.id);
+                if (targetTask) {
+                  const ex = getTaskExerciseInfo(targetTask);
+                  setSelectedReaderTopic(null);
+                  setSimuladoModalInfo({
+                    subjectId: ex.subjectId,
+                    subjectName: ex.subjectName,
+                    lessonNumber: ex.lessonNumber,
+                    taskTitle: targetTask.title,
+                    taskId: targetTask.id,
+                    batteryNumber: 1,
+                  });
+                }
+              }
+            }}
           />
         </DialogContent>
     </Dialog>

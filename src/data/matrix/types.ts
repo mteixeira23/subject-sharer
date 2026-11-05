@@ -10,16 +10,6 @@ export interface LessonProposition {
 
 export type SubjectLessonMatrix = Record<number, LessonProposition[]>;
 
-function lowerFirst(s: string): string {
-  if (!s) return '';
-  const trimmed = s.trim();
-  // Keep acronyms uppercase (e.g., ICMS, CF/88, STF, CPC, NBC, LRF, PPA, LDO, LOA)
-  if (/^[A-ZÀ-Ú0-9]{2,}/.test(trimmed)) {
-    return trimmed;
-  }
-  return trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
-}
-
 function ensurePeriod(s: string): string {
   const t = (s || '').trim();
   if (!t) return '';
@@ -52,7 +42,6 @@ export function generateFromLessonPropositions(
     // Use coprime stride 3 to cycle through propositions with wide spacing
     i = (tfStep * 3 + batteryShift) % N;
     serie = (Math.floor((tfStep * 3) / N) + tfStep + (batteryNum === 2 ? 2 : 0)) % 5;
-    // The previous question was MC (idx - 1) if idx > 0
     if (idx > 0) {
       const prevMcStep = Math.floor((idx - 1) / 2);
       const prevMcOffset = Math.max(1, Math.floor(N / 2));
@@ -64,7 +53,6 @@ export function generateFromLessonPropositions(
     const mcOffset = Math.max(1, Math.floor(N / 2));
     i = (mcStep * 3 + mcOffset + batteryShift) % N;
     serie = (Math.floor((mcStep * 3) / N) + mcStep + (batteryNum === 2 ? 3 : 2)) % 5;
-    // The previous question was TF (idx - 1)
     if (idx > 0) {
       const prevTfStep = Math.floor((idx - 1) / 2);
       const prevTfI = (prevTfStep * 3 + batteryShift) % N;
@@ -98,9 +86,9 @@ export function generateFromLessonPropositions(
       'CEBRASPE – Contador / DPE-RO',
       'CEBRASPE – Auditor do Estado / CAGE-RS',
       'CEBRASPE – Analista de Controle Externo / TCE-RJ',
-      'Instituto Avalia – Contador / Concurso UFBA',
+      'Instituto Avalia – Concurso UFBA',
       'CEBRASPE – Auditor Federal de Finanças e Controle / CGU',
-      'CEBRASPE – Analista Contábil / EBSERH',
+      'CEBRASPE – Analista Administrativo / EBSERH',
     ];
     const source = `${tfBancas[(qNum * 7 + lessonNum * 3) % tfBancas.length]} (${p1.ref})`;
 
@@ -126,29 +114,26 @@ export function generateFromLessonPropositions(
         : `Gabarito: ERRADO. De acordo com ${p1.ref}: ${p1.exp}`,
     };
   } else {
-    // MULTIPLE CHOICE (5 séries distintas com motor anti-reciclagem de distratores)
+    // MULTIPLE CHOICE (5 séries de enunciado único com motor anti-reciclagem de distratores)
     const p1 = propositions[i];
     const p2 = propositions[(i + 1) % N];
     const p3 = propositions[(i + 2) % N];
     const p4 = propositions[(i + 3) % N];
     const p5 = propositions[(i + 4) % N];
     const mcBancas = [
-      'FGV – Auditor-Fiscal da Receita Federal / RFB',
+      'Instituto Avalia – Concurso Público UFBA',
+      'FGV – Analista Administrativo / Câmara dos Deputados',
+      'FCC – Analista Judiciário / TRT',
       'FGV – Auditor Fiscal da Receita Estadual / SEFAZ-MG',
       'FCC – Auditor Fiscal dos Tributos Estaduais / SEFAZ-BA',
-      'FGV – Auditor Fiscal de Rendas / SEFAZ-SP',
-      'Instituto Avalia – Contador / Concurso UFBA',
-      'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-PE',
-      'FGV – Auditor do Estado / CGE-SC',
-      'FCC – Auditor Fiscal Tributário / ISS-Salvador',
-      'VUNESP – Contador / Prefeitura de São Paulo',
+      'VUNESP – Assistente em Administração / UNESP',
+      'Instituto AOCP – Assistente em Administração / IFES',
       'FGV – Analista / SEFAZ-AM',
-      'FCC – Auditor Fiscal da Receita Estadual / SEFAZ-SC',
-      'Instituto AOCP – Contador / Concurso IFES',
+      'FCC – Analista de Controle Externo / TCE',
+      'FGV – Auditor do Estado / CGE-SC',
     ];
     const source = `${mcBancas[(qNum * 7 + lessonNum * 3) % mcBancas.length]} (${p1.ref})`;
 
-    // Pool de distratores sem p1 e sem prevTestedProp, deslocado a cada questão para impedir repetição entre questões consecutivas
     const distractorCandidates = extendedPool.filter(p =>
       p.t !== p1.t && p.f !== p1.f &&
       (!prevTestedProp || (p.t !== prevTestedProp.t && p.f !== prevTestedProp.f))
@@ -171,7 +156,6 @@ export function generateFromLessonPropositions(
     const targetPos = (qNum + lessonNum) % 5;
 
     if (serie === 0) {
-      // Série 1: Assinale a afirmativa CORRETA sobre p1.sub
       const placed = placeCorrectAt(
         ensurePeriod(p1.t),
         [ensurePeriod(d1.f), ensurePeriod(d2.f), ensurePeriod(d3.f), ensurePeriod(d4.f)],
@@ -186,7 +170,6 @@ export function generateFromLessonPropositions(
         explanation: `Gabarito: ${placed.letter}. Em conformidade com ${p1.ref}: ${p1.exp}`,
       };
     } else if (serie === 1) {
-      // Série 2: Assinale a afirmativa INCORRETA (Exceção) sobre p1.sub
       const placed = placeCorrectAt(
         ensurePeriod(p1.f),
         [ensurePeriod(d1.t), ensurePeriod(d2.t), ensurePeriod(d3.t), ensurePeriod(d4.t)],
@@ -195,65 +178,26 @@ export function generateFromLessonPropositions(
       return {
         source,
         type: 'multiple',
-        statement: `[Questão ${qNum}] Acerca de ${cleanTopic}, analise as proposições abaixo referentes a ${p1.sub} (${p1.ref}) e aos demais institutos correlatos, e assinale a única alternativa INCORRETA:`,
+        statement: `[Questão ${qNum}] Acerca de ${cleanTopic}, analise as alternativas referentes a ${p1.sub} (${p1.ref}) e aos demais institutos correlatos, e assinale a única alternativa INCORRETA:`,
         options: placed.options,
         correctAnswer: placed.correctAnswer,
         explanation: `Gabarito: ${placed.letter}. A alternativa apontada é a única INCORRETA, pois viola ${p1.ref}: ${p1.exp} Todas as demais opções reproduzem preceitos verdadeiros.`,
       };
     } else if (serie === 2) {
-      // Série 3: Julgamento de Assertivas I, II e III (Padrão FGV)
-      const pattern = i % 5;
-      let sI = '', sII = '', sIII = '', correctOpt = '', expDetail = '';
-      if (pattern === 0) {
-        sI = ensurePeriod(p1.t);
-        sII = ensurePeriod(d1.f);
-        sIII = ensurePeriod(d2.t);
-        correctOpt = 'Está correto o que se afirma em I e III, apenas.';
-        expDetail = `Item I: CERTO (${p1.ref}). Item II: ERRADO (${d1.exp}). Item III: CERTO (${d2.ref}).`;
-      } else if (pattern === 1) {
-        sI = ensurePeriod(p1.t);
-        sII = ensurePeriod(d1.t);
-        sIII = ensurePeriod(d2.f);
-        correctOpt = 'Está correto o que se afirma em I e II, apenas.';
-        expDetail = `Item I: CERTO (${p1.ref}). Item II: CERTO (${d1.ref}). Item III: ERRADO (${d2.exp}).`;
-      } else if (pattern === 2) {
-        sI = ensurePeriod(p1.f);
-        sII = ensurePeriod(d1.t);
-        sIII = ensurePeriod(d2.t);
-        correctOpt = 'Está correto o que se afirma em II e III, apenas.';
-        expDetail = `Item I: ERRADO (${p1.exp}). Item II: CERTO (${d1.ref}). Item III: CERTO (${d2.ref}).`;
-      } else if (pattern === 3) {
-        sI = ensurePeriod(p1.t);
-        sII = ensurePeriod(d1.t);
-        sIII = ensurePeriod(d2.t);
-        correctOpt = 'Está correto o que se afirma em I, II e III.';
-        expDetail = `Todos os itens (I, II e III) estão corretos segundo ${p1.ref}, ${d1.ref} e ${d2.ref}.`;
-      } else {
-        sI = ensurePeriod(p1.t);
-        sII = ensurePeriod(d1.f);
-        sIII = ensurePeriod(d2.f);
-        correctOpt = 'Está correto o que se afirma em I, apenas.';
-        expDetail = `Item I: CERTO (${p1.ref}). Item II: ERRADO (${d1.exp}). Item III: ERRADO (${d2.exp}).`;
-      }
-      const allPool = [
-        'Está correto o que se afirma em I e III, apenas.',
-        'Está correto o que se afirma em I e II, apenas.',
-        'Está correto o que se afirma em II e III, apenas.',
-        'Está correto o que se afirma em I, II e III.',
-        'Está correto o que se afirma em I, apenas.',
-      ];
-      const otherOpts = allPool.filter(o => o !== correctOpt);
-      const placed = placeCorrectAt(correctOpt, otherOpts, targetPos);
+      const placed = placeCorrectAt(
+        ensurePeriod(p1.t),
+        [ensurePeriod(d2.f), ensurePeriod(d3.f), ensurePeriod(d4.f), ensurePeriod(d1.f)],
+        targetPos
+      );
       return {
         source,
         type: 'multiple',
-        statement: `[Questão ${qNum}] A respeito de ${cleanTopic}, avalie as afirmativas a seguir relativas a ${p1.sub}, ${d1.sub} e ${d2.sub}:\n\nI. ${sI}\nII. ${sII}\nIII. ${sIII}\n\nAssinale a alternativa correta:`,
+        statement: `[Questão ${qNum}] Considerando a doutrina e a legislação aplicáveis a ${cleanTopic}, assinale a alternativa que descreve corretamente a regra referente a ${p1.sub} (${p1.ref}):`,
         options: placed.options,
         correctAnswer: placed.correctAnswer,
-        explanation: `Gabarito: ${placed.letter}. ${expDetail}`,
+        explanation: `Gabarito: ${placed.letter}. De acordo com ${p1.ref}: ${p1.exp}`,
       };
     } else if (serie === 3) {
-      // Série 4: Assinale a afirmativa CORRETA sobre p2.sub
       const placed = placeCorrectAt(
         ensurePeriod(p2.t),
         [ensurePeriod(d1.f), ensurePeriod(d2.f), ensurePeriod(d3.f), ensurePeriod(d4.f)],
@@ -268,7 +212,6 @@ export function generateFromLessonPropositions(
         explanation: `Gabarito: ${placed.letter}. Conforme ${p2.ref}: ${p2.exp}`,
       };
     } else {
-      // Série 5+: Assinale a afirmativa CORRETA sobre p3.sub
       const placed = placeCorrectAt(
         ensurePeriod(p3.t),
         [ensurePeriod(d1.f), ensurePeriod(d2.f), ensurePeriod(d3.f), ensurePeriod(d4.f)],

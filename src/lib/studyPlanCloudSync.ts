@@ -51,13 +51,22 @@ export function getCanonicalLessonNum(lessonStr?: string): number | null {
 }
 
 export function getSpecialistAulaNum(specialistTopicId?: string, lessonStr?: string): number | null {
-  if (specialistTopicId === 'pericia-contabil') return 16;
-  if (specialistTopicId === 'casp-municipal-siconfi') return 18;
-  if (specialistTopicId === 'legislacao-ufba-ifes') return 24;
-  if (specialistTopicId === 'governo-digital-governanca') return 23;
+  if (specialistTopicId === 'pericia-contabil') return 17;
+  if (specialistTopicId === 'casp-municipal-siconfi') return 19;
+  if (specialistTopicId === 'contabilidade-custos-siafi') return 31;
+  if (specialistTopicId === 'redacao-oficial-variacao') return 16;
+  if (specialistTopicId === 'legislacao-ufba-ifes') return 25;
+  if (specialistTopicId === 'governo-digital-governanca') return 26;
+  if (specialistTopicId === 'etica-lai-lgpd') return 27;
+  if (specialistTopicId === 'assistente-tga-estruturas-podc') return 28;
+  if (specialistTopicId === 'assistente-processos-qualidade') return 29;
+  if (specialistTopicId === 'assistente-gestao-pessoas-comportamento') return 30;
+  if (specialistTopicId === 'assistente-recursos-materiais-estoques') return 31;
+  if (specialistTopicId === 'assistente-arquivologia-completa') return 32;
+  if (specialistTopicId === 'assistente-atendimento-publico') return 33;
   const norm = normalizeSubject(lessonStr);
-  if (norm.includes('especialista ufba 1')) return 24;
-  if (norm.includes('especialista ufba 2')) return 23;
+  if (norm.includes('especialista ufba 1')) return 25;
+  if (norm.includes('especialista ufba 2')) return 26;
   return null;
 }
 

@@ -11,6 +11,7 @@ export interface PlanTask {
   description: string;
   isVaccine?: boolean;
   specialistTopicId?: string;
+  isAssistenteExclusive?: boolean;
 }
 
 export interface DayPlan {
@@ -27,18 +28,48 @@ export function buildUfbaSprintPlan(): DayPlan[] {
   // Data de Início: 22/10/2026
   const startDate = new Date(2026, 9, 22);
 
-  // Sequência de matérias prioritárias UFBA 100% alinhada à numeração oficial do catálogo SEFAZ-BA / Matrizes
-  const UFBA_WEEKDAY_SEQUENCE: { subject: string; lesson: string; title: string; desc: string }[] = [
+  // Sequência principal de matérias prioritárias UFBA (Turnos 1, 2 e 3 preservando 100% os IDs ufba-day-X-t1..t3 já marcados pelo aluno!)
+  const UFBA_WEEKDAY_SEQUENCE: {
+    subject: string;
+    lesson: string;
+    title: string;
+    desc: string;
+    specialistTopicId?: string;
+  }[] = [
     // Módulos Especializados da UFBA (Lacunas do Edital UFBA cobertas pelos Especialistas Hermes)
-    { subject: 'Auditoria', lesson: 'Módulo Especialista', title: 'Perícia Contábil (NBC TP 01 e NBC PP 01) [Especialista UFBA]', desc: 'Conceitos, Laudo e Parecer Pericial, NBC TP 01, Provas e Quesitos Judiciais [Leitor Teórico no Habitus]', specialistTopicId: 'pericia-contabil' },
-    { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Módulo Especialista', title: 'CASP Municipal e Sistemas Federais [Especialista UFBA]', desc: 'Arrecadação Municipal, Fundos Especiais, Siconfi, Siope e Siops (MEC/MS) [Leitor Teórico no Habitus]', specialistTopicId: 'casp-municipal-siconfi' },
-    { subject: 'Direito Administrativo', lesson: 'Módulo Especialista UFBA 1', title: 'Legislação Institucional da UFBA e IFES [Especialista UFBA]', desc: 'Estatuto e Regimento Geral da UFBA, CONSUNI, CONSEPE, Curadores e Gestão Universitária [Leitor Teórico no Habitus]', specialistTopicId: 'legislacao-ufba-ifes' },
-    { subject: 'Direito Administrativo', lesson: 'Módulo Especialista UFBA 2', title: 'Governo Digital e Gestão de Riscos [Especialista UFBA]', desc: 'Lei do Governo Digital (Lei 14.129/21), LINDB/Riscos (Decreto 9.830/19) e Agenda Ambiental A3P [Leitor Teórico no Habitus]', specialistTopicId: 'governo-digital-governanca' },
+    {
+      subject: 'Auditoria',
+      lesson: 'Aula 17',
+      title: 'Perícia Contábil (NBC TP 01 e NBC PP 01) [Especialista UFBA]',
+      desc: 'Conceitos, Laudo e Parecer Pericial, NBC TP 01, Provas e Quesitos Judiciais [Leitor Teórico PDF + Questões no Habitus]',
+      specialistTopicId: 'pericia-contabil',
+    },
+    {
+      subject: 'Contabilidade Aplicada ao Setor Público (CASP)',
+      lesson: 'Aula 19',
+      title: 'CASP Municipal e Sistemas Federais [Especialista UFBA]',
+      desc: 'Arrecadação Municipal, Fundos Especiais, Siconfi, Siope e Siops (MEC/MS) [Leitor Teórico PDF + Questões no Habitus]',
+      specialistTopicId: 'casp-municipal-siconfi',
+    },
+    {
+      subject: 'Direito Administrativo',
+      lesson: 'Aula 25',
+      title: 'Legislação Institucional da UFBA e IFES [Especialista UFBA]',
+      desc: 'Estatuto e Regimento Geral da UFBA, CONSUNI, CONSEPE, Curadores, Gestão Universitária e Lei 11.091/05 [Leitor Teórico PDF + Questões no Habitus]',
+      specialistTopicId: 'legislacao-ufba-ifes',
+    },
+    {
+      subject: 'Direito Administrativo',
+      lesson: 'Aula 26',
+      title: 'Governo Digital e Gestão de Riscos [Especialista UFBA]',
+      desc: 'Lei do Governo Digital (Lei 14.129/21), LINDB/Riscos (Decreto 9.830/19) e Agenda Ambiental A3P [Leitor Teórico PDF + Questões no Habitus]',
+      specialistTopicId: 'governo-digital-governanca',
+    },
     // Bloco 1: Fundação Contábil, CASP, AFO, Administrativo e Português
     { subject: 'Contabilidade Geral', lesson: 'Aula 00', title: 'Contabilidade Geral - Aula 00', desc: 'Aspectos Introdutórios da Contabilidade (Objeto, Finalidade e Técnicas)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 00', title: 'CASP - Aula 00', desc: 'Aspectos Introdutórios e Conceito da CASP (MCASP e NBC TSP)' },
     { subject: 'Direito Administrativo', lesson: 'Aula 00', title: 'Direito Administrativo - Aula 00', desc: 'Princípios do Direito Administrativo (LIMPE e Implícitos)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 00', title: 'Português - Aula 00', desc: 'Ortografia Oficial, Acentuação Gráfica e Fonemas' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 00', title: 'Português - Aula 00', desc: 'Compreensão e Interpretação de Textos de Gêneros Variados' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 01', title: 'Contabilidade Geral - Aula 01', desc: 'Patrimônio: Ativo, Passivo e Patrimônio Líquido (Situações Líquidas)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 01', title: 'CASP - Aula 01', desc: 'Despesa Pública no Setor Público (Categorias, Estágios, RP e DEA)' },
@@ -48,12 +79,12 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 02', title: 'Contabilidade Geral - Aula 02', desc: 'Atos e Fatos Contábeis (Permutativos, Modificativos e Mistos) e Lançamentos' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 02', title: 'CASP - Aula 02', desc: 'MCASP: Procedimentos Contábeis Patrimoniais II (Imobilizado, Reavaliação e Impairment)' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 01', title: 'AFO / Finanças - Aula 01', desc: 'Princípios Orçamentários (Universalidade, Exclusividade, Não Afetação e Anualidade)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 01', title: 'Português - Aula 01', desc: 'Compreensão e Interpretação de Textos (Coesão e Coerência)' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 01', title: 'Português - Aula 01', desc: 'Ortografia Oficial e Acentuação Gráfica' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 03', title: 'Contabilidade Geral - Aula 03', desc: 'Contas, Teorias das Contas, Natureza Devedora/Credora e Plano de Contas' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 03', title: 'CASP - Aula 03', desc: 'MCASP: Procedimentos Contábeis Patrimoniais III (Intangível, Provisões e VPA/VPD)' },
     { subject: 'Direito Administrativo', lesson: 'Aula 02', title: 'Direito Administrativo - Aula 02', desc: 'Poderes Administrativos (Vinculado, Discricionário, Hierárquico, Disciplinar e Polícia)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 02', title: 'Português - Aula 02', desc: 'Tipologia e Gêneros Textuais (Narração, Descrição, Dissertação e Injunção)' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 02', title: 'Português - Aula 02', desc: 'Morfologia: Estrutura e Formação de Palavras' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 04', title: 'Contabilidade Geral - Aula 04', desc: 'Balancete de Verificação (Finalidade, Colunas e Limitações na Detecção de Erros)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 04', title: 'CASP - Aula 04', desc: 'Plano de Contas Aplicado ao Setor Público (PCASP - 8 Classes e Atributos F/P)' },
@@ -64,12 +95,12 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 05', title: 'Contabilidade Geral - Aula 05', desc: 'Estrutura Conceitual Contábil (CPC 00 R2 - Características Qualitativas e Elementos)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 05', title: 'CASP - Aula 05', desc: 'Balanço Orçamentário (Previsão vs. Execução, Resultado Orçamentário e Quadros de RP)' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 03', title: 'AFO / Finanças - Aula 03', desc: 'Ciclo Orçamentário e Processo Legislativo Orçamentário (Prazos e Emendas)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 03', title: 'Português - Aula 03', desc: 'Semântica: Parônimos, Homônimos, Polissemia e Significação de Palavras' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 03', title: 'Português - Aula 03', desc: 'Classes de Palavras: Substantivos, Adjetivos, Artigos e Numerais' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 06', title: 'Contabilidade Geral - Aula 06', desc: 'Operações com Mercadorias e Estoques (CPC 16 - PEPS, Média Ponderada e CMV)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 06', title: 'CASP - Aula 06', desc: 'Balanço Financeiro (Ingressos/Dispêndios Orçamentários e Extraorçamentários)' },
     { subject: 'Direito Administrativo', lesson: 'Aula 04', title: 'Direito Administrativo - Aula 04', desc: 'Atos Administrativos - Parte 2 (Espécies, Anulação, Revogação e Convalidação)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 06', title: 'Português - Aula 06', desc: 'Classes de Palavras: Substantivos, Adjetivos e Artigos' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 06', title: 'Português - Aula 06', desc: 'Classes Invariáveis: Advérbios, Preposições e Conjunções' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 07', title: 'Contabilidade Geral - Aula 07', desc: 'Tributos Sobre Compras e Vendas (ICMS, IPI, PIS e COFINS Recuperáveis)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 07', title: 'CASP - Aula 07', desc: 'Balanço Patrimonial Público (Quadro Principal, Financeiro/Permanente e Superávit Financeiro)' },
@@ -79,12 +110,12 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 08', title: 'Contabilidade Geral - Aula 08', desc: 'Duplicatas Descontadas e Perdas Estimadas em Créditos de Liquidação Duvidosa (PCLD)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 08', title: 'CASP - Aula 08', desc: 'Demonstração das Variações Patrimoniais (DVP - VPA, VPD e Resultado Patrimonial)' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 05', title: 'AFO / Finanças - Aula 05', desc: 'Receita Pública: Conceito, Classificações (Correntes/Capital) e Origens' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 07', title: 'Português - Aula 07', desc: 'Pronomes: Emprego, Relativos (Cujo/Onde) e Colocação Pronominal' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 07', title: 'Português - Aula 07', desc: 'Análise Sintática: Termos da Oração (Essenciais, Integrantes e Acessórios)' },
 
-    { subject: 'Contabilidade Geral', lesson: 'Aula 09', title: 'Contabilidade Geral - Aula 09', desc: 'Ativo Imobilizado (CPC 27 - Reconhecimento, Mensuração e Custos Ativáveis)' },
-    { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 09', title: 'CASP - Aula 09', desc: 'DFC, DMPL e Notas Explicativas no Setor Público (MCASP Parte V)' },
-    { subject: 'Direito Administrativo', lesson: 'Aula 08', title: 'Direito Administrativo - Aula 08', desc: 'Agentes Públicos e Regime Jurídico dos Servidores Públicos' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 08', title: 'Português - Aula 08', desc: 'Verbos: Modos, Tempos, Vozes Verbais e Correlação Verbal' },
+    { subject: 'Contabilidade Geral', lesson: 'Aula 09', title: 'Contabilidade Geral - Aula 09', desc: 'Ativo Intangível (CPC 04) e Ativo Imobilizado (CPC 27 - Reconhecimento e Mensuração)' },
+    { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 09', title: 'CASP - Aula 09', desc: 'DCASP: Balanço Orçamentário, Financeiro, DFC, DMPL e Notas Explicativas (MCASP Parte V)' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 08', title: 'Direito Administrativo - Aula 08', desc: 'Agentes Públicos e Regime Jurídico dos Servidores Públicos (Lei 8.112/90)' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 08', title: 'Português - Aula 08', desc: 'Período Composto por Coordenação e Subordinação' },
 
     // Bloco 3: CPCs Avançados, Lei 4.320/64, NBC TSP Estrutura Conceitual, LRF e Lei 14.133/2021
     { subject: 'Contabilidade Geral', lesson: 'Aula 10', title: 'Contabilidade Geral - Aula 10', desc: 'Depreciação, Amortização e Exaustão (Métodos Linear, Soma dos Dígitos e Unidades)' },
@@ -95,12 +126,12 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 11', title: 'Contabilidade Geral - Aula 11', desc: 'Ativo Intangível (CPC 04 - Pesquisa vs. Desenvolvimento, Goodwill e Amortização)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 11', title: 'CASP - Aula 11', desc: 'NBC TSP Estrutura Conceitual (RCPGs, Características Qualitativas e Mensuração)' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 07', title: 'AFO / Finanças - Aula 07', desc: 'Despesa Pública: Classificação Orçamentária por Natureza (Categorias e GND)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 09', title: 'Português - Aula 09', desc: 'Estrutura Sintática da Oração (Sujeito, Predicado e Complementos)' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 09', title: 'Português - Aula 09', desc: 'Pontuação: Emprego da Vírgula e Demais Sinais' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 12', title: 'Contabilidade Geral - Aula 12', desc: 'Redução ao Valor Recuperável de Ativos - Impairment (CPC 01 - Valor em Uso e Valor Justo)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 12', title: 'CASP - Aula 12', desc: 'Tópicos Selecionados da LRF I (Receita Corrente Líquida e Limites de Pessoal)' },
     { subject: 'Direito Administrativo', lesson: 'Aula 10', title: 'Direito Administrativo - Aula 10', desc: 'Nova Lei de Licitações (Lei 14.133/2021 - Parte 2: Dispensa e Inexigibilidade)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 10', title: 'Português - Aula 10', desc: 'Sintaxe do Período Composto (Orações Coordenadas e Subordinadas)' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 10', title: 'Português - Aula 10', desc: 'Concordância Verbal e Concordância Nominal' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 13', title: 'Contabilidade Geral - Aula 13', desc: 'Passivo Exigível, Provisões e Passivos/Ativos Contingentes (CPC 25)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 13', title: 'CASP - Aula 13', desc: 'Tópicos Selecionados da LRF II (Regra de Ouro, ARO, RREO, RGF e Restos a Pagar)' },
@@ -110,18 +141,18 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 14', title: 'Contabilidade Geral - Aula 14', desc: 'Patrimônio Líquido: Capital Social, Reservas de Capital e Reservas de Lucros' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 14', title: 'CASP - Aula 14', desc: 'Princípios Orçamentários e Contábeis no Setor Público' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 09', title: 'AFO / Finanças - Aula 09', desc: 'Lei de Responsabilidade Fiscal (LRF Parte 1 - Planejamento, Metas e Renúncia de Receita)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 11', title: 'Português - Aula 11', desc: 'Concordância Verbal e Concordância Nominal' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 11', title: 'Português - Aula 11', desc: 'Regência Verbal e Nominal' },
 
     // Bloco 4: Demonstrações Societárias Completas (BP, DRE, DFC, DMPL, DVA), Análise de Balanços e Patrimônio Público
     { subject: 'Contabilidade Geral', lesson: 'Aula 15', title: 'Contabilidade Geral - Aula 15', desc: 'Ações em Tesouraria, Dividendos Obrigatórios e Juros sobre o Capital Próprio (JSCP)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 15', title: 'CASP - Aula 15', desc: 'Composição do Patrimônio Público (Bens de Uso Comum, Especial e Dominicais)' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 10', title: 'AFO / Finanças - Aula 10', desc: 'Lei de Responsabilidade Fiscal (LRF Parte 2 - Despesa com Pessoal e Limite Prudencial)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 12', title: 'Português - Aula 12', desc: 'Regência Verbal e Nominal e Emprego do Sinal Indicativo de Crase' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 12', title: 'Português - Aula 12', desc: 'Crase: Regra Geral, Casos Proibidos, Obrigatórios e Facultativos' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 16', title: 'Contabilidade Geral - Aula 16', desc: 'Apuração do Resultado do Exercício (ARE), Absorção de Prejuízos e Participações' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 16', title: 'CASP - Aula 16', desc: 'Estoques no Setor Público (NBC TSP 04 - Distribuição Gratuita e Custo de Reposição)' },
     { subject: 'Direito Administrativo', lesson: 'Aula 15', title: 'Direito Administrativo - Aula 15', desc: 'Controle da Administração Pública (Interno, Externo, Parlamentar e Tribunais de Contas)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 13', title: 'Português - Aula 13', desc: 'Pontuação (Vírgula, Ponto e Vírgula, Dois-Pontos e Travessões)' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 13', title: 'Português - Aula 13', desc: 'Coesão, Coerência e Reescrita de Frases' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 17', title: 'Contabilidade Geral - Aula 17', desc: 'Balanço Patrimonial Societário (Estrutura Completa da Lei 6.404/76 e Ciclo Operacional)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 17', title: 'CASP - Aula 17', desc: 'Fundeb (Fundo de Manutenção da Educação Básica - Contabilização de Deduções e Receitas)' },
@@ -131,7 +162,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 18', title: 'Contabilidade Geral - Aula 18', desc: 'Demonstração do Resultado do Exercício (DRE - Receita Líquida, Lucro Bruto e LAIR)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 18', title: 'CASP - Aula 18', desc: 'Princípios Aplicados à Contabilidade Pública' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 12', title: 'AFO / Finanças - Aula 12', desc: 'Lei de Responsabilidade Fiscal (LRF Parte 4 - Transparência, RREO, RGF e Contas)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 14', title: 'Português - Aula 14', desc: 'Reescritura de Frases, Nominalização e Equivalência de Estruturas' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 14', title: 'Português - Aula 14', desc: 'Semântica: Sinônimos, Antônimos, Homônimos, Parônimos e Polissemia' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 19', title: 'Contabilidade Geral - Aula 19', desc: 'Demonstração dos Fluxos de Caixa (DFC - CPC 03: Métodos Direto e Indireto)' },
     { subject: 'Contabilidade Geral', lesson: 'Aula 20', title: 'Contabilidade Geral - Aula 20', desc: 'Demonstração das Mutações do Patrimônio Líquido (DMPL) e DLPA' },
@@ -159,6 +190,53 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 30', title: 'Contabilidade Geral - Aula 30', desc: 'Revisão Geral de Contabilidade Societária e Pronunciamentos do CPC' },
   ];
 
+  // Turno 4 Complementar (Novos Módulos Especialistas do Tronco Comum/Contador + Aulas Complementares SEFAZ-BA sem alterar os IDs t1..t3!)
+  const UFBA_EXTRA_COMMON_SEQUENCE: {
+    subject: string;
+    lesson: string;
+    title: string;
+    desc: string;
+    specialistTopicId?: string;
+  }[] = [
+    {
+      subject: 'Contabilidade Geral',
+      lesson: 'Aula 31',
+      title: 'Contabilidade de Custos (Absorção, Variável, ABC, NBC TSP 34) e SIAFI [Especialista UFBA]',
+      desc: 'Custeio por Absorção vs. Variável, Margem de Contribuição, Ponto de Equilíbrio, ABC, NBC TSP 34 e SIAFI [Leitor Teórico PDF + Questões no Habitus]',
+      specialistTopicId: 'contabilidade-custos-siafi',
+    },
+    {
+      subject: 'Direito Administrativo',
+      lesson: 'Aula 27',
+      title: 'Ética Pública (Dec. 1.171/94), LAI (Lei 12.527/11) e LGPD (Lei 13.709/18) [Especialista UFBA]',
+      desc: 'Código de Ética do Servidor Federal, Comissão de Ética (Censura), Lei de Acesso à Informação e LGPD no Setor Público [Leitor Teórico PDF + Questões no Habitus]',
+      specialistTopicId: 'etica-lai-lgpd',
+    },
+    {
+      subject: 'Língua Portuguesa',
+      lesson: 'Aula 16',
+      title: 'Redação Oficial (Manual da Presidência), Variação Linguística e Funções do Que/Se [Especialista UFBA]',
+      desc: 'Atributos da Redação Oficial, Padrão Ofício, Vocativos/Fechos, Variação Linguística e Morfossintaxe do Que e do Se [Leitor Teórico PDF + Questões no Habitus]',
+      specialistTopicId: 'redacao-oficial-variacao',
+    },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 04', title: 'Português - Aula 04', desc: 'Pronomes: Pessoais, Possessivos, Demonstrativos, Indefinidos, Relativos e Colocação Pronominal' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 05', title: 'Português - Aula 05', desc: 'Verbos: Emprego dos Tempos e Modos Verbais, Vozes Verbais e Correlação' },
+    { subject: 'Informática Básica', lesson: 'Aula 03', title: 'Informática - Aula 03', desc: 'Navegadores Web (Browsers), Correio Eletrônico (Webmail/Mozilla) e Buscas' },
+    { subject: 'Informática Básica', lesson: 'Aula 04', title: 'Informática - Aula 04', desc: 'Segurança da Informação: Malware, Phishing, Criptografia, Firewall e Backup' },
+    { subject: 'Informática Básica', lesson: 'Aula 05', title: 'Informática - Aula 05', desc: 'Editores de Texto: Microsoft Word e LibreOffice Writer' },
+    { subject: 'Informática Básica', lesson: 'Aula 07', title: 'Informática - Aula 07', desc: 'Planilhas Eletrônicas Avançadas: Excel e LibreOffice Calc' },
+    { subject: 'Informática Básica', lesson: 'Aula 08', title: 'Informática - Aula 08', desc: 'Editor de Apresentações (PowerPoint / Impress) e Ferramentas de Colaboração' },
+    { subject: 'Informática Básica', lesson: 'Aula 09', title: 'Informática - Aula 09', desc: 'Noções de Banco de Dados, Governança de Dados e Transformação Digital' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 06', title: 'Direito Administrativo - Aula 06', desc: 'Administração Indireta: Autarquias, Fundações, Empresas Públicas e Sociedades de Economia Mista' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 18', title: 'Direito Administrativo - Aula 18', desc: 'Serviços Públicos: Conceito, Princípios, Classificação e Concessão/Permissão (Lei 8.987/95)' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 19', title: 'Direito Administrativo - Aula 19', desc: 'Bens Públicos: Classificação, Regime Jurídico, Afetação/Desafetação e Alienação' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 22', title: 'Direito Administrativo - Aula 22', desc: 'Lei Anticorrupção (Lei 12.846/2013), Acordo de Leniência e Compliance Público' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 23', title: 'Direito Administrativo - Aula 23', desc: 'Lei Estadual da Bahia nº 14.634/2023 (Licitações e Contratos BA)' },
+    { subject: 'Direito Administrativo', lesson: 'Aula 24', title: 'Direito Administrativo - Aula 24', desc: 'Lei Estadual da Bahia nº 9.290/2004 e Legislação Complementar' },
+    { subject: 'Contabilidade Geral', lesson: 'Aula 23', title: 'Contabilidade Geral - Aula 23', desc: 'Consolidação das Demonstrações Contábeis e Combinação de Negócios (CPC 15 e CPC 36)' },
+    { subject: 'Contabilidade Geral', lesson: 'Aula 24', title: 'Contabilidade Geral - Aula 24', desc: 'Efeitos das Mudanças nas Taxas de Câmbio e Ativo Não Circulante Mantido para Venda (CPC 02 e CPC 31)' },
+  ];
+
   // Tarefas da Vacina CGU para os fins de semana (Manhã) - 100% mapeadas a aulas únicas
   const CGU_VACCINE_TASKS = [
     { subject: 'Auditoria', lesson: 'Aula 00', title: '💉 Vacina CGU: Auditoria - Aula 00 (NBC TA 200)', desc: 'Conceito, Objetivos Gerais do Auditor Independente, Ceticismo e Risco de Auditoria' },
@@ -173,7 +251,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Auditoria', lesson: 'Aula 05', title: '💉 Vacina CGU: Materialidade em Auditoria - Aula 05 (NBC TA 320)', desc: 'Materialidade Global, Materialidade para Execução dos Trabalhos e Revisão' },
   ];
 
-  // Baterias de Revisão Ativa para os fins de semana (Noite) - cada fim de semana exercita uma aula distinta!
+  // Baterias de Revisão Ativa para os fins de semana (Noite)
   const WEEKEND_REVIEW_TASKS = [
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 04', title: 'Revisão Ativa: Bateria PCASP e Naturezas de Informação (Aula 04)', desc: 'Resolução de 50 questões comentadas sobre as 8 Classes do PCASP e Atributos F/P' },
     { subject: 'Administração, Economia e Finanças Públicas', lesson: 'Aula 02', title: 'Revisão Ativa: Bateria Créditos Adicionais e Fontes (Aula 02)', desc: 'Resolução de 50 questões sobre Créditos Suplementares, Especiais, Extraordinários e Superávit Financeiro' },
@@ -187,7 +265,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 19', title: 'Revisão Ativa: Bateria DFC - Fluxos de Caixa (Aula 19)', desc: 'Resolução de 50 questões sobre Fluxos Operacionais, Investimento e Financiamento (CPC 03)' },
   ];
 
-  // Tarefas de Reta Final UFBA (Dias 54 a 59) com aulas específicas distintas
+  // Tarefas de Reta Final UFBA (Dias 54 a 59)
   const RETA_FINAL_T1 = [
     { subject: 'Direito Administrativo', lesson: 'Aula 05', title: 'Reta Final UFBA: Autarquias Federais e Regime das IFES (Aula 05)', desc: 'Natureza autárquica especial das Universidades Federais, autonomia universitária (Art. 207 da CF) e bens' },
     { subject: 'Direito Administrativo', lesson: 'Aula 08', title: 'Reta Final UFBA: Regime Jurídico dos Servidores - Lei 8.112/90 (Aula 08)', desc: 'Provimento, vacância, direitos, deveres, proibições e processo administrativo disciplinar' },
@@ -206,8 +284,91 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 30', title: 'Revisão Relâmpago UFBA: Síntese Geral de Contabilidade Societária (Aula 30)', desc: 'Revisão final de CPC 00, Estoques (CPC 16), Imobilizado (CPC 27), Impairment (CPC 01) e DFC/DVA' },
   ];
 
+  // ============================================================================
+  // BLOCO EXCLUSIVO FINAL (DIAS 57, 58 E 59): TÓPICOS QUE CAEM SOMENTE PARA
+  // ASSISTENTE EM ADMINISTRAÇÃO (CÓD. 301 - MANHÃ), POSICIONADOS NO FINAL DO PLANO!
+  // ============================================================================
+  const ASSISTENTE_EXCLUSIVE_BY_DAY: Record<
+    number,
+    {
+      subject: string;
+      lesson: string;
+      title: string;
+      desc: string;
+      specialistTopicId?: string;
+    }[]
+  > = {
+    57: [
+      {
+        subject: 'Direito Administrativo',
+        lesson: 'Aula 28',
+        title: '📋 [Só Assistente em Adm.] TGA, Estruturas Organizacionais, Departamentalização e Processo PODC',
+        desc: 'Abordagens Clássica/Burocrática/Sistêmica/Contingencial, Estruturas Linear/Funcional/Matricial e Funções PODC [Apostila PDF + Questões no Habitus]',
+        specialistTopicId: 'assistente-tga-estruturas-podc',
+      },
+      {
+        subject: 'Direito Administrativo',
+        lesson: 'Aula 29',
+        title: '📋 [Só Assistente em Adm.] Gestão de Processos (BPM/BPMN), Gestão da Qualidade (PDCA/5S) e Projetos',
+        desc: 'Mapeamento BPMN, Ciclo PDCA, Programa 5S, Ferramentas da Qualidade (Pareto/Ishikawa) e Noções de Projetos [Apostila PDF + Questões no Habitus]',
+        specialistTopicId: 'assistente-processos-qualidade',
+      },
+      {
+        subject: 'Direito Administrativo',
+        lesson: 'Aula 30',
+        title: '📋 [Só Assistente em Adm.] Gestão de Pessoas, Comportamento Organizacional, Motivação e Liderança',
+        desc: 'Maslow, Herzberg, McGregor, Liderança Situacional, Clima vs. Cultura Organizacional e Avaliação 360º [Apostila PDF + Questões no Habitus]',
+        specialistTopicId: 'assistente-gestao-pessoas-comportamento',
+      },
+    ],
+    58: [
+      {
+        subject: 'Direito Administrativo',
+        lesson: 'Aula 31',
+        title: '📋 [Só Assistente em Adm.] Administração de Recursos Materiais, Estoques (Curva ABC/PEPS) e Patrimônio',
+        desc: 'Classificação ABC (Pareto) e XYZ, PEPS/UEPS/Média, Ponto de Pedido, Estoque de Segurança, Recebimento e Inventário [Apostila PDF + Questões no Habitus]',
+        specialistTopicId: 'assistente-recursos-materiais-estoques',
+      },
+      {
+        subject: 'Direito Administrativo',
+        lesson: 'Aula 32',
+        title: '📋 [Só Assistente em Adm.] Arquivologia Completa (Lei 8.159/91, Teoria das 3 Idades, TTD e Protocolo)',
+        desc: 'Ciclo Vital (Corrente, Intermediário, Permanente), Tabela de Temporalidade, Métodos de Arquivamento e Preservação [Apostila PDF + Questões no Habitus]',
+        specialistTopicId: 'assistente-arquivologia-completa',
+      },
+      {
+        subject: 'Direito Administrativo',
+        lesson: 'Aula 33',
+        title: '📋 [Só Assistente em Adm.] Atendimento ao Público, Comunicação Organizacional e Lei 13.460/2017',
+        desc: 'Qualidade no Atendimento, Postura e Empatia, Barreiras à Comunicação, Ouvidoria e Carta de Serviços ao Usuário [Apostila PDF + Questões no Habitus]',
+        specialistTopicId: 'assistente-atendimento-publico',
+      },
+    ],
+    59: [
+      {
+        subject: 'Informática Básica',
+        lesson: 'Aula 01',
+        title: '📋 [Só Assistente em Adm.] Informática Básica - Aula 01: Sistema Operacional Windows 10/11 e Pastas',
+        desc: 'Gerenciamento de arquivos, pastas, atalhos, área de transferência e verificação de integridade (PDF da pasta Sefaz BA + Questões no Habitus)',
+      },
+      {
+        subject: 'Informática Básica',
+        lesson: 'Aula 02',
+        title: '📋 [Só Assistente em Adm.] Informática Básica - Aula 02: Redes de Computadores e Conectividade Básica',
+        desc: 'Conceitos de redes locais, Internet, Intranet, protocolos e conectividade (PDF da pasta Sefaz BA + Questões no Habitus)',
+      },
+      {
+        subject: 'Informática Básica',
+        lesson: 'Aula 10',
+        title: '📋 [Só Assistente em Adm.] Informática Básica - Aula 10: Computação em Nuvem e Colaboração Online',
+        desc: 'Modelos IaaS, PaaS, SaaS, armazenamento em nuvem (Google Drive / OneDrive) e edição colaborativa (PDF da pasta Sefaz BA + Questões no Habitus)',
+      },
+    ],
+  };
+
   let weekdayIdx = 0;
   let vaccineIdx = 0;
+  let extraCommonIdx = 0;
 
   for (let d = 1; d <= 60; d++) {
     const currentDate = new Date(startDate);
@@ -218,7 +379,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     const dateFormatted = currentDate.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
     const weekNum = Math.ceil(d / 7);
 
@@ -237,92 +398,118 @@ export function buildUfbaSprintPlan(): DayPlan[] {
         subject: 'Auditoria',
         lesson: 'Aula 16',
         title: '🌟 PROVA DA CGU EM SALVADOR (Auditor Federal)',
-        description: 'Aplicação da prova Cebraspe. Foco na pontuação líquida: deixe em branco o que não domina!'
+        description: 'Aplicação da prova Cebraspe. Foco na pontuação líquida: deixe em branco o que não domina!',
       });
       days.push({
         dayNumber: d,
         dateStr: dateFormatted,
         weekNumber: weekNum,
         phase: '🎯 DIA DE PROVA: CGU',
-        tasks
+        tasks,
       });
       continue;
     }
 
     if (d === 60) {
-      // 20/12/2026: PROVA DA UFBA
+      // 20/12/2026: PROVA DA UFBA (MANHÃ: ASSISTENTE EM ADMINISTRAÇÃO | TARDE: CONTADOR)
       tasks.push({
         id: `ufba-day-60-ufba`,
         dayNumber: 60,
         dateStr: dateFormatted,
         weekNumber: weekNum,
         phase: '🏆 DIA DE PROVA: UFBA',
-        shift: 'Dia Inteiro',
+        shift: 'Manhã (301) & Tarde (405)',
         subject: 'Contabilidade Aplicada ao Setor Público (CASP)',
         lesson: 'Aula 18',
-        title: '🏆 PROVA DA UFBA EM SALVADOR (Contador - Código 405)',
-        description: '60 Questões (Específicas Peso 2) + Redação. Chute tudo o que tiver dúvida (não anula)! Sua vaga em Salvador.'
+        title: '🏆 PROVA DA UFBA EM SALVADOR (Manhã: Assistente em Adm. Cód. 301 | Tarde: Contador Cód. 405)',
+        description: 'Manhã: 50 Questões Objetivas (Assistente em Administração). Tarde: 60 Questões Objetivas + Redação (Contador). Não há apenação por erro — preencha todo o cartão-resposta!',
       });
       days.push({
         dayNumber: d,
         dateStr: dateFormatted,
         weekNumber: weekNum,
         phase: '🏆 DIA DE PROVA: UFBA',
-        tasks
+        tasks,
       });
       continue;
     }
 
     if (d >= 54 && d <= 59) {
-      // Semana entre CGU e UFBA: RETA FINAL EXCLUSIVA UFBA
+      // Semana entre CGU e UFBA: RETA FINAL UFBA + BLOCO EXCLUSIVO ASSISTENTE EM ADMINISTRAÇÃO NOS DIAS 57, 58 E 59
       const rfIdx = d - 54;
       const t1 = RETA_FINAL_T1[rfIdx % RETA_FINAL_T1.length];
       const t2 = RETA_FINAL_T2[rfIdx % RETA_FINAL_T2.length];
       const portLesson = `Aula ${String(10 + (rfIdx % 6)).padStart(2, '0')}`;
+      const assistExclusiveList = ASSISTENTE_EXCLUSIVE_BY_DAY[d] || [];
+
+      const dayPhase =
+        assistExclusiveList.length > 0
+          ? 'Fase Final: Tópicos Exclusivos de Assistente em Administração + Revisão UFBA'
+          : 'Fase 4: Sprint Final UFBA';
 
       tasks.push({
         id: `ufba-day-${d}-t1`,
         dayNumber: d,
         dateStr: dateFormatted,
         weekNumber: weekNum,
-        phase: 'Fase 4: Sprint Final UFBA',
+        phase: dayPhase,
         shift: 'Turno 1',
         subject: t1.subject,
         lesson: t1.lesson,
         title: t1.title,
-        description: t1.desc
+        description: t1.desc,
       });
       tasks.push({
         id: `ufba-day-${d}-t2`,
         dayNumber: d,
         dateStr: dateFormatted,
         weekNumber: weekNum,
-        phase: 'Fase 4: Sprint Final UFBA',
+        phase: dayPhase,
         shift: 'Turno 2',
         subject: t2.subject,
         lesson: t2.lesson,
         title: t2.title,
-        description: t2.desc
+        description: t2.desc,
       });
       tasks.push({
         id: `ufba-day-${d}-t3`,
         dayNumber: d,
         dateStr: dateFormatted,
         weekNumber: weekNum,
-        phase: 'Fase 4: Sprint Final UFBA',
+        phase: dayPhase,
         shift: 'Turno 3',
         subject: 'Língua Portuguesa',
         lesson: portLesson,
         title: `Treino de Redação e Gramática Aplicada (${portLesson})`,
-        description: 'Elaboração de texto dissertativo de 25 linhas com revisão de sintaxe, pontuação e reescritura'
+        description: 'Elaboração de texto dissertativo de 25 linhas com revisão de sintaxe, pontuação e reescritura',
       });
+
+      if (assistExclusiveList.length > 0) {
+        // Nos dias finais (57, 58 e 59), acrescentamos os tópicos que são SOMENTE de Assistente em Administração!
+        assistExclusiveList.forEach((aItem, idx) => {
+          tasks.push({
+            id: `ufba-day-${d}-assist-${idx + 1}`,
+            dayNumber: d,
+            dateStr: dateFormatted,
+            weekNumber: weekNum,
+            phase: dayPhase,
+            shift: `Bloco Final Assistente ${idx + 1}`,
+            subject: aItem.subject,
+            lesson: aItem.lesson,
+            title: aItem.title,
+            description: aItem.desc,
+            specialistTopicId: aItem.specialistTopicId,
+            isAssistenteExclusive: true,
+          });
+        });
+      }
 
       days.push({
         dayNumber: d,
         dateStr: dateFormatted,
         weekNumber: weekNum,
-        phase: 'Fase 4: Sprint Final UFBA',
-        tasks
+        phase: dayPhase,
+        tasks,
       });
       continue;
     }
@@ -346,7 +533,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
         lesson: vTask.lesson,
         title: vTask.title,
         description: vTask.desc,
-        isVaccine: true
+        isVaccine: true,
       });
 
       tasks.push({
@@ -359,7 +546,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
         subject: 'Língua Portuguesa',
         lesson: redPortLesson,
         title: `✍️ Treino de Redação Semanal + Português (${redPortLesson})`,
-        description: 'Produzir 1 texto dissertativo completo de 20 a 30 linhas sobre Eficiência Pública ou Ética'
+        description: 'Produzir 1 texto dissertativo completo de 20 a 30 linhas sobre Eficiência Pública ou Ética',
       });
 
       tasks.push({
@@ -372,7 +559,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
         subject: rTask.subject,
         lesson: rTask.lesson,
         title: rTask.title,
-        description: rTask.desc
+        description: rTask.desc,
       });
 
       days.push({
@@ -380,12 +567,12 @@ export function buildUfbaSprintPlan(): DayPlan[] {
         dateStr: dateFormatted,
         weekNumber: weekNum,
         phase: 'Fase 2: Vacina CGU & Revisão',
-        tasks
+        tasks,
       });
       continue;
     }
 
-    // Dias de Semana Normais: 3 aulas por dia do Núcleo de Ouro UFBA
+    // Dias de Semana Normais: 3 aulas por dia do Núcleo de Ouro UFBA (100% compatível com os IDs salvos!)
     for (let t = 1; t <= 3; t++) {
       const item = UFBA_WEEKDAY_SEQUENCE[weekdayIdx % UFBA_WEEKDAY_SEQUENCE.length];
       weekdayIdx++;
@@ -400,7 +587,27 @@ export function buildUfbaSprintPlan(): DayPlan[] {
         lesson: item.lesson,
         title: item.title,
         description: item.specialistTopicId ? item.desc : `${item.desc} (PDF da pasta Sefaz BA)`,
-        specialistTopicId: item.specialistTopicId
+        specialistTopicId: item.specialistTopicId,
+      });
+    }
+
+    // A partir do Dia 21 (quando o aluno concluiu os primeiros 20 dias), adiciona 1 Turno Complementar (t4)
+    // com os 3 novos Módulos Especialistas do Tronco Comum/Contador + aulas complementares da pasta SEFAZ-BA
+    if (d >= 21 && extraCommonIdx < UFBA_EXTRA_COMMON_SEQUENCE.length) {
+      const extraItem = UFBA_EXTRA_COMMON_SEQUENCE[extraCommonIdx];
+      extraCommonIdx++;
+      tasks.push({
+        id: `ufba-day-${d}-t4`,
+        dayNumber: d,
+        dateStr: dateFormatted,
+        weekNumber: weekNum,
+        phase: 'Fase 1: Núcleo de Ouro UFBA',
+        shift: 'Turno 4 (Complementar)',
+        subject: extraItem.subject,
+        lesson: extraItem.lesson,
+        title: extraItem.title,
+        description: extraItem.specialistTopicId ? extraItem.desc : `${extraItem.desc} (PDF da pasta Sefaz BA)`,
+        specialistTopicId: extraItem.specialistTopicId,
       });
     }
 
@@ -409,7 +616,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
       dateStr: dateFormatted,
       weekNumber: weekNum,
       phase: 'Fase 1: Núcleo de Ouro UFBA',
-      tasks
+      tasks,
     });
   }
 

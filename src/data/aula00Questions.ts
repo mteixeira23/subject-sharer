@@ -791,6 +791,8 @@ import { ADMINISTRATIVO_LESSON_MATRIX } from './matrix/administrativoMatrix';
 import { CONTABILIDADE_LESSON_MATRIX, CASP_LESSON_MATRIX } from './matrix/contabilidadeCaspMatrix';
 import { ESTATISTICA_LESSON_MATRIX, MATEMATICA_FINANCEIRA_LESSON_MATRIX, ECONOMIA_LESSON_MATRIX } from './matrix/exatasMatrix';
 import { PORTUGUES_LESSON_MATRIX, INFORMATICA_LESSON_MATRIX, IGUALDADE_RACIAL_LESSON_MATRIX } from './matrix/humanasMatrix';
+import { getUfbaSpecialistQuestionsForLesson } from './ufbaSpecialistQuestions';
+import { UFBA_AUDITORIA_SPECIALIST_MATRIX, UFBA_CASP_SPECIALIST_MATRIX, UFBA_CONTABILIDADE_SPECIALIST_MATRIX, UFBA_PORTUGUES_SPECIALIST_MATRIX, UFBA_ADMINISTRATIVO_SPECIALIST_MATRIX } from './matrix/ufbaSpecialistMatrix';
 import {
   getAccountingQuestion,
   getTaxLawQuestion,
@@ -868,6 +870,10 @@ export function generateCustomQuestionsForSubject(subjectName: string, lessonNum
     bank = REAL_CONCURSO_QUESTIONS.igualdade_racial;
   }
 
+  const ufbaSpec = getUfbaSpecialistQuestionsForLesson(subjectName, lessonNum);
+  if (ufbaSpec && batteryNum === 1) {
+    lessonSpecific = lessonSpecific ? [...ufbaSpec, ...lessonSpecific] : [...ufbaSpec];
+  }
   const rawList = buildDomainSpecificQuestions(subjectName, lessonNum, lessonTitle, bank, lessonSpecific, batteryNum);
   return rawList.map(q => balanceQuestion(q, lessonNum + (batteryNum === 2 ? 7 : 0)));
 }
@@ -1107,6 +1113,47 @@ function buildDomainSpecificQuestions(
     }
   }
 
+  let b1Matrix: SubjectLessonMatrix | undefined;
+  if (
+    lowerSubj.includes('finanças') ||
+    lowerSubj.includes('financas') ||
+    lowerSubj.includes('afo') ||
+    lowerSubj.includes('orçamento') ||
+    lowerSubj.includes('orcamento') ||
+    lowerSubj.includes('administração, economia') ||
+    (lowerSubj.includes('administração') && lowerSubj.includes('finanças'))
+  ) {
+    b1Matrix = AFO_LESSON_MATRIX;
+  } else if (lowerSubj.includes('tributário') || lowerSubj.includes('tributario')) {
+    b1Matrix = TRIBUTARIO_LESSON_MATRIX;
+  } else if (lowerSubj.includes('matemática') || lowerSubj.includes('matematica') || lowerSubj.includes('financeira')) {
+    b1Matrix = MATEMATICA_FINANCEIRA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('estatística') || lowerSubj.includes('estatistica')) {
+    b1Matrix = ESTATISTICA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('casp') || lowerSubj.includes('setor público') || lowerSubj.includes('setor publico')) {
+    b1Matrix = { ...CASP_LESSON_MATRIX, ...UFBA_CASP_SPECIALIST_MATRIX };
+  } else if (lowerSubj.includes('contabilidade')) {
+    b1Matrix = { ...CONTABILIDADE_LESSON_MATRIX, ...UFBA_CONTABILIDADE_SPECIALIST_MATRIX };
+  } else if (lowerSubj.includes('direito administrativo') || (lowerSubj.includes('administrativ') && !lowerSubj.includes('finan') && !lowerSubj.includes('econom'))) {
+    b1Matrix = { ...ADMINISTRATIVO_LESSON_MATRIX, ...UFBA_ADMINISTRATIVO_SPECIALIST_MATRIX };
+  } else if (lowerSubj.includes('constitucional')) {
+    b1Matrix = CONSTITUCIONAL_LESSON_MATRIX;
+  } else if (lowerSubj.includes('auditoria')) {
+    b1Matrix = { ...AUDITORIA_LESSON_MATRIX, ...UFBA_AUDITORIA_SPECIALIST_MATRIX };
+  } else if (lowerSubj.includes('portuguesa') || lowerSubj.includes('língua') || lowerSubj.includes('lingua') || lowerSubj.includes('português')) {
+    b1Matrix = { ...PORTUGUES_LESSON_MATRIX, ...UFBA_PORTUGUES_SPECIALIST_MATRIX };
+  } else if (lowerSubj.includes('economia')) {
+    b1Matrix = ECONOMIA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('informática') || lowerSubj.includes('informatica') || lowerSubj.includes('tecnologia') || lowerSubj.includes('ti')) {
+    b1Matrix = INFORMATICA_LESSON_MATRIX;
+  } else if (lowerSubj.includes('igualdade') || lowerSubj.includes('racial') || lowerSubj.includes('gênero') || lowerSubj.includes('genero')) {
+    b1Matrix = IGUALDADE_RACIAL_LESSON_MATRIX;
+  }
+  if (!subjectMatrix) {
+    subjectMatrix = b1Matrix;
+  } else if (b1Matrix) {
+    subjectMatrix = { ...b1Matrix, ...subjectMatrix };
+  }
   const lessonProps = subjectMatrix ? subjectMatrix[lessonNum] : undefined;
 
   for (let idx = 0; results.length < 50 && idx < 800; idx++) {

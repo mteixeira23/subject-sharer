@@ -22,12 +22,14 @@ import {
   TrendingUp,
   CheckSquare,
   Zap,
+  FileText,
+  Download,
 } from 'lucide-react';
 import { buildUfbaSprintPlan, PlanTask } from '@/data/ufbaPlanningData';
 import { buildSefazBAPlan } from '@/data/sefazBAPlanningData';
 import { getLessonName } from '@/data/sefazBA';
 import { UFBA_SPECIALIST_TOPICS, UfbaSpecialistTopic } from '@/data/ufbaSpecialistTopics';
-import { UfbaTheoryReaderModal } from '@/components/study/UfbaTheoryReaderModal';
+import { UfbaTheoryReaderModal, printCompleteUfbaApostilaPdf } from '@/components/study/UfbaTheoryReaderModal';
 import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -50,7 +52,7 @@ export { getCanonicalSubject, getLessonKey };
 export interface UfbaEditalItem {
   id: string;
   lessonKey: string;
-  editalBlock: 'especificos' | 'comuns';
+  editalBlock: 'especificos' | 'comuns' | 'assistente';
   editalCategory: string;
   editalItemCode: string;
   editalTopicTitle: string;
@@ -72,17 +74,17 @@ interface UfbaEditalTrackerProps {
 }
 
 function mapSubjectToEditalMeta(subject: string, aulaNum: number, desc: string): {
-  editalBlock: 'especificos' | 'comuns';
+  editalBlock: 'especificos' | 'comuns' | 'assistente';
   editalCategory: string;
   editalItemCode: string;
   weightLabel: string;
 } {
   const cSub = getCanonicalSubject(subject);
   if (cSub === 'contabilidade geral') {
-    if (aulaNum === 6 || aulaNum === 7) {
+    if (aulaNum === 6 || aulaNum === 7 || aulaNum === 31) {
       return {
         editalBlock: 'especificos',
-        editalCategory: '1. Contabilidade Geral & 3. Custos',
+        editalCategory: '1. Contabilidade Geral & 3. Custos / SIAFI',
         editalItemCode: 'Esp. Item 1 / 3',
         weightLabel: 'Peso 2.0',
       };
@@ -103,10 +105,10 @@ function mapSubjectToEditalMeta(subject: string, aulaNum: number, desc: string):
         weightLabel: 'Peso 2.0',
       };
     }
-    if (aulaNum === 17) {
+    if (aulaNum === 17 || aulaNum === 19) {
       return {
         editalBlock: 'especificos',
-        editalCategory: '7. Contabilidade Pública Municipal / Fundos',
+        editalCategory: '7. Contabilidade Pública Municipal / Fundos / SICONFI',
         editalItemCode: 'Esp. Item 7',
         weightLabel: 'Peso 2.0',
       };
@@ -153,33 +155,49 @@ function mapSubjectToEditalMeta(subject: string, aulaNum: number, desc: string):
   if (cSub === 'lingua portuguesa') {
     return {
       editalBlock: 'comuns',
-      editalCategory: 'Língua Portuguesa (12 Questões)',
+      editalCategory: 'Língua Portuguesa (Comum Contador & Assistente)',
       editalItemCode: 'Comum • Port.',
       weightLabel: 'Peso 1.0',
     };
   }
   if (cSub === 'informatica') {
+    if (aulaNum === 1 || aulaNum === 2 || aulaNum === 10) {
+      return {
+        editalBlock: 'assistente',
+        editalCategory: 'Exclusivo Assistente em Administração • Informática Nível Médio',
+        editalItemCode: 'Assist. • Info.',
+        weightLabel: 'Peso 1.0 (Manhã)',
+      };
+    }
     return {
       editalBlock: 'comuns',
-      editalCategory: 'Informática Básica (6 Questões)',
+      editalCategory: 'Informática Básica (Comum Contador & Assistente)',
       editalItemCode: 'Comum • Info.',
       weightLabel: 'Peso 1.0',
+    };
+  }
+  if (cSub === 'direito administrativo' && aulaNum >= 28 && aulaNum <= 33) {
+    return {
+      editalBlock: 'assistente',
+      editalCategory: 'Exclusivo Assistente em Administração • Conhecimentos Específicos',
+      editalItemCode: 'Assist. • Esp.',
+      weightLabel: 'Peso 2.0 (Manhã)',
     };
   }
   // Direito Administrativo / Constitucional -> Administração Pública (Comuns + Legislação Específica)
   if (aulaNum === 9 || aulaNum === 10 || aulaNum === 11) {
     return {
       editalBlock: 'comuns',
-      editalCategory: 'Administração Pública & Lei 14.133/2021',
+      editalCategory: 'Administração Pública & Lei 14.133/2021 (Ambos os Cargos)',
       editalItemCode: 'Comum & Esp. 5',
       weightLabel: 'Peso 1.0 / 2.0',
     };
   }
   return {
     editalBlock: 'comuns',
-    editalCategory: 'Administração Pública e Legislação UFBA (12 Questões)',
+    editalCategory: 'Administração Pública e Legislação UFBA (Ambos os Cargos)',
     editalItemCode: 'Comum • Adm.',
-    weightLabel: 'Peso 1.0',
+    weightLabel: 'Peso 1.0 / 2.0',
   };
 }
 
@@ -279,7 +297,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
       day.tasks.forEach(task => {
         if (!task.subject || !task.lesson) return;
         // Skip exam milestone placeholders on Day 53 and Day 60 if already covered
-        if (task.id === 'ufba-day-53-cgu' || task.id === 'ufba-day-60-ufba') return;
+        if (task.id === 'ufba-day-53-cgu' || task.id === 'ufba-day-60-ufba' || task.id === 'ufba-day-60-assistente') return;
 
         const lKey = getLessonKey(task.subject, task.lesson);
         if (!lKey) return;
@@ -306,7 +324,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
             ? specialistData.title
             : (cleanDesc || officialLessonTitle);
           const displayHabitusLesson = isSpecialist
-            ? 'Especialista UFBA'
+            ? `Aula ${String(aulaNum).padStart(2, '0')} • Especialista PDF`
             : `Aula ${String(aulaNum).padStart(2, '0')}`;
 
           map.set(lKey, {
@@ -336,44 +354,13 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
       });
     });
 
-    // Ensure any remaining high-yield Edital UFBA items (e.g., Português Aula 15, Contab. Geral Aulas 28-30) are included
-    const extraItems: { subject: string; aulaNum: number; dateStr: string; dayNumber: number; desc: string; specialistTopicId?: string }[] = [
-      { subject: 'Auditoria', aulaNum: 16, dateStr: '14/11/2026', dayNumber: 24, desc: 'Aula 16 - Estrutura Conceitual para Trabalhos de Asseguração' },
-      { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', aulaNum: 18, dateStr: '18/11/2026', dayNumber: 28, desc: 'Aula 18 - Princípios Aplicados à Contabilidade Pública' },
-      { subject: 'Direito Administrativo', aulaNum: 23, dateStr: '28/11/2026', dayNumber: 38, desc: 'Aula 23 - Lei Estadual da Bahia nº 14.634-2023 (Licitações)' },
-      { subject: 'Direito Administrativo', aulaNum: 24, dateStr: '25/11/2026', dayNumber: 35, desc: 'Aula 24 - Lei Estadual da Bahia nº 9.290-2004' },
-      { subject: 'Língua Portuguesa', aulaNum: 15, dateStr: '11/12/2026', dayNumber: 51, desc: 'Aula 15 - Figuras de Linguagem e Bateria de Questões Comentadas FGV' },
-      { subject: 'Contabilidade Geral', aulaNum: 28, dateStr: '11/12/2026', dayNumber: 51, desc: 'Aula 28 - Contabilidade Geral - Tópicos Especiais I' },
-      { subject: 'Contabilidade Geral', aulaNum: 29, dateStr: '12/12/2026', dayNumber: 52, desc: 'Aula 29 - Contabilidade Geral - Tópicos Especiais II e Pronunciamentos' },
-    ];
-
-    extraItems.forEach(ex => {
-      const lessonStr = `Aula ${String(ex.aulaNum).padStart(2, '0')}`;
-      const lKey = getLessonKey(ex.subject, lessonStr);
-      if (lKey && !map.has(lKey)) {
-        const meta = mapSubjectToEditalMeta(ex.subject, ex.aulaNum, ex.desc);
-        map.set(lKey, {
-          id: lKey,
-          lessonKey: lKey,
-          editalBlock: meta.editalBlock,
-          editalCategory: meta.editalCategory,
-          editalItemCode: meta.editalItemCode,
-          editalTopicTitle: ex.desc,
-          habitusSubject: ex.subject,
-          habitusLesson: lessonStr,
-          aulaNumberZeroBased: ex.aulaNum,
-          scheduledStudyDate: ex.dateStr,
-          scheduledDayNumber: ex.dayNumber,
-          scheduledReviewDates: [],
-          taskIdsInUfbaPlan: [],
-          taskIdsInSefazPlan: sefazTasksByLessonKey.get(lKey) || [],
-          weightLabel: meta.weightLabel,
-          specialistTopicId: ex.specialistTopicId,
-        });
-      }
+    // Sort so that Exclusive Assistente em Administração items are always at the end of the plan
+    return Array.from(map.values()).sort((a, b) => {
+      const aAssist = a.editalBlock === 'assistente' ? 1 : 0;
+      const bAssist = b.editalBlock === 'assistente' ? 1 : 0;
+      if (aAssist !== bAssist) return aAssist - bAssist;
+      return a.scheduledDayNumber - b.scheduledDayNumber;
     });
-
-    return Array.from(map.values()).sort((a, b) => a.scheduledDayNumber - b.scheduledDayNumber);
   }, [ufbaDays, sefazDays]);
 
   // Compute dynamic status for each item (Study status, Questions count, Accuracy %, Date)
@@ -571,10 +558,12 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
       // Block / Subject filter
       if (blockFilter === 'especificos' && item.editalBlock !== 'especificos') return false;
       if (blockFilter === 'comuns' && item.editalBlock !== 'comuns') return false;
+      if (blockFilter === 'assistente' && item.editalBlock !== 'assistente') return false;
       if (
         blockFilter !== 'all' &&
         blockFilter !== 'especificos' &&
         blockFilter !== 'comuns' &&
+        blockFilter !== 'assistente' &&
         getCanonicalSubject(item.habitusSubject) !== blockFilter
       ) {
         return false;
@@ -603,7 +592,8 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
 
     if (sortBy === 'subject') {
       return [...list].sort((a, b) => {
-        if (a.editalBlock !== b.editalBlock) return a.editalBlock === 'especificos' ? -1 : 1;
+        const orderMap = { especificos: 0, comuns: 1, assistente: 2 };
+        if (a.editalBlock !== b.editalBlock) return orderMap[a.editalBlock] - orderMap[b.editalBlock];
         if (a.habitusSubject !== b.habitusSubject) return a.habitusSubject.localeCompare(b.habitusSubject);
         return a.aulaNumberZeroBased - b.aulaNumberZeroBased;
       });
@@ -665,22 +655,32 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
                 EDITAL UFBA Nº 007/2026
               </Badge>
               <Badge variant="outline" className="border-amber-500/40 text-amber-400 bg-amber-500/10 font-semibold">
-                Cargo 405: Contador • Instituto Avalia
+                Contador (405 - Tarde) + Assistente em Adm. (301 - Manhã)
               </Badge>
               <Badge variant="outline" className="border-cyan-500/40 text-cyan-400 bg-cyan-500/10">
-                Prova: 20/12/2026
+                Prova: 20/12/2026 • Instituto Avalia
               </Badge>
             </div>
             <CardTitle className="text-lg sm:text-xl font-bold flex items-center gap-2 pt-1">
               <CalendarCheck className="h-5 w-5 text-emerald-400 shrink-0" />
-              Controle Verticalizado do Edital UFBA — Assuntos Estudados, Questões, % de Acerto e Datas
+              Controle Verticalizado do Edital UFBA — Contador & Assistente em Administração (Exclusivos no Final)
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm">
-              Sincronizado em tempo real com o seu <strong>Plano de Estudo UFBA (60 Dias)</strong> e com o banco de <strong>Simulados de Questões</strong>. Marque o estudo, resolva a bateria da aula ou ajuste a data programada.
+              Sincronizado com o seu <strong>Plano de Estudo UFBA (60 Dias)</strong>. Os tópicos que caem <strong>somente para Assistente em Administração</strong> estão posicionados no final do plano, com apostila teórica em PDF e baterias de questões comentadas.
             </CardDescription>
           </div>
 
           <div className="flex items-center gap-2 shrink-0 flex-wrap">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => printCompleteUfbaApostilaPdf('all')}
+              className="border-purple-500/40 text-purple-300 hover:bg-purple-500/15 font-semibold gap-1.5 shadow-sm"
+              title="Baixar / Imprimir Apostila Completa em PDF com todos os 13 temas fora da pasta SEFAZ + Questões de Concursos Comentadas"
+            >
+              <FileText className="h-4 w-4 text-purple-400" />
+              Apostila PDF + Questões (13 Temas)
+            </Button>
             <Button
               size="sm"
               onClick={onOpenStudyPlan}
@@ -824,8 +824,9 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
             >
               <option value="all">📚 Todos os Blocos do Edital ({enrichedItems.length})</option>
               <option value="especificos">🎯 Conhecimentos Específicos — Contador (Peso 2.0)</option>
-              <option value="comuns">🏛️ Conhecimentos Comuns — Nível Superior (Peso 1.0)</option>
-              <option value="contabilidade geral">• Contabilidade Geral & Societária</option>
+              <option value="comuns">🏛️ Tronco Comum — Contador + Assistente (Peso 1.0)</option>
+              <option value="assistente">📋 Exclusivos Assistente em Administração — Final do Plano (Manhã)</option>
+              <option value="contabilidade geral">• Contabilidade Geral, Societária & Custos</option>
               <option value="casp">• Contabilidade Pública (CASP) & Lei 4.320</option>
               <option value="afo">• AFO, Orçamento Público & LRF</option>
               <option value="direito administrativo">• Administração Pública & Leis Federais/UFBA</option>
@@ -955,10 +956,16 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
                                 "text-[10px] py-0 px-1.5 font-semibold",
                                 item.editalBlock === 'especificos'
                                   ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
+                                  : item.editalBlock === 'assistente'
+                                  ? "border-blue-500/40 text-blue-300 bg-blue-500/15"
                                   : "border-cyan-500/40 text-cyan-400 bg-cyan-500/10"
                               )}
                             >
-                              {item.editalBlock === 'especificos' ? '🎯 Específicos (Peso 2)' : '🏛️ Comuns (Peso 1)'}
+                              {item.editalBlock === 'especificos'
+                                ? '🎯 Específicos Contador (Peso 2)'
+                                : item.editalBlock === 'assistente'
+                                ? '📋 Só Assistente Adm. (Final do Plano)'
+                                : '🏛️ Comum Contador + Assistente'}
                             </Badge>
                             <span className="text-[11px] font-semibold text-muted-foreground">
                               {item.editalCategory}

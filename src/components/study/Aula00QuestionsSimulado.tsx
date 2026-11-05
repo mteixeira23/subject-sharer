@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { AULA_00_QUESTIONS, QuestionData, generateCustomQuestionsForSubject } from '@/data/aula00Questions';
-import { SEFAZ_BA_SUBJECTS, getLessonName } from '@/data/sefazBA';
+import { SEFAZ_BA_SUBJECTS, getLessonName, getTotalSimuladoLessons } from '@/data/sefazBA';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -76,7 +76,7 @@ export function Aula00QuestionsSimulado({
   const activeSubjectName = activeSubjectObj ? activeSubjectObj.name : 'Contabilidade Geral';
 
   const sefazDef = SEFAZ_BA_SUBJECTS.find(s => s.name.trim().toLowerCase() === activeSubjectName.trim().toLowerCase());
-  const totalLessonsForActiveSubj = sefazDef ? sefazDef.totalLessons : 10;
+  const totalLessonsForActiveSubj = getTotalSimuladoLessons(activeSubjectName, sefazDef ? sefazDef.totalLessons : 10);
 
   const dynamicLessonOptions = useMemo(() => {
     return Array.from({ length: totalLessonsForActiveSubj }, (_, i) => ({
