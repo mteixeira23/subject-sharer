@@ -69,7 +69,7 @@ export function buildUfbaSprintPlan(): DayPlan[] {
     { subject: 'Contabilidade Geral', lesson: 'Aula 00', title: 'Contabilidade Geral - Aula 00', desc: 'Aspectos Introdutórios da Contabilidade (Objeto, Finalidade e Técnicas)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 00', title: 'CASP - Aula 00', desc: 'Aspectos Introdutórios e Conceito da CASP (MCASP e NBC TSP)' },
     { subject: 'Direito Administrativo', lesson: 'Aula 00', title: 'Direito Administrativo - Aula 00', desc: 'Princípios do Direito Administrativo (LIMPE e Implícitos)' },
-    { subject: 'Língua Portuguesa', lesson: 'Aula 00', title: 'Português - Aula 00', desc: 'Compreensão e Interpretação de Textos de Gêneros Variados' },
+    { subject: 'Língua Portuguesa', lesson: 'Aula 00', title: 'Português - Aula 00', desc: 'Ortografia Oficial, Acentuação Gráfica, Emprego do Hífen e Fonemas (PDF da pasta Sefaz BA)' },
 
     { subject: 'Contabilidade Geral', lesson: 'Aula 01', title: 'Contabilidade Geral - Aula 01', desc: 'Patrimônio: Ativo, Passivo e Patrimônio Líquido (Situações Líquidas)' },
     { subject: 'Contabilidade Aplicada ao Setor Público (CASP)', lesson: 'Aula 01', title: 'CASP - Aula 01', desc: 'Despesa Pública no Setor Público (Categorias, Estágios, RP e DEA)' },
