@@ -8,6 +8,7 @@ import { PomodoroSession } from '@/types/pomodoro';
 import { SEFAZ_BA_SUBJECTS, getLessonName } from '@/data/sefazBA';
 import { SUBJECT_COLORS } from '@/types/study';
 import { getLocalDateString } from '@/lib/dates';
+import { syncStudyPlanFromCloud } from '@/lib/studyPlanCloudSync';
 
 // ── Row mappers ──────────────────────────────────────────────────────────────
 
@@ -228,6 +229,13 @@ export function useStudyData() {
 
   const isLoading = loadingContests || loadingSubjects || loadingLessons || seeding;
 
+  // ── Cloud Sync for Study Plan (UFBA / SEFAZ / Batteries) ───────────────
+
+  useEffect(() => {
+    if (!userId) return;
+    syncStudyPlanFromCloud(userId);
+  }, [userId]);
+
   // ── Seed / Sync initial data for users ──────────────────────────────────
 
   useEffect(() => {
@@ -258,7 +266,7 @@ export function useStudyData() {
         }
 
         // Ensure all subjects exist and all lessons exist for each subject
-        const currentSubjects = [...rawSubjects];
+        const currentSubjects = rawSubjects.filter(s => sefazNames.has(s.name.trim().toLowerCase()));
 
         if (activeContestId) {
           // A.0) Purge non-SEFAZ-BA subjects from Supabase database
@@ -395,7 +403,6 @@ export function useStudyData() {
         }
 
         // D) Purge old mock template schedule events and generate official SEFAZ-BA daily schedule
-        const sefazNames = new Set(SEFAZ_BA_SUBJECTS.map(s => s.name.trim().toLowerCase()));
         const isSEFAZSubject = (subjId: string) => {
           const s = subjects.find(sub => sub.id === subjId);
           if (!s) return false;

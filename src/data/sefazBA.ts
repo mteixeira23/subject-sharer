@@ -41,6 +41,7 @@ export const AUDITORIA_LESSON_NAMES: Record<number, string> = {
   15: 'Aula 14 - Auditoria Fiscal e Tributária (Parte 1)',
   16: 'Aula 15 - Auditoria Fiscal e Tributária (Parte 2)',
   17: 'Aula 16 - Estrutura Conceitual para Trabalhos de Asseguração',
+  18: 'Aula 17 - Perícia Contábil (NBC TP 01, NBC PP 01 e CPC)',
 };
 
 export const ECONOMIA_LESSON_NAMES: Record<number, string> = {
@@ -175,6 +176,7 @@ export const PORTUGUES_LESSON_NAMES: Record<number, string> = {
   14: 'Aula 13 - Pontuação (Vírgula, Ponto e Vírgula, Dois Pontos)',
   15: 'Aula 14 - Reescritura de Frases e Equivalência de Estruturas (FGV)',
   16: 'Aula 15 - Figuras de Linguagem e Bateria de Questões Comentadas FGV',
+  17: 'Aula 16 - Redação Oficial (Manual da PR), Variação Linguística e Funções do Que/Se (UFBA)',
 };
 
 export const IGUALDADE_RACIAL_LESSON_NAMES: Record<number, string> = {
@@ -222,6 +224,7 @@ export const CONTABILIDADE_GERAL_LESSON_NAMES: Record<number, string> = {
   29: 'Aula 28 - Contabilidade Geral: Tópicos Especiais I (Prof. Cadu Carrilho)',
   30: 'Aula 29 - Contabilidade Geral: Tópicos Especiais II e Pronunciamentos',
   31: 'Aula 30 - Contabilidade Geral: Revisão Geral e Bateria FGV',
+  32: 'Aula 31 - Contabilidade de Custos (Absorção, Variável, ABC, NBC TSP 34) e Sistema SIAFI',
 };
 
 export const CASP_LESSON_NAMES: Record<number, string> = {
@@ -244,6 +247,7 @@ export const CASP_LESSON_NAMES: Record<number, string> = {
   17: 'Aula 16 - Estoques no Setor Público',
   18: 'Aula 17 - Fundeb (Fundo de Manutenção da Educação)',
   19: 'Aula 18 - Princípios Aplicados à Contabilidade Pública',
+  20: 'Aula 19 - CASP Municipal e Sistemas Estruturantes (SICONFI, SIAFIC, MSC)',
 };
 
 export const DIREITO_ADMINISTRATIVO_LESSON_NAMES: Record<number, string> = {
@@ -272,6 +276,15 @@ export const DIREITO_ADMINISTRATIVO_LESSON_NAMES: Record<number, string> = {
   23: 'Aula 22 - Constituição do Estado da Bahia (CE-BA)',
   24: 'Aula 23 - Lei Estadual da Bahia nº 14.634-2023 (Licitações)',
   25: 'Aula 24 - Lei Estadual da Bahia nº 9.290-2004',
+  26: 'Aula 25 - Legislação Específica UFBA & Carreira TAE-IFES (Estatuto UFBA, Lei 11.091/05)',
+  27: 'Aula 26 - Governo Digital (Lei 14.129/21), Governança (Dec. 9.203/17) e Sustentabilidade (A3P)',
+  28: 'Aula 27 - Ética no Serviço Público (Dec. 1.171/94), LAI (Lei 12.527/11) e LGPD (Lei 13.709/18)',
+  29: 'Aula 28 - [Assistente UFBA] Administração Geral: Estruturas Organizacionais, Departamentalização e PODC',
+  30: 'Aula 29 - [Assistente UFBA] Gestão de Processos (BPM), Gestão da Qualidade (PDCA, 5S, Ferramentas) e Projetos',
+  31: 'Aula 30 - [Assistente UFBA] Gestão de Pessoas, Comportamento, Motivação (Maslow/Herzberg), Liderança e Clima',
+  32: 'Aula 31 - [Assistente UFBA] Administração de Recursos Materiais, Estoques (Curva ABC, Ponto de Pedido) e Almoxarifado',
+  33: 'Aula 32 - [Assistente UFBA] Arquivologia Completa: Lei 8.159/91, Três Idades, Temporalidade, Protocolo e Métodos',
+  34: 'Aula 33 - [Assistente UFBA] Atendimento ao Público, Comunicação Interpessoal e Carta de Serviços (Lei 13.460/17)',
 };
 
 export const FINANCAS_PUBLICAS_LESSON_NAMES: Record<number, string> = {
@@ -289,6 +302,16 @@ export const FINANCAS_PUBLICAS_LESSON_NAMES: Record<number, string> = {
   12: 'Aula 11 - Lei de Responsabilidade Fiscal (LRF Parte 3 - Dívida e Endividamento)',
   13: 'Aula 12 - Lei de Responsabilidade Fiscal (LRF Parte 4 - Transparência e Controle)',
 };
+
+export function getTotalSimuladoLessons(subjectName: string, defaultTotal: number): number {
+  const nameClean = (subjectName || '').trim().toLowerCase();
+  if (nameClean.includes('administrativo')) return 34; // Aulas 00 a 33
+  if (nameClean.includes('auditoria')) return 18; // Aulas 00 a 17
+  if (nameClean.includes('casp') || nameClean.includes('setor público') || nameClean.includes('setor publico')) return 20; // Aulas 00 a 19
+  if (nameClean.includes('contabilid') && !nameClean.includes('casp')) return 32; // Aulas 00 a 31
+  if (nameClean.includes('portug') || nameClean.includes('língua') || nameClean.includes('lingua')) return 17; // Aulas 00 a 16
+  return defaultTotal;
+}
 
 export function getLessonName(subjectName: string, lessonNumber: number): string {
   const key = lessonNumber + 1;

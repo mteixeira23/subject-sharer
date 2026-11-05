@@ -12,6 +12,11 @@ import { useStudy } from '@/contexts/StudyContext';
 import { getLocalDateString } from '@/lib/dates';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import {
+  QUESTIONS_DONE_STORAGE_KEY,
+  getCanonicalSubject,
+  pushStudyPlanToCloud,
+} from '@/lib/studyPlanCloudSync';
 
 interface Aula00QuestionsSimuladoProps {
   onSaveSession?: () => void;
@@ -88,21 +93,7 @@ export function Aula00QuestionsSimulado({
   }, [activeSubjectName, selectedLessonNumber, selectedBattery]);
 
   const canonicalSubj = useMemo(() => {
-    const n = activeSubjectName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
-    if (n.includes("casp") || n.includes("setor publico")) return "casp";
-    if (n.includes("contabilid")) return "contabilidade geral";
-    if (n.includes("portug") || n.includes("lingua")) return "lingua portuguesa";
-    if (n.includes("constitucional")) return "direito constitucional";
-    if (n.includes("administrativo")) return "direito administrativo";
-    if (n.includes("tribut")) return "direito tributario";
-    if (n.includes("auditoria")) return "auditoria";
-    if (n.includes("estat")) return "estatistica";
-    if (n.includes("economia")) return "economia";
-    if (n.includes("financas") || n.includes("afo") || n.includes("orcamento") || n.includes("administracao")) return "afo";
-    if (n.includes("racial")) return "igualdade racial";
-    if (n.includes("matem")) return "matematica financeira";
-    if (n.includes("inform") || n.includes("tecnologia")) return "informatica";
-    return n;
+    return getCanonicalSubject(activeSubjectName);
   }, [activeSubjectName]);
 
   // Stores user answers: questionId -> chosen answer index or string ('Certo'/'Errado' or number index)
@@ -113,17 +104,32 @@ export function Aula00QuestionsSimulado({
 
   const { isB1Done, isB2Done } = useMemo(() => {
     try {
-      const raw = localStorage.getItem("study_completed_questions_keys_v2");
+      const raw = localStorage.getItem(QUESTIONS_DONE_STORAGE_KEY);
       const map = raw ? JSON.parse(raw) : {};
       const lKey = canonicalSubj + "|aula-" + Number(selectedLessonNumber);
+      const dbLessonNum = Number(selectedLessonNumber) + 1;
+      const matchingSubIds = new Set(
+        studyData.subjects.filter(s => getCanonicalSubject(s.name) === canonicalSubj).map(s => s.id)
+      );
+      const matchingSessions = studyData.questionSessions.filter(
+        qs => matchingSubIds.has(qs.subjectId) && Number(qs.lessonNumber) === dbLessonNum
+      );
+      const lessonObj = studyData.lessons.find(
+        l => matchingSubIds.has(l.subjectId) && l.number === dbLessonNum
+      );
+      const totalQ = Math.max(
+        matchingSessions.reduce((acc, s) => acc + (Number(s.questionsCount) || 0), 0),
+        lessonObj?.questionsCount || 0
+      );
+
       return {
-        isB1Done: Boolean(map[lKey + "|b1"] || map[lKey]),
-        isB2Done: Boolean(map[lKey + "|b2"]),
+        isB1Done: Boolean(map[lKey + "|b1"] || map[lKey] || matchingSessions.length >= 1 || totalQ > 0),
+        isB2Done: Boolean(map[lKey + "|b2"] || matchingSessions.length >= 2 || totalQ >= 80),
       };
     } catch (e) {
       return { isB1Done: false, isB2Done: false };
     }
-  }, [canonicalSubj, selectedLessonNumber]);
+  }, [canonicalSubj, selectedLessonNumber, studyData.subjects, studyData.questionSessions, studyData.lessons]);
 
   const handleBatteryChange = (newBat: 1 | 2) => {
     if (newBat === selectedBattery) return;
@@ -200,23 +206,9 @@ export function Aula00QuestionsSimulado({
       });
 
       try {
-        const n = currentSubj.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
-        let cSub = n;
-        if (n.includes("casp") || n.includes("setor publico")) cSub = "casp";
-        else if (n.includes("contabilid")) cSub = "contabilidade geral";
-        else if (n.includes("portug") || n.includes("lingua")) cSub = "lingua portuguesa";
-        else if (n.includes("constitucional")) cSub = "direito constitucional";
-        else if (n.includes("administrativo")) cSub = "direito administrativo";
-        else if (n.includes("tribut")) cSub = "direito tributario";
-        else if (n.includes("auditoria")) cSub = "auditoria";
-        else if (n.includes("estat")) cSub = "estatistica";
-        else if (n.includes("economia")) cSub = "economia";
-        else if (n.includes("financas") || n.includes("afo") || n.includes("orcamento") || n.includes("administracao")) cSub = "afo";
-        else if (n.includes("racial")) cSub = "igualdade racial";
-        else if (n.includes("matem")) cSub = "matematica financeira";
-        else if (n.includes("inform") || n.includes("tecnologia")) cSub = "informatica";
+        const cSub = getCanonicalSubject(currentSubj.name);
         const lKey = cSub + "|aula-" + Number(selectedLessonNumber);
-        const raw = localStorage.getItem("study_completed_questions_keys_v2");
+        const raw = localStorage.getItem(QUESTIONS_DONE_STORAGE_KEY);
         const map = raw ? JSON.parse(raw) : {};
         if (selectedBattery === 1) {
           map[lKey] = true;
@@ -224,7 +216,8 @@ export function Aula00QuestionsSimulado({
         } else {
           map[lKey + "|b2"] = true;
         }
-        localStorage.setItem("study_completed_questions_keys_v2", JSON.stringify(map));
+        localStorage.setItem(QUESTIONS_DONE_STORAGE_KEY, JSON.stringify(map));
+        pushStudyPlanToCloud(undefined, { questionsDoneKeys: map }).catch(() => {});
         window.dispatchEvent(new Event("ufba-plan-sync"));
       } catch (e) {}
       toast.success(`🎉 Bateria ${selectedBattery} salva no sistema! ${correctCount}/${answeredCount} acertos (${accuracyPercent}%).`);

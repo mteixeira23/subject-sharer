@@ -31,54 +31,22 @@ import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
+import {
+  SEFAZ_STORAGE_KEY,
+  UFBA_STORAGE_KEY,
+  QUESTIONS_DONE_STORAGE_KEY,
+  normalizeSubject,
+  getCanonicalSubject,
+  getCanonicalLessonNum,
+  getSpecialistAulaNum,
+  getLessonKey,
+  syncStudyPlanFromCloud,
+  pushStudyPlanToCloud,
+} from '@/lib/studyPlanCloudSync';
+
 interface StudyPlanModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-const SEFAZ_STORAGE_KEY = 'sefaz_ba_daily_plan_completed_tasks_v2';
-const UFBA_STORAGE_KEY = 'ufba_cgu_sprint_plan_completed_tasks_v2';
-const QUESTIONS_DONE_STORAGE_KEY = 'study_completed_questions_keys_v2';
-
-function normalizeSubject(str: string): string {
-  return (str || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function getCanonicalSubject(name: string): string {
-  const n = normalizeSubject(name);
-  if (n.includes('casp') || n.includes('setor publico')) return 'casp';
-  if (n.includes('contabilid')) return 'contabilidade geral';
-  if (n.includes('portug') || n.includes('lingua')) return 'lingua portuguesa';
-  if (n.includes('constitucional')) return 'direito constitucional';
-  if (n.includes('administrativo')) return 'direito administrativo';
-  if (n.includes('tribut')) return 'direito tributario';
-  if (n.includes('auditoria')) return 'auditoria';
-  if (n.includes('estat')) return 'estatistica';
-  if (n.includes('economia')) return 'economia';
-  if (n.includes('financas') || n.includes('afo') || n.includes('orcamento') || n.includes('administracao')) return 'afo';
-  if (n.includes('racial')) return 'igualdade racial';
-  if (n.includes('matem')) return 'matematica financeira';
-  if (n.includes('inform') || n.includes('tecnologia')) return 'informatica';
-  return n;
-}
-
-function getCanonicalLessonNum(lessonStr?: string): number | null {
-  if (!lessonStr) return null;
-  const match = lessonStr.match(/\d+/);
-  return match ? parseInt(match[0], 10) : null;
-}
-
-function getLessonKey(subject?: string, lesson?: string): string | null {
-  if (!subject || !lesson) return null;
-  const cSub = getCanonicalSubject(subject);
-  const num = getCanonicalLessonNum(lesson);
-  if (num === null) return `${cSub}|${normalizeSubject(lesson)}`;
-  return `${cSub}|aula-${num}`;
 }
 
 export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
@@ -116,7 +84,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
   const [crossPlanCompletedKeys, setCrossPlanCompletedKeys] = useState<Set<string>>(() => new Set());
 
   // Track completed exercise/question sessions per lesson: "canonical_subject|aula-X"
-    const [questionsDoneKeys, setQuestionsDoneKeys] = useState<Record<string, boolean>>(() => {
+  const [questionsDoneKeys, setQuestionsDoneKeys] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem(QUESTIONS_DONE_STORAGE_KEY);
       return saved ? JSON.parse(saved) : {};
@@ -125,13 +93,41 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
     }
   });
 
+  // Reload state whenever localStorage or cloud sync dispatches 'ufba-plan-sync'
+  const reloadFromStorage = useCallback(() => {
+    try {
+      const u = localStorage.getItem(UFBA_STORAGE_KEY);
+      if (u !== null) setUfbaTaskIds(JSON.parse(u));
+      const s = localStorage.getItem(SEFAZ_STORAGE_KEY);
+      if (s !== null) setSefazTaskIds(JSON.parse(s));
+      const q = localStorage.getItem(QUESTIONS_DONE_STORAGE_KEY);
+      if (q !== null) setQuestionsDoneKeys(JSON.parse(q));
+    } catch (e) {}
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('storage', reloadFromStorage);
+    window.addEventListener('ufba-plan-sync', reloadFromStorage);
+    return () => {
+      window.removeEventListener('storage', reloadFromStorage);
+      window.removeEventListener('ufba-plan-sync', reloadFromStorage);
+    };
+  }, [reloadFromStorage]);
+
+  // Sync with Supabase cloud whenever modal opens or mounts
+  useEffect(() => {
+    syncStudyPlanFromCloud().then(() => {
+      reloadFromStorage();
+    });
+  }, [open, reloadFromStorage]);
+
   useEffect(() => {
     try {
       localStorage.setItem(QUESTIONS_DONE_STORAGE_KEY, JSON.stringify(questionsDoneKeys));
     } catch (e) {}
   }, [questionsDoneKeys]);
 
-  // Build the cross-plan map only from what the user explicitly marks
+  // Build the cross-plan map from explicit marks AND Supabase studyData.lessons
   useEffect(() => {
     const keys = new Set<string>();
 
@@ -155,8 +151,22 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
       });
     });
 
+    // 3. From Supabase studyData.lessons (theoryCompleted)
+    if (studyData?.lessons && studyData?.subjects) {
+      studyData.lessons.forEach(lesson => {
+        if (lesson.theoryCompleted) {
+          const sub = studyData.subjects.find(s => s.id === lesson.subjectId);
+          if (sub) {
+            const cSub = getCanonicalSubject(sub.name);
+            const aulaZero = Math.max(0, Number(lesson.number) - 1);
+            keys.add(`${cSub}|aula-${aulaZero}`);
+          }
+        }
+      });
+    }
+
     setCrossPlanCompletedKeys(keys);
-  }, [sefazDays, ufbaDays, sefazTaskIds, ufbaTaskIds]);
+  }, [sefazDays, ufbaDays, sefazTaskIds, ufbaTaskIds, studyData?.lessons, studyData?.subjects]);
 
   // Save SEFAZ tasks to localStorage
   useEffect(() => {
@@ -174,14 +184,16 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
   // Check if a task is completed (looks at plan ID or cross-plan equivalent lesson)
   const isTaskCompleted = useCallback((task: PlanTask): boolean => {
-    // 1. Direct task ID match
+    // 1. Direct task ID match (if explicitly set true or false in active plan)
     if (activePlanType === 'ufba') {
-      if (ufbaTaskIds[task.id]) return true;
+      if (ufbaTaskIds[task.id] === true) return true;
+      if (ufbaTaskIds[task.id] === false) return false;
     } else {
-      if (sefazTaskIds[task.id]) return true;
+      if (sefazTaskIds[task.id] === true) return true;
+      if (sefazTaskIds[task.id] === false) return false;
     }
 
-    // 2. Lesson match across plans
+    // 2. Lesson match across plans and Supabase lessons
     const lessonKey = getLessonKey(task.subject, task.lesson);
     if (lessonKey && crossPlanCompletedKeys.has(lessonKey)) return true;
 
@@ -209,6 +221,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
           }
         });
       } catch (e) {}
+      pushStudyPlanToCloud(undefined, { ufbaTaskIds: {}, sefazTaskIds: {}, questionsDoneKeys: {} }, true);
       toast.success('Todas as marcações foram zeradas! Você pode marcar seu progresso do zero.');
     }
   };
@@ -264,7 +277,10 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
       else subjectName = 'Contabilidade Geral';
     }
 
-    if (task.lesson) {
+    const specNum = getSpecialistAulaNum(task.specialistTopicId, task.lesson);
+    if (specNum !== null) {
+      lessonNum = String(specNum);
+    } else if (task.lesson) {
       const m = task.lesson.match(/\d+/);
       if (m) lessonNum = m[0];
     } else {
@@ -287,16 +303,50 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
 
   const getTaskBatteryStatus = useCallback((exInfo: { subjectName: string; lessonNumber: string }) => {
     const lKey = getLessonKey(exInfo.subjectName, 'Aula ' + exInfo.lessonNumber);
-    const isB1Done = Boolean(lKey && (questionsDoneKeys[lKey + '|b1'] || questionsDoneKeys[lKey]));
-    const isB2Done = Boolean(lKey && questionsDoneKeys[lKey + '|b2']);
+    const cSub = getCanonicalSubject(exInfo.subjectName);
+    const dbLessonNum = Number(exInfo.lessonNumber) + 1;
+
+    // Also check Supabase questionSessions and lessons so smartphone & PC always match
+    let sessionCount = 0;
+    let totalQ = 0;
+    if (studyData?.subjects) {
+      const matchingSubIds = new Set(
+        studyData.subjects.filter(s => getCanonicalSubject(s.name) === cSub).map(s => s.id)
+      );
+      if (studyData.questionSessions) {
+        const matchingSessions = studyData.questionSessions.filter(
+          qs => matchingSubIds.has(qs.subjectId) && Number(qs.lessonNumber) === dbLessonNum
+        );
+        sessionCount = matchingSessions.length;
+        totalQ = matchingSessions.reduce((acc, s) => acc + (Number(s.questionsCount) || 0), 0);
+      }
+      if (studyData.lessons) {
+        const matchingLesson = studyData.lessons.find(
+          l => matchingSubIds.has(l.subjectId) && Number(l.number) === dbLessonNum
+        );
+        if (matchingLesson && (matchingLesson.questionsCount || 0) > totalQ) {
+          totalQ = matchingLesson.questionsCount || 0;
+        }
+      }
+    }
+
+    const isB1Done = Boolean(
+      (lKey && (questionsDoneKeys[lKey + '|b1'] || questionsDoneKeys[lKey])) ||
+      sessionCount >= 1 ||
+      totalQ > 0
+    );
+    const isB2Done = Boolean(
+      (lKey && questionsDoneKeys[lKey + '|b2']) ||
+      sessionCount >= 2 ||
+      totalQ >= 80
+    );
     return { isB1Done, isB2Done, isAnyDone: isB1Done || isB2Done };
-  }, [questionsDoneKeys]);
+  }, [questionsDoneKeys, studyData?.subjects, studyData?.questionSessions, studyData?.lessons]);
 
   const isQuestionsDoneForTask = useCallback((task: PlanTask, exInfo: { subjectName: string; lessonNumber: string }) => {
-    const lKey = getLessonKey(exInfo.subjectName, 'Aula ' + exInfo.lessonNumber);
-    if (lKey && (questionsDoneKeys[lKey] || questionsDoneKeys[lKey + '|b1'] || questionsDoneKeys[lKey + '|b2'])) return true;
-    return false;
-  }, [questionsDoneKeys]);
+    const status = getTaskBatteryStatus(exInfo);
+    return status.isAnyDone;
+  }, [getTaskBatteryStatus]);
 
   // Statistics
   const totalTasksCount = useMemo(() => {
@@ -316,11 +366,14 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
     const wasCompleted = isTaskCompleted(task);
     const newState = !wasCompleted;
 
+    let nextUfba = { ...ufbaTaskIds };
+    let nextSefaz = { ...sefazTaskIds };
+
     // 1. Update the active plan's task IDs
     if (activePlanType === 'ufba') {
-      setUfbaTaskIds(prev => ({ ...prev, [task.id]: newState }));
+      nextUfba[task.id] = newState;
     } else {
-      setSefazTaskIds(prev => ({ ...prev, [task.id]: newState }));
+      nextSefaz[task.id] = newState;
     }
 
     // 2. Cross-sync using canonical lesson key
@@ -333,30 +386,16 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
         return next;
       });
 
-      // Cross-sync matching task IDs in the OTHER plan
-      if (activePlanType === 'ufba') {
-        const matchingSefazTasks = sefazDays.flatMap(d => d.tasks).filter(
-          t => getLessonKey(t.subject, t.lesson) === lessonKey
-        );
-        if (matchingSefazTasks.length > 0) {
-          setSefazTaskIds(prev => {
-            const next = { ...prev };
-            matchingSefazTasks.forEach(st => { next[st.id] = newState; });
-            return next;
-          });
-        }
-      } else {
-        const matchingUfbaTasks = ufbaDays.flatMap(d => d.tasks).filter(
-          t => getLessonKey(t.subject, t.lesson) === lessonKey
-        );
-        if (matchingUfbaTasks.length > 0) {
-          setUfbaTaskIds(prev => {
-            const next = { ...prev };
-            matchingUfbaTasks.forEach(ut => { next[ut.id] = newState; });
-            return next;
-          });
-        }
-      }
+      // Cross-sync matching task IDs in both plans
+      const matchingSefazTasks = sefazDays.flatMap(d => d.tasks).filter(
+        t => getLessonKey(t.subject, t.lesson) === lessonKey
+      );
+      matchingSefazTasks.forEach(st => { nextSefaz[st.id] = newState; });
+
+      const matchingUfbaTasks = ufbaDays.flatMap(d => d.tasks).filter(
+        t => getLessonKey(t.subject, t.lesson) === lessonKey
+      );
+      matchingUfbaTasks.forEach(ut => { nextUfba[ut.id] = newState; });
 
       // Sync to Supabase & localStorage lesson flags for the main study table
       if (task.subject && task.lesson) {
@@ -365,7 +404,7 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
           const sub = studyData?.subjects?.find(
             s => getCanonicalSubject(s.name) === cSub
           );
-          const num = getCanonicalLessonNum(task.lesson);
+          const num = getSpecialistAulaNum(task.specialistTopicId, task.lesson) ?? getCanonicalLessonNum(task.lesson);
 
           if (sub && num !== null) {
             const dbNumber = num + 1; // Aula 00 -> 1, Aula 01 -> 2
@@ -376,6 +415,10 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
         } catch (e) {}
       }
     }
+
+    setUfbaTaskIds(nextUfba);
+    setSefazTaskIds(nextSefaz);
+    pushStudyPlanToCloud(undefined, { ufbaTaskIds: nextUfba, sefazTaskIds: nextSefaz });
 
     if (newState) {
       window.dispatchEvent(new Event('ufba-plan-sync'));
@@ -993,7 +1036,11 @@ export function StudyPlanModal({ open, onOpenChange }: StudyPlanModalProps) {
                     const lKey = getLessonKey(simuladoModalInfo.subjectName, 'Aula ' + simuladoModalInfo.lessonNumber);
                     if (lKey) {
                       const batKey = lKey + (simuladoModalInfo.batteryNumber === 2 ? '|b2' : '|b1');
-                      setQuestionsDoneKeys(prev => ({ ...prev, [lKey]: true, [batKey]: true }));
+                      setQuestionsDoneKeys(prev => {
+                        const next = { ...prev, [lKey]: true, [batKey]: true };
+                        pushStudyPlanToCloud(undefined, { questionsDoneKeys: next });
+                        return next;
+                      });
                     }
                     setSimuladoModalInfo(null);
                     toast.success(`Bateria ${simuladoModalInfo.batteryNumber || 1} salva e tarefa marcada como concluída! 🎯`);

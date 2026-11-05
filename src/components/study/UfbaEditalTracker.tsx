@@ -31,52 +31,21 @@ import { UfbaTheoryReaderModal } from '@/components/study/UfbaTheoryReaderModal'
 import { useStudy } from '@/contexts/StudyContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import {
+  SEFAZ_STORAGE_KEY,
+  UFBA_STORAGE_KEY,
+  QUESTIONS_DONE_STORAGE_KEY,
+  UFBA_CUSTOM_DATES_KEY,
+  normalizeSubject,
+  getCanonicalSubject,
+  getCanonicalLessonNum,
+  getSpecialistAulaNum,
+  getLessonKey,
+  syncStudyPlanFromCloud,
+  pushStudyPlanToCloud,
+} from '@/lib/studyPlanCloudSync';
 
-const SEFAZ_STORAGE_KEY = 'sefaz_ba_daily_plan_completed_tasks_v2';
-const UFBA_STORAGE_KEY = 'ufba_cgu_sprint_plan_completed_tasks_v2';
-const QUESTIONS_DONE_STORAGE_KEY = 'study_completed_questions_keys_v2';
-const UFBA_CUSTOM_DATES_KEY = 'ufba_edital_custom_dates_v1';
-
-function normalizeSubject(str: string): string {
-  return (str || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-export function getCanonicalSubject(name: string): string {
-  const n = normalizeSubject(name);
-  if (n.includes('casp') || n.includes('setor publico')) return 'casp';
-  if (n.includes('contabilid')) return 'contabilidade geral';
-  if (n.includes('portug') || n.includes('lingua')) return 'lingua portuguesa';
-  if (n.includes('constitucional')) return 'direito constitucional';
-  if (n.includes('administrativo')) return 'direito administrativo';
-  if (n.includes('tribut')) return 'direito tributario';
-  if (n.includes('auditoria')) return 'auditoria';
-  if (n.includes('estat')) return 'estatistica';
-  if (n.includes('economia')) return 'economia';
-  if (n.includes('financas') || n.includes('afo') || n.includes('orcamento') || n.includes('administracao')) return 'afo';
-  if (n.includes('racial')) return 'igualdade racial';
-  if (n.includes('matem')) return 'matematica financeira';
-  if (n.includes('inform') || n.includes('tecnologia')) return 'informatica';
-  return n;
-}
-
-function getCanonicalLessonNum(lessonStr?: string): number | null {
-  if (!lessonStr) return null;
-  const match = lessonStr.match(/\d+/);
-  return match ? parseInt(match[0], 10) : null;
-}
-
-export function getLessonKey(subject?: string, lesson?: string): string | null {
-  if (!subject || !lesson) return null;
-  const cSub = getCanonicalSubject(subject);
-  const num = getCanonicalLessonNum(lesson);
-  if (num === null) return `${cSub}|${normalizeSubject(lesson)}`;
-  return `${cSub}|aula-${num}`;
-}
+export { getCanonicalSubject, getLessonKey };
 
 export interface UfbaEditalItem {
   id: string;
@@ -278,6 +247,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
   }, []);
 
   useEffect(() => {
+    syncStudyPlanFromCloud().then(() => reloadFromStorage()).catch(() => {});
     window.addEventListener('storage', reloadFromStorage);
     window.addEventListener('ufba-plan-sync', reloadFromStorage);
     const interval = setInterval(reloadFromStorage, 2500);
@@ -317,7 +287,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
         const isSpecialist = Boolean(task.specialistTopicId);
         const specialistData = task.specialistTopicId ? UFBA_SPECIALIST_TOPICS[task.specialistTopicId] : undefined;
         const parsedAulaNum = getCanonicalLessonNum(task.lesson);
-        const aulaNum = parsedAulaNum ?? 0;
+        const aulaNum = getSpecialistAulaNum(task.specialistTopicId, task.lesson) ?? parsedAulaNum ?? 0;
         const cleanDesc = task.description.replace(/\s*\(PDF da pasta Sefaz BA\)\s*/i, '').trim();
 
         const existing = map.get(lKey);
@@ -410,13 +380,16 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
   const enrichedItems = useMemo(() => {
     return editalItems.map(item => {
       const cSub = getCanonicalSubject(item.habitusSubject);
+      const matchingSubIds = new Set(
+        studyData.subjects.filter(s => getCanonicalSubject(s.name) === cSub).map(s => s.id)
+      );
       const subjectObj = studyData.subjects.find(s => getCanonicalSubject(s.name) === cSub);
       const dbLessonNumber = item.aulaNumberZeroBased + 1; // Aula 00 -> 1 in studyData
 
-      // Find lesson in studyData
-      const lessonObj = subjectObj
-        ? studyData.lessons.find(l => l.subjectId === subjectObj.id && l.number === dbLessonNumber)
-        : undefined;
+      // Find lesson in studyData across any matching subject
+      const lessonObj = studyData.lessons.find(
+        l => matchingSubIds.has(l.subjectId) && l.number === dbLessonNumber
+      );
 
       // Check localStorage flag for theory/review as well
       const sNameLower = subjectObj ? subjectObj.name.trim().toLowerCase() : item.habitusSubject.trim().toLowerCase();
@@ -432,11 +405,9 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
       const isReviewed = Boolean(lessonObj?.reviewCompleted || lsReview);
 
       // Calculate questions & accuracy from studyData.questionSessions and lessonObj
-      const matchingSessions = subjectObj
-        ? studyData.questionSessions.filter(
-            qs => qs.subjectId === subjectObj.id && Number(qs.lessonNumber) === dbLessonNumber
-          )
-        : [];
+      const matchingSessions = studyData.questionSessions.filter(
+        qs => matchingSubIds.has(qs.subjectId) && Number(qs.lessonNumber) === dbLessonNumber
+      );
 
       const sessionsQuestions = matchingSessions.reduce((acc, s) => acc + (Number(s.questionsCount) || 0), 0);
       const sessionsCorrect = matchingSessions.reduce((acc, s) => acc + (Number(s.correctAnswers) || 0), 0);
@@ -446,7 +417,9 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
         ? sessionsCorrect
         : (lessonObj?.correctAnswers || 0);
 
-      const hasDoneQuestions = totalQuestions > 0 || Boolean(questionsDoneKeys[item.lessonKey]);
+      const hasDoneQuestions =
+        totalQuestions > 0 ||
+        Boolean(questionsDoneKeys[item.lessonKey] || questionsDoneKeys[item.lessonKey + '|b1'] || questionsDoneKeys[item.lessonKey + '|b2']);
       const accuracy = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : null;
 
       // Latest question session date
@@ -490,6 +463,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
         isReviewed,
         totalQuestions,
         totalCorrect,
+        sessionsCount: matchingSessions.length,
         hasDoneQuestions,
         accuracy,
         lastQuestionDate,
@@ -505,32 +479,29 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
   const handleToggleStudied = (item: typeof enrichedItems[0]) => {
     const newState = !item.isStudied;
 
+    let nextUfba = { ...ufbaTaskIds };
+    let nextSefaz = { ...sefazTaskIds };
+
     // 1. Update UFBA Plan Task IDs
     if (item.taskIdsInUfbaPlan.length > 0) {
-      setUfbaTaskIds(prev => {
-        const next = { ...prev };
-        item.taskIdsInUfbaPlan.forEach(id => {
-          next[id] = newState;
-        });
-        try {
-          localStorage.setItem(UFBA_STORAGE_KEY, JSON.stringify(next));
-        } catch (e) {}
-        return next;
+      item.taskIdsInUfbaPlan.forEach(id => {
+        nextUfba[id] = newState;
       });
+      setUfbaTaskIds(nextUfba);
+      try {
+        localStorage.setItem(UFBA_STORAGE_KEY, JSON.stringify(nextUfba));
+      } catch (e) {}
     }
 
     // 2. Update SEFAZ Plan Task IDs
     if (item.taskIdsInSefazPlan.length > 0) {
-      setSefazTaskIds(prev => {
-        const next = { ...prev };
-        item.taskIdsInSefazPlan.forEach(id => {
-          next[id] = newState;
-        });
-        try {
-          localStorage.setItem(SEFAZ_STORAGE_KEY, JSON.stringify(next));
-        } catch (e) {}
-        return next;
+      item.taskIdsInSefazPlan.forEach(id => {
+        nextSefaz[id] = newState;
       });
+      setSefazTaskIds(nextSefaz);
+      try {
+        localStorage.setItem(SEFAZ_STORAGE_KEY, JSON.stringify(nextSefaz));
+      } catch (e) {}
     }
 
     // 3. Update studyData lesson theory flag
@@ -542,6 +513,11 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
       const lessonId = item.lessonObj?.id || `${item.subjectObj.id}-lesson-${item.dbLessonNumber}`;
       updateLesson(lessonId, { theoryCompleted: newState }, item.subjectObj.id, item.dbLessonNumber);
     }
+
+    pushStudyPlanToCloud(undefined, {
+      ufbaTaskIds: nextUfba,
+      sefazTaskIds: nextSefaz,
+    }).catch(() => {});
 
     window.dispatchEvent(new Event('ufba-plan-sync'));
     setSyncTick(t => t + 1);
@@ -575,6 +551,7 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
       try {
         localStorage.setItem(UFBA_CUSTOM_DATES_KEY, JSON.stringify(next));
       } catch (e) {}
+      pushStudyPlanToCloud(undefined, { customDates: next }).catch(() => {});
       return next;
     });
     setEditingDateKey(null);
@@ -1181,8 +1158,16 @@ export function UfbaEditalTracker({ onOpenSimulado, onOpenStudyPlan }: UfbaEdita
                           )}
 
                           {(() => {
-                            const isB1Done = Boolean(questionsDoneKeys[item.lessonKey + '|b1'] || questionsDoneKeys[item.lessonKey]);
-                            const isB2Done = Boolean(questionsDoneKeys[item.lessonKey + '|b2']);
+                            const isB1Done = Boolean(
+                              questionsDoneKeys[item.lessonKey + '|b1'] ||
+                              questionsDoneKeys[item.lessonKey] ||
+                              item.totalQuestions > 0
+                            );
+                            const isB2Done = Boolean(
+                              questionsDoneKeys[item.lessonKey + '|b2'] ||
+                              item.sessionsCount >= 2 ||
+                              item.totalQuestions >= 80
+                            );
 
                             return (
                               <>
